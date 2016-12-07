@@ -21,7 +21,7 @@ class CircularQueue:
                 self.tail_idx = len(self.__queue)
                 self.__extend()
                 self.__queue[self.tail_idx] = element
-            if self.tail_idx >= len(self.__queue):
+            elif self.tail_idx >= len(self.__queue):
                 # Try to add at the front
                 if self.head_idx > 0:
                     self.tail_idx = 0
@@ -53,10 +53,8 @@ class CircularQueue:
 
     def __extend(self):
         """ Reconstruct the circular queue and make it twice as big """
-        new_queue = (
-            self.__queue[self.head_idx:]
-            + (self.__queue[0:self.tail_idx + 1] if self.tail_idx < self.head_idx else [])  # our tail is at the start (circular)
-            + ([None] * len(self.__queue)))  # increase size by 2
+        new_queue = (self.__reconstruct_queue()
+                     + ([None] * len(self.__queue)))  # increase size 2 times
         self.__queue = new_queue
 
     def __reconstruct_queue(self):
@@ -76,30 +74,28 @@ class CircularQueue:
         self.__count = val
 
 
-
-
-queue = CircularQueue()
-queue.enqueue(10)
-queue.enqueue(20)
-queue.enqueue(30)
-queue.enqueue(40)
-queue.enqueue(50)
-print(queue.count)
-print(list(queue))
-print(queue.dequeue())
-print(queue.count)
-
-print(queue.dequeue())
-print(queue.count)
-
-print(queue.dequeue())
-print(queue.count)
-
-print(queue.dequeue())
-print(queue.count)
-print(list(queue))
-
-print(queue.dequeue())
-print(queue.count)
-
-print(list(queue))
+# queue = CircularQueue()
+# queue.enqueue(10)
+# queue.enqueue(20)
+# queue.enqueue(30)
+# queue.enqueue(40)
+# queue.enqueue(50)
+# print(queue.count)
+# print(list(queue))
+# print(queue.dequeue())
+# print(queue.count)
+#
+# print(queue.dequeue())
+# print(queue.count)
+#
+# print(queue.dequeue())
+# print(queue.count)
+#
+# print(queue.dequeue())
+# print(queue.count)
+# print(list(queue))
+#
+# print(queue.dequeue())
+# print(queue.count)
+#
+# print(list(queue))
