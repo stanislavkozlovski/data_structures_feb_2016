@@ -52,6 +52,8 @@ fabric.properties
 .idea/modules.xml
 .idea/misc.xml
 .idea/vcs.xml
+*.xml
+*.iml
 # *.ipr
 
 
@@ -63,6 +65,11 @@ __pycache__/
 
 # C extensions
 *.so
+
+
+
+# LibreOffice locks
+.~lock.*#
 
 # Distribution / packaging
 .Python
