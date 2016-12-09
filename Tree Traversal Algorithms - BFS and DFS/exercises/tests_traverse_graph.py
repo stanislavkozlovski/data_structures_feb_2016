@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import patch
 from traverse_graph_find_connected_components import main as traverse_graph
 import sys
 from io import StringIO
@@ -106,5 +105,7 @@ Connected components: 5
         finally:
             sys.stdin = sys.__stdin__
             sys.stdout = sys.__stdout__
+
+
 if __name__ == '__main__':
     unittest.main()
