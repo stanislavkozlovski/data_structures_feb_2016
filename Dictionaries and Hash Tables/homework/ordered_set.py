@@ -14,8 +14,63 @@ The set should be foreach-able (just like arrays, lists and other data structure
 Implement the IEnumerable<T> interface to achieve this. The set should yield all elements, sorted, in ascending order.
 Tip: Use in-order traversal.
 """
+from collections import deque
+
+
+class Node:
+    def __init__(self, value, left=None, right=None):
+        self.value = value
+        self.left = left
+        self.right = right
+
+    def __iter__(self):
+        if self.left:
+            yield from self.left.__iter__()
+
+        yield self.value
+
+        if self.right:
+            yield from self.right.__iter__()
 
 
 class OrderedSet:
     def __init__(self):
         self.count = 0
+        self.root = None
+
+    def add(self, value):
+        if not self.root:
+            self.root = Node(value)
+            self.count += 1
+            return
+        parent = self.__find_parent(value)
+        if parent is None:
+            return  # value is already in the tree
+
+        if parent.value < value:
+            parent.right = Node(value)
+        elif value < parent.value:
+            parent.left = Node(value)
+        else:
+            raise Exception('Error while adding!')
+
+        self.count += 1
+
+    def __find_parent(self, value):
+        """ Finds a place for the value in our binary tree"""
+        def __find(parent):
+            if value == parent.value:
+                return None
+            elif parent.value < value:
+                if not parent.right:  # no more to go
+                    return parent
+                return __find(parent.right)
+            elif value < parent.value:
+                if not parent.left:  # no more to go
+                    return parent
+                return __find(parent.left)
+        return __find(self.root)
+
+    def __iter__(self):
+        return (val for val in self.root.__iter__())
+
