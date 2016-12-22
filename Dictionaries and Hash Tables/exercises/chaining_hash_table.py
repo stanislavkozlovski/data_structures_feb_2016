@@ -64,6 +64,17 @@ class HashTable():
             self.slots[index].append(key_val)
             self.count += 1
 
+    def find(self, key):
+        """ Try to find a value with the given key. If no such exists, return false"""
+        index = self.get_key_index(key)
+        if not self.slots[index]:
+            return None
+        for slot in self.slots[index]:
+            print(slot)
+            if slot.key == key:
+                return slot
+        return None
+
     def grow_if_needed(self):
         capacity = len(self.slots)
         if self.count / capacity < 0.65:
@@ -81,7 +92,7 @@ class HashTable():
         return new_hash_table
 
     def get_key_index(self, key):
-        index = hash(key) % len(self.slots)
+        index = abs(hash(key) % len(self.slots))
         return index
 
     @property
