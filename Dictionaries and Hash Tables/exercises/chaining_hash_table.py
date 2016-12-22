@@ -18,6 +18,10 @@ class KeyValue:
     def __eq__(self, other):
         return self.key == other.key and self.value == other.value
 
+    def __iter__(self):
+        for el in [self.key, self.value]:
+            yield el
+
     def __combine_hash_codes(self, h1: int, h2: int):
         return ((h1 << 5) + h1) ^ h2
 
