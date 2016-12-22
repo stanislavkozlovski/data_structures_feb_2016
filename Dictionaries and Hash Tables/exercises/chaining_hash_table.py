@@ -41,13 +41,11 @@ class KeyValue:
 class HashTable():
     def __init__(self, capacity=initial_capacity):
         self.slots = deque([None] * capacity)
+        self.__orig_capacity = capacity
         self.count = 0
 
     def __iter__(self):
-        for slot in self.slots:
-            if slot is not None:
-                for key_val in slot:
-                    yield key_val
+        return (key_val for slot in self.slots if slot is not None for key_val in slot)
 
     def __getitem__(self, key):
         return self.__get(key)
@@ -65,21 +63,19 @@ class HashTable():
         self.__add(key, value, to_replace=True)
 
     def __add(self, key, value, to_replace=False):
-        key_val = KeyValue(key, value)
         self.grow_if_needed()
         index = self.get_key_index(key)
 
         if self.slots[index] is None:
-            self.slots[index] = deque([key_val])
-        else:
-            for taken_slot in self.slots[index]:
-                if taken_slot.key == key_val.key:
-                    if to_replace:
-                        taken_slot.value = value
-                        return
-                    raise Exception('The key {} is taken!'.format(key_val.key))
+            self.slots[index] = deque()
 
-            self.slots[index].append(key_val)
+        for key_val in self.slots[index]:
+            if key_val.key == key:
+                if to_replace:
+                    key_val.value = value
+                    return
+                raise KeyError('Key is already in the hashtable!')
+        self.slots[index].append(KeyValue(key, value))
         self.count += 1
 
     def remove(self, key):
