@@ -49,6 +49,9 @@ class HashTable():
                 for key_val in slot:
                     yield key_val
 
+    def __getitem__(self, key):
+        return self.__get(key)
+
     def add(self, key, value):
         key_val = KeyValue(key, value)
         self.grow_if_needed()
@@ -74,6 +77,27 @@ class HashTable():
             if slot.key == key:
                 return slot
         return None
+
+    def __get(self, key):
+        """ Returns the value by the key or raises and exception if the key is not in the hashtable"""
+        result = self.find(key)
+        if not result:
+            raise KeyError('The key {} is not in the hashtable!'.format(key))
+
+        return result.value
+
+    def try_get_value(self, key):
+        """ Tries to get the value from a key without throwing an exception if it does not exist
+        @param result - boolean indicating if we successfully got the value
+        :returns value, result"""
+        try:
+            value = self.__get(key)
+            return value, True
+        except:
+            return None, False
+
+    def has_key(self, key):
+        return self.find(key) is not None
 
     def grow_if_needed(self):
         capacity = len(self.slots)

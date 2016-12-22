@@ -72,8 +72,7 @@ class ChainingHashTableTests(unittest.TestCase):
         self.hash_table.remove("Ivan")
         self.assertEqual(0, len(self.hash_table))
 
-    def test_get_existing_element_should_return_value(self):
-
+    def test_indexer_get_existing_element_should_return_value(self):
         self.hash_table.add(555, "Peter")
         actual_value = self.hash_table[555]
 
