@@ -41,7 +41,22 @@ class RbTreeTests(unittest.TestCase):
 
         tree.root = root
         tree.add(4)
-        print()#TODO parents do not get updated, see node 2/4 for reference
+        """ This should trigger two recolors.
+            2 and 8 should turn to black,
+            6 should turn to red,
+            -10 and 20 should turn to black"""
+        node_2 = rightest_left
+        node_8 = rightest
+        self.assertEqual(node_2.color, BLACK)
+        self.assertEqual(node_8.color, BLACK)
+
+        node_6 = left_right
+        self.assertEqual(node_6.color, RED)
+
+        node_m10 = first_left
+        node_20 = leftest
+        self.assertEqual(node_m10.color, BLACK)
+        self.assertEqual(node_20.color, BLACK)
 
     def test_right_rotation(self):
         tree = RedBlackTree()
@@ -62,7 +77,16 @@ class RbTreeTests(unittest.TestCase):
 
         tree.root = root
         tree.add(13)
-        print()
+
+        """ this should cause a right rotation on 20-15-13 to 15-20-13"""
+        self.assertEqual(right_left.color, BLACK)  # this should be the parent of both now
+        node_20 = right_left.right
+        self.assertEqual(node_20.value, 20)
+        self.assertEqual(node_20.color, RED)
+
+        node_13 = right_left.left
+        self.assertEqual(node_13.value, 13)
+        self.assertEqual(node_13.color, RED)
 
 if __name__ == '__main__':
     unittest.main()
