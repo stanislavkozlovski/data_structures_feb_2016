@@ -70,10 +70,15 @@ class HashTable():
             return  # not over the fill factor
 
         # double the capacity
-        for i in range(capacity):
-            self.slots.append(None)
+        new_hash_table = self.__rehash_elements(HashTable(self.capacity * 2))
+        self.slots = new_hash_table.slots
+        self.count = new_hash_table.count
 
-        # TODO: Rehash
+    def __rehash_elements(self, new_hash_table):
+        for element in self:
+            new_hash_table.add(element.key, element.value)
+
+        return new_hash_table
 
     def get_key_index(self, key):
         index = hash(key) % len(self.slots)
