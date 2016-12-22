@@ -52,6 +52,12 @@ class HashTable():
     def __getitem__(self, key):
         return self.__get(key)
 
+    def __setitem__(self, key, value):
+        self.add_or_replace(key, value)
+
+    def __len__(self):
+        return self.count
+
     def add(self, key, value):
         self.__add(key, value)
 
@@ -74,7 +80,19 @@ class HashTable():
                     raise Exception('The key {} is taken!'.format(key_val.key))
 
             self.slots[index].append(key_val)
-            self.count += 1
+        self.count += 1
+
+    def remove(self, key):
+        """ Try to find a value with the given key and remove it. If no such exists, return false"""
+        index = self.get_key_index(key)
+        if not self.slots[index]:
+            return False
+        for slot in self.slots[index]:
+            if slot.key == key:
+                self.slots[index].remove(slot)
+                self.count -= 1
+                return True
+        return False
 
     def find(self, key):
         """ Try to find a value with the given key. If no such exists, return false"""
@@ -82,7 +100,6 @@ class HashTable():
         if not self.slots[index]:
             return None
         for slot in self.slots[index]:
-            print(slot)
             if slot.key == key:
                 return slot
         return None
