@@ -53,6 +53,12 @@ class HashTable():
         return self.__get(key)
 
     def add(self, key, value):
+        self.__add(key, value)
+
+    def add_or_replace(self, key, value):
+        self.__add(key, value, to_replace=True)
+
+    def __add(self, key, value, to_replace=False):
         key_val = KeyValue(key, value)
         self.grow_if_needed()
         index = self.get_key_index(key)
@@ -62,6 +68,9 @@ class HashTable():
         else:
             for taken_slot in self.slots[index]:
                 if taken_slot.key == key_val.key:
+                    if to_replace:
+                        taken_slot.value = value
+                        return
                     raise Exception('The key {} is taken!'.format(key_val.key))
 
             self.slots[index].append(key_val)

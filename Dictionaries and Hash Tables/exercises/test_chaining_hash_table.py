@@ -52,7 +52,7 @@ class ChainingHashTableTests(unittest.TestCase):
             KeyValue("Peter", 5)
         ]
         actual_elements = list(self.hash_table)
-        self.assertCountEqual(actual_elements,)
+        self.assertCountEqual(actual_elements, expected_elements)
 
     def test_count_add_remove_should_work(self):
 
@@ -104,7 +104,7 @@ class ChainingHashTableTests(unittest.TestCase):
         self.assertEqual("Peter", value)
         self.assertTrue(result)
 
-    def test_try_get_nonexisting_element_should_return_false(self):
+    def test_try_get_non_existing_element_should_return_false(self):
         value, result = self.hash_table.try_get_value(555)
         self.assertFalse(result)
 
