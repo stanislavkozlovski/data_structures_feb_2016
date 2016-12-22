@@ -1,9 +1,9 @@
 import unittest
 import maya
-from .chaining_self.hash_table import HashTable, KeyValue
+from exercises.chaining_hash_table import HashTable, KeyValue
+
 
 class ChainingHashTableTests(unittest.TestCase):
-
     def setUp(self):
         self.hash_table = HashTable()
 
@@ -12,7 +12,7 @@ class ChainingHashTableTests(unittest.TestCase):
         self.assertEqual(key_val.key, 'Man')
         self.assertEqual(key_val.value, 23)
 
-    def add_empty_hash_table_no_duplicates_should_add_elements(self):
+    def test_add_empty_hash_table_no_duplicates_should_add_elements(self):
         elements = [
             KeyValue("Peter", 5),
             KeyValue("Maria", 6),
@@ -24,22 +24,22 @@ class ChainingHashTableTests(unittest.TestCase):
             self.hash_table.add(element.key, element.value)
 
         actual_elements = list(self.hash_table)
-        self.assertEqual(actual_elements, elements)
+        self.assertCountEqual(actual_elements, elements)
 
-    def add_empty_hash_table_duplicates_should_throw_error(self):
+    def test_add_empty_hash_table_duplicates_should_throw_error(self):
         self.hash_table.add('Peter', 5)
         with self.assertRaises(Exception):
             self.hash_table.add('Peter', 10)
 
-    def add_1000_elements_should_work(self):
+    def test_add_1000_elements_should_work(self):
         expected_elements = []
         for i in range(1000):
-            self.hash_table.add("key " + i, i)
-            expected_elements.append(KeyValue("key " + i, i))
+            self.hash_table.add("key " + str(i), i)
+            expected_elements.append(KeyValue("key " + str(i), i))
         actual_elements = list(self.hash_table)
-        self.assertEqual(actual_elements, expected_elements)
+        self.assertCountEqual(actual_elements, expected_elements)
 
-    def add_or_replace_with_duplicates_should_work(self):
+    def test_add_or_replace_with_duplicates_should_work(self):
 
         self.hash_table.add_or_replace("Peter", 555)
         self.hash_table.add_or_replace("Maria", 999)
@@ -52,9 +52,9 @@ class ChainingHashTableTests(unittest.TestCase):
             KeyValue("Peter", 5)
         ]
         actual_elements = list(self.hash_table)
-        self.assertEqual(actual_elements,)
+        self.assertCountEqual(actual_elements,)
 
-    def count_add_remove_should_work(self):
+    def test_count_add_remove_should_work(self):
 
         self.assertEqual(0, len(self.hash_table))
 
@@ -72,19 +72,18 @@ class ChainingHashTableTests(unittest.TestCase):
         self.hash_table.remove("Ivan")
         self.assertEqual(0, len(self.hash_table))
 
-    def get_existing_element_should_return_value(self):
+    def test_get_existing_element_should_return_value(self):
 
         self.hash_table.add(555, "Peter")
         actual_value = self.hash_table[555]
 
-        self.assertEqual("Peter", actual_value)
+        self.assertCountEqual("Peter", actual_value)
 
-    def get_non_existing_element_should_raise_exception(self):
+    def test_get_non_existing_element_should_raise_exception(self):
         with self.assertRaises(KeyError):
             self.hash_table[12345]
 
-
-    def indexer_add_replace_with_duplicates_should_work(self):
+    def test_indexer_add_replace_with_duplicates_should_work(self):
 
         self.hash_table["Peter"] = 555
         self.hash_table["Maria"] = 999
@@ -98,19 +97,19 @@ class ChainingHashTableTests(unittest.TestCase):
         ]
         actual_elements = list(self.hash_table)
 
-        self.assertEqual(actual_elements, expected_elements)
+        self.assertCountEqual(actual_elements, expected_elements)
 
-    def try_get_existing_element_should_work(self):
+    def test_try_get_existing_element_should_work(self):
         self.hash_table.add(555, "Peter")
         value, result = self.hash_table.try_get_value(555)
         self.assertEqual("Peter", value)
         self.assertTrue(result)
 
-    def try_get_nonexisting_element_should_return_false(self):
+    def test_try_get_nonexisting_element_should_return_false(self):
         value, result = self.hash_table.try_get_value(555)
         self.assertFalse(result)
 
-    def find_existing_element_should_return_the_element(self):
+    def test_find_existing_element_should_return_the_element(self):
         name = "Maria"
         dt = maya.now()
         self.hash_table.add(name, dt)
@@ -119,22 +118,22 @@ class ChainingHashTableTests(unittest.TestCase):
         expected_element = KeyValue(name, dt)
         self.assertEqual(element, expected_element)
 
-    def find_non_existing_element_should_return_none(self):
+    def test_find_non_existing_element_should_return_none(self):
         element = self.hash_table.find("Maria")
         self.assertIsNone(element)
 
-    def contains_key_existing_element_should_return_true(self):
+    def test_contains_key_existing_element_should_return_true(self):
         dt = maya.now()
         self.hash_table.add(dt, 555)
 
         contains_key = self.hash_table.has_key(dt)
         self.assertTrue(contains_key)
 
-    def contains_non_existing_element_should_return_false(self):
+    def test_contains_non_existing_element_should_return_false(self):
         contains_key = self.hash_table.has_key('Nothing')
         self.assertFalse(contains_key)
 
-    def remove_existing_element_should_work(self):
+    def test_remove_existing_element_should_work(self):
         self.hash_table.add("peter", 12.5)
         self.hash_table.add("maria", 5)
 
@@ -144,7 +143,7 @@ class ChainingHashTableTests(unittest.TestCase):
         self.assertTrue(removed)
         self.assertEqual(len(self.hash_table), 1)
 
-    def remove_non_existing_element_should_work(self):
+    def test_remove_non_existing_element_should_work(self):
         self.hash_table.add("peter", 12.5)
         self.hash_table.add("maria", 5)
 
@@ -154,7 +153,7 @@ class ChainingHashTableTests(unittest.TestCase):
         self.assertFalse(removed)
         self.assertEqual(len(self.hash_table), 2)
 
-    def remove_5000_elements_should_work(self):
+    def test_remove_5000_elements_should_work(self):
         keys = []
         count = 5000
         for i in range(count):
@@ -169,9 +168,9 @@ class ChainingHashTableTests(unittest.TestCase):
             self.assertEqual(len(self.hash_table), count)
 
         expected_elements = []
-        self.assertEqual(list(self.hash_table), expected_elements)
+        self.assertCountEqual(list(self.hash_table), expected_elements)
 
-    def clear_should_work_correctly(self):
+    def test_clear_should_work_correctly(self):
         self.assertEqual(len(self.hash_table), 0)
         self.hash_table.clear()
         self.assertEqual(len(self.hash_table), 0)
@@ -183,7 +182,7 @@ class ChainingHashTableTests(unittest.TestCase):
         self.assertEqual(len(self.hash_table), 3)
         self.hash_table.clear()
         self.assertEqual(len(self.hash_table), 0)
-        self.assertEqual(list(self.hash_table), [])
+        self.assertCountEqual(list(self.hash_table), [])
 
         self.hash_table.add("Peter", 5)
         self.hash_table.add("Maria", 7)
@@ -191,7 +190,7 @@ class ChainingHashTableTests(unittest.TestCase):
 
         self.assertEqual(len(self.hash_table), 3)
 
-    def keys_should_work_correctly(self):
+    def test_keys_should_work_correctly(self):
         self.assertEqual([], self.hash_table.keys())
 
         self.hash_table.add("Peter", 5)
@@ -201,9 +200,9 @@ class ChainingHashTableTests(unittest.TestCase):
         keys = self.hash_table.keys()
 
         expected_keys = ["Peter", "Maria", "George"]
-        self.assertEqual(keys, expected_keys)
+        self.assertCountEqual(keys, expected_keys)
 
-    def values_should_work_correctly(self):
+    def test_values_should_work_correctly(self):
         self.assertEqual([], self.hash_table.values())
 
         self.hash_table.add("Peter", 5)
@@ -214,4 +213,7 @@ class ChainingHashTableTests(unittest.TestCase):
 
         expected_values = [5, 3, 231.2]
 
-        self.assertEqual(values, expected_values)
+        self.assertCountEqual(values, expected_values)
+
+if __name__ == '__main__':
+    unittest.main()
