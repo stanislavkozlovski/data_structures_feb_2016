@@ -96,7 +96,7 @@ class OrderedSetTests(unittest.TestCase):
 
         for i in range(100):
             self.ordered_set.remove(i)
-            self.assertEqual(self.ordered_set.count, (100-i)+1)
+            self.assertEqual(self.ordered_set.count, (100-i)-1)
 
 if __name__ == '__main__':
     unittest.main()
