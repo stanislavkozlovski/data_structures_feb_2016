@@ -47,58 +47,72 @@ class OrderedSet:
             self.root = Node(value)
             self.count += 1
             return
-        parent = self.__find_parent(value)
-        if parent is None:
-            return  # value is already in the tree
 
-        if parent.value < value:
-            parent.right = Node(value, parent=parent)
-        elif value < parent.value:
-            parent.left = Node(value, parent=parent)
-        else:
-            raise Exception('Error while adding!')
+        def add_to_tree(root):
+            """
+            Traverse the tree to find a place to add the node
+            :returns True if it was added successfully
+            :returns False if it is already in the tree
+            """
+            if root.value == value:
+                return False
+            elif root.value > value:
+                if root.left:
+                    return add_to_tree(root.left)
+                root.left = Node(value, parent=root)
+            else:  # root.value < value
+                if root.right:
+                    return add_to_tree(root.right)
+                root.right = Node(value, parent=root)
+            return True
+
+        # add to the tree and check if it was already there
+        node_was_added = add_to_tree(self.root)
+        if not node_was_added:
+            return  # it was already there, no need to increment
 
         self.count += 1
 
     def remove(self, value):
-        element_to_remove = self.find_element(value)
-        if element_to_remove == False:
-            raise Exception("Element is not in the set, You can't remove it!")
-        parent = element_to_remove.parent
-        right_node = element_to_remove.right
-        left_node = element_to_remove.left
-        if right_node:
-            if self.root.value == value:
-                self.root = right_node
-            right_node.parent = parent
-            if parent:
-                if parent.value > right_node:
-                    parent.left = right_node
-                else:
-                    parent.right = right_node
-            if left_node:
-                leftest_node = self.__get_leftest_node(right_node)
-                left_node.parent = leftest_node
-                leftest_node.left = left_node
-                # TODO: get leftest and etc
-        elif left_node:
-            if self.root.value == value:
-                self.root = left_node
-            left_node.parent = parent
-            if parent:
-                if parent.value > left_node:
-                    parent.left = left_node
-                else:
-                    parent.right = left_node
-        else:
+        element_to_remove, found = self.find_element(value)
+        if not found:
+            raise Exception('{} is not in the Ordered Set'.format(value))
+        self.count -= 1  # it's obvious that we will remove a node now
+
+        removing_root = self.root.value == value
+        left_node, parent, right_node = element_to_remove.left, element_to_remove.parent, element_to_remove.right
+        if not right_node and not left_node:
+            # Node does not have any children
+            if removing_root:
+                self.root = None
             if parent:
                 if parent.value > value:
                     parent.left = None
                 else:
                     parent.right = None
-        self.count -= 1
+            return
 
+        replacement_node = None  # the node that will replace the original node
+        if right_node:
+            replacement_node = right_node
+            # we want the leftest child of the right node to be the parent of the left node of the original node
+            if left_node:
+                right_leftest_node = self.__get_leftest_node(right_node)  # return the leftest node or the node itself
+                left_node.parent = right_leftest_node
+                right_leftest_node.left = left_node
+        elif left_node:
+            replacement_node = left_node
 
+        replacement_node.parent = parent
+
+        if removing_root:
+            self.root = replacement_node
+        if parent:
+            # because we removed a node, we need to change its parent's reference
+            if parent.value > replacement_node.value:
+                parent.left = replacement_node
+            else:
+                parent.right = replacement_node
 
     def __get_leftest_node(self, node):
         if node.left:
@@ -106,34 +120,22 @@ class OrderedSet:
         return node
 
     def find_element(self, value):
+        """
+        :return: a Tuple holding the Element and a boolean indicating if it found it or not
+        """
         def __find(element):
             if value == element.value:
-                return element
-            elif element.value < value:
-                if not element.right:  # no more to go
-                    return False
+                return element, True
+            elif element.right and element.value < value:
                 return __find(element.right)
-            elif value < element.value:
-                if not element.left:  # no more to go
-                    return False
+            elif element.left and value < element.value:
                 return __find(element.left)
+
+            return None, False
 
         return __find(self.root)
 
     def contains(self, value):
-        return self.__find_parent(value) is None
+        _, found = self.find_element(value)
+        return found
 
-    def __find_parent(self, value):
-        """ Finds a place for the value in our binary tree"""
-        def __find(parent):
-            if value == parent.value:
-                return None
-            elif parent.value < value:
-                if not parent.right:  # no more to go
-                    return parent
-                return __find(parent.right)
-            elif value < parent.value:
-                if not parent.left:  # no more to go
-                    return parent
-                return __find(parent.left)
-        return __find(self.root)
