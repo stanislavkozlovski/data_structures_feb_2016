@@ -145,6 +145,17 @@ class HashTable():
         index = abs(hash(key) % len(self.slots))
         return index
 
+    def clear(self):
+        """ Removes everything in the hash_table"""
+        self.count = 0
+        self.slots = deque([None] * self.__orig_capacity)
+
+    def keys(self):
+        return [key_val.key for key_val in self]
+
+    def values(self):
+        return [key_val.value for key_val in self]
+
     @property
     def capacity(self):
         return len(self.slots)
