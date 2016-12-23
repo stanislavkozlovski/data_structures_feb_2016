@@ -125,6 +125,43 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_9.left.color, NIL)
         self.assertEqual(node_9.right.color, NIL)
 
+    def test_right_rotation_no_sibling_left_subtree(self):
+        rb_tree = RedBlackTree()
+        root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        # LEFT SUBTREE
+        node_m10 = Node(value=-10, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_m11 = Node(value=-11, color=RED, parent=node_m10, left=NIL_LEAF, right=NIL_LEAF)
+        node_m10.left = node_m11
+        # RIGHT SUBTREE
+        rightest = Node(value=20, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        right_left = Node(value=15, color=RED, parent=rightest, left=NIL_LEAF, right=NIL_LEAF)
+        rightest.left = right_left
+
+        root.left = node_m10
+        root.right = rightest
+        rb_tree.root = root
+        rb_tree.add(-12)
+        """
+        red-red relationship with -11 -12, so we do a right rotation where -12 becomes the left child of -11,
+                                                                            -10 becomes the right child of -11
+        -11's parent is root, -11 is black, -10,-12 are RED
+        """
+        node_m12 = node_m11.left
+        self.assertEqual(node_m12.value, -12)
+        self.assertEqual(node_m12.color, RED)
+        self.assertEqual(node_m12.parent.value, -11)
+        self.assertEqual(node_m12.left.color, NIL)
+        self.assertEqual(node_m12.right.color, NIL)
+
+        self.assertEqual(node_m11.color, BLACK)
+        self.assertEqual(node_m11.parent.value, 10)  # root parent
+        self.assertEqual(node_m11.left.value, -12)
+        self.assertEqual(node_m11.right.value, -10)
+
+        self.assertEqual(node_m10.color, RED)
+        self.assertEqual(node_m10.parent.value, -11)
+        self.assertEqual(node_m10.left.color, NIL)
+        self.assertEqual(node_m10.right.color, NIL)
 
 
     def test_left_right_rotation_no_sibling(self):

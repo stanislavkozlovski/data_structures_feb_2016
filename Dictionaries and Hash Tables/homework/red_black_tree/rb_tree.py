@@ -51,6 +51,7 @@ class RedBlackTree:
                         parent.color = BLACK
 
                         par_par_parent = par_parent.parent
+                        parent.parent = par_par_parent
                         if par_par_parent:
                             if par_par_parent.value > par_parent.value:
                                 par_par_parent.left = parent
