@@ -88,5 +88,84 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_13.value, 13)
         self.assertEqual(node_13.color, RED)
 
+    def test_left_right_rotation_no_sibling(self):
+        rb_tree = RedBlackTree()
+        root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        # LEFT PART
+        leftest = Node(value=-10, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        left_right = Node(value=7, color=RED, parent=leftest, left=NIL_LEAF, right=NIL_LEAF)
+        leftest.right = left_right
+
+        # RIGHT PART
+        rightest = Node(value=20, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        right_left = Node(value=15, color=RED, parent=rightest, left=NIL_LEAF, right=NIL_LEAF)
+        rightest.left = right_left
+
+        root.left=leftest
+        root.right=rightest
+
+        rb_tree.root = root
+        rb_tree.add(17)
+        """
+        15-17 should do a left rotation so 17 is now the parent of 15.
+        Then, a right rotation should be done so 17 is the parent of 20(15's prev parent)
+        Also, a recoloring should be done such that 17 is now black and his children are red
+        """
+        node_15 = right_left
+        node_20 = rightest
+        node_17 = node_15.parent
+        self.assertEqual(node_17.value, 17)
+        self.assertEqual(node_17.color, BLACK)
+        self.assertEqual(node_17.parent.value, 10)
+        self.assertEqual(node_17.parent.right.value, 17)
+        self.assertEqual(node_17.left.value, 15)
+        self.assertEqual(node_17.right.value, 20)
+
+        self.assertEqual(node_20.parent.value, 17)
+        self.assertEqual(node_20.color, RED)
+        self.assertEqual(node_20.left.color, NIL)
+        self.assertEqual(node_20.right.color, NIL)
+        self.assertEqual(node_15.parent.value, 17)
+        self.assertEqual(node_15.color, RED)
+        self.assertEqual(node_15.left.color, NIL)
+        self.assertEqual(node_15.right.color, NIL)
+        print()
+
+    def test_right_left_rotation_no_sibling(self):
+        rb_tree = RedBlackTree()
+        root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        # LEFT PART
+        nodem10 = Node(value=-10, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_7 = Node(value=7, color=RED, parent=nodem10, left=NIL_LEAF, right=NIL_LEAF)
+        nodem10.right = node_7
+
+        # RIGHT PART
+        node_20 = Node(value=20, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_15 = Node(value=15, color=RED, parent=node_20, left=NIL_LEAF, right=NIL_LEAF)
+        node_20.left = node_15
+
+        root.left = nodem10
+        root.right = node_20
+
+        rb_tree.root = root
+        rb_tree.add(2)
+        """
+        2 goes as left to 7, but both are red so we do a RIGHT-LEFT rotation
+        First a right rotation should happen, so that 2 becomes the parent of 7 [2 right-> 7]
+        Second a left rotation should happen, so that 2 becomes the parent of -10 and 7
+        2 is black, -10 and 7 are now red. 2's parent is the root - 10
+        """
+        node_2 = node_7.parent
+        self.assertEqual(node_2.parent.value, 10)
+        self.assertEqual(node_2.color, BLACK)
+        self.assertEqual(node_2.left.value, -10)
+        self.assertEqual(node_2.right.value, 7)
+
+        self.assertEqual(node_7.color, RED)
+        self.assertEqual(node_7.parent.value, 2)
+
+        self.assertEqual(nodem10.color, RED)
+        self.assertEqual(nodem10.parent.value, 2)
+
 if __name__ == '__main__':
     unittest.main()
