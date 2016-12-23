@@ -126,6 +126,21 @@ class RedBlackTree:
                         par_parent.parent = new_node
                         pass
                     else:  # new node is on the RIGHT
+                        # LEFT ROTATION
+                        parent.left = par_parent
+                        parent.parent = par_parent.parent
+                        par_parent.right = NIL_LEAF
+                        par_par_parent = par_parent.parent
+                        par_parent.parent = parent
+                        if par_par_parent.value > par_parent.value:
+                            par_par_parent.left = parent
+                        else:
+                            par_par_parent.right = parent
+                        parent.right = new_node
+                        # recolor
+                        parent.color = BLACK
+                        new_node.color = RED
+                        par_parent.color = RED
                         pass
                     pass
                 elif par_parent.left.color == BLACK:
