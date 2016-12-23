@@ -311,6 +311,7 @@ class RbTreeTests(unittest.TestCase):
         rb_tree.add(2)
         self.assertEqual(rb_tree.root.value, 2)
         self.assertEqual(rb_tree.root.color, BLACK)
+        node_2 = rb_tree.root
         """ 2 """
         rb_tree.add(1)
         """
@@ -391,6 +392,106 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_5.color, RED)
         self.assertEqual(node_5.left.value, 4)
         self.assertEqual(node_5.right.value, 9)
+
+        rb_tree.add(6)
+        """
+        Nothing special
+           __2B__
+         1B      5R___
+               4B    _9B
+              3R    6R
+        """
+        node_6 = node_9.left
+        self.assertEqual(node_6.value, 6)
+        self.assertEqual(node_6.color, RED)
+        self.assertEqual(node_6.parent.value, 9)
+        self.assertEqual(node_6.left.color, NIL)
+        self.assertEqual(node_6.right.color, NIL)
+
+        rb_tree.add(7)
+        """
+                   __2B__                                                    __2B__
+                 1B      ___5R___             ---LEFT  ROTATION TO-->       1B   ___5R___
+                       4B      _9B_                                             4B      9B
+                     3R       6R                                               3R      7R
+                               7R                                                     6B
+            RIGHT ROTATION (RECOLOR) TO
+                 __2B__
+               1B    ___5R___
+                    4B      7B
+                   3R     6R  9R
+        """
+        node_7 = node_5.right
+        self.assertEqual(node_7.value, 7)
+        self.assertEqual(node_7.color, BLACK)
+        self.assertEqual(node_7.left.value, 6)
+        self.assertEqual(node_7.right.value, 9)
+        self.assertEqual(node_7.parent.value, 5)
+
+        self.assertEqual(node_5.color, RED)
+        self.assertEqual(node_5.right.value, 7)
+
+        self.assertEqual(node_6.color, RED)
+        self.assertEqual(node_6.left.color, NIL)
+        self.assertEqual(node_6.right.color, NIL)
+        self.assertEqual(node_6.parent.value, 7)
+
+        self.assertEqual(node_9.color, RED)
+        self.assertEqual(node_9.left.color, NIL)
+        self.assertEqual(node_9.right.color, NIL)
+        self.assertEqual(node_9.parent.value, 7)
+
+        rb_tree.add(15)
+        """
+                    __2B__                                         __2B__
+               1B    ___5R___                                    1B    ___5R___
+                    4B      7B       ---RECOLORS TO-->                4B       7R
+                   3R     6R  9R                                     3R       6B 9B
+                               15R                                                15R
+                Red-red relationship on 5R-7R. 7R's sibling is BLACK, so we need to rotate.
+                7 is the right child of 5, 5 is the right child of 2, so we have RR => L: Left rotation with recolor
+                What we get is:
+
+                            ___5B___
+                        __2R__      7R
+                      1B     4B    6B 9B
+                            3R         15R
+        """
+        node_15 = node_9.right
+        self.assertEqual(node_15.color, RED)
+        self.assertEqual(node_15.parent.value, 9)
+        self.assertEqual(node_15.left.color, NIL)
+        self.assertEqual(node_15.right.color, NIL)
+
+        self.assertEqual(node_9.color, BLACK)
+        self.assertEqual(node_9.left.color, NIL)
+        self.assertEqual(node_9.right.value, 15)
+        self.assertEqual(node_9.parent.value, 7)
+
+        self.assertEqual(node_6.color, BLACK)
+
+        self.assertEqual(node_7.color, RED)
+        self.assertEqual(node_7.left.value, 6)
+        self.assertEqual(node_7.right.value, 9)
+
+        self.assertEqual(rb_tree.root.value, 5)
+        self.assertIsNone(node_5.parent)
+        self.assertEqual(node_5.right.value, 7)
+        self.assertEqual(node_5.left.value, 2)
+
+        self.assertEqual(node_2.color, RED)
+        self.assertEqual(node_2.parent.value, 5)
+        self.assertEqual(node_2.left.value, 1)
+        self.assertEqual(node_2.right.value, 4)
+
+        self.assertEqual(node_4.parent.value, 2)
+        self.assertEqual(node_4.color, BLACK)
+        self.assertEqual(node_4.left.value, 3)
+        self.assertEqual(node_4.right.color, NIL)
+
+
+
+
 
 
 if __name__ == '__main__':
