@@ -28,132 +28,150 @@ class RedBlackTree:
             self.root = Node(value, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
             self.count += 1
             return
-        parent, dir = self.__find_parent(value)
-        if dir is None:
+        parent, node_dir = self.__find_parent(value)
+        if node_dir is None:
             return  # value is in the tree
         new_node = Node(value=value, color=RED, parent=parent, left=NIL_LEAF, right=NIL_LEAF)
-        if dir == 'left':
+        if node_dir == 'left':
             parent.left = new_node
         else:
             parent.right = new_node
 
-        if parent.color == RED:  # TODO: RECOLOR
-            par_parent = parent.parent
-            if not par_parent: return
-            if par_parent.value > parent.value:
+        if parent.color == RED:
+            grandfather = parent.parent
+            if not grandfather: return
+            if grandfather.value > parent.value:
                 # parent is on the left
+                uncle = grandfather.right
                 # check right
-                if par_parent.right.color == NIL:
-                    if value < parent.value:  # TODO: RIGHT ROTATION
-                        # value is on parent's left & parent is on par_parent's left, so we do a right rotation
+                if uncle.color == NIL:
+                    if node_dir == 'left':  # TODO: RIGHT ROTATION
+                        # value is on parent's left & parent is on grandfather's left, so we do a right rotation
                         parent.left = new_node
-                        parent.right = par_parent
+                        parent.right = grandfather
                         parent.color = BLACK
 
-                        par_par_parent = par_parent.parent
-                        parent.parent = par_par_parent
-                        if par_par_parent:
-                            if par_par_parent.value > par_parent.value:
-                                par_par_parent.left = parent
+                        grand_grandfather = grandfather.parent
+                        parent.parent = grand_grandfather
+                        if grand_grandfather:
+                            if grand_grandfather.value > grandfather.value:
+                                grand_grandfather.left = parent
                             else:
-                                par_par_parent.right = parent
-                        par_parent.parent = parent
-                        par_parent.color = RED
-                        par_parent.left = NIL_LEAF
-                    else:  # value is on the right
-                        # LEFT -> RIGHT ROTATION
-                        # LEFT ROTATION
-                        new_node.left = parent
-                        new_node.parent = par_parent
-                        parent.right = NIL_LEAF
-                        parent.parent = new_node
-                        par_par_parent = par_parent.parent
-                        # RIGHT ROTATION
-                        new_node.parent = par_parent.parent
-                        new_node.right = par_parent
-
-                        new_node.left = parent
-                        parent.parent = new_node
-                        par_parent.left = NIL_LEAF
-                        if par_parent.value > par_par_parent.value:
-                            par_par_parent.right = new_node
+                                grand_grandfather.right = parent
                         else:
-                            par_par_parent.left = new_node
-                        par_parent.parent = new_node
-                        new_node.color = BLACK
-                        par_parent.color = RED
-                        parent.color = RED
-                        pass
+                            self.root = parent
+                        grandfather.parent = parent
+                        grandfather.color = RED
+                        grandfather.left = NIL_LEAF
+                    else:  # value is on the right
+                        """
+                        RL => Left-Right rotation!
+                        """
+                        self.left_right_rotation(new_node, parent, grandfather)
 
-                    # TODO: ROTATE, RECOLOR
-                    pass
-                elif par_parent.right.color == BLACK:
+                elif uncle.color == BLACK:
                     raise Exception('Should not be here')
-                else:  # RED SIBLING
-                    par_parent.right.color = BLACK
-                    par_parent.left.color = BLACK
-                    if par_parent != self.root:
-                        par_parent.color = RED
-                    self._check_after_recolor(par_parent)
-                    # TODO: CHECK
-                    pass
-                pass
+                else:  # RED UNCLE
+                    grandfather.right.color = BLACK
+                    grandfather.left.color = BLACK
+                    if grandfather != self.root:
+                        grandfather.color = RED
+                    self._check_after_recolor(grandfather)
             else:
                 # parent is on the right
+                uncle = grandfather.left
                 # check left
-                if par_parent.left.color == NIL:
-                    # TODO: ROTATE, RECOLOR
+                if uncle.color == NIL:
                     if value < parent.value: # new node is on the LEFT
+                        """
+                        LR => Right-Left rotation
+                        """
                         # RIGHT LEFT ROTATION I THINK
                         # RIGHT
-                        par_parent.right = new_node
-                        new_node.parent = par_parent
+                        grandfather.right = new_node
+                        new_node.parent = grandfather
                         new_node.right = parent
                         new_node.color = BLACK
                         parent.color = RED
-                        par_parent.color = RED
+                        grandfather.color = RED
                         parent.parent = new_node
                         parent.left = NIL_LEAF
                         # LEFT
-                        par_par_parent = par_parent.parent
-                        if par_par_parent.value > par_parent.value:
-                            par_par_parent.left = new_node
+                        grand_grandfather = grandfather.parent
+                        if grand_grandfather.value > grandfather.value:
+                            grand_grandfather.left = new_node
                         else:
-                            par_par_parent.right = new_node
-                        new_node.parent = par_par_parent
-                        new_node.left = par_parent
-                        par_parent.right = NIL_LEAF
-                        par_parent.parent = new_node
-                        pass
+                            grand_grandfather.right = new_node
+                        new_node.parent = grand_grandfather
+                        new_node.left = grandfather
+                        grandfather.right = NIL_LEAF
+                        grandfather.parent = new_node
                     else:  # new node is on the RIGHT
+                        """
+                        RR => Left Rotation
+                        """
                         # LEFT ROTATION
-                        parent.left = par_parent
-                        parent.parent = par_parent.parent
-                        par_parent.right = NIL_LEAF
-                        par_par_parent = par_parent.parent
-                        par_parent.parent = parent
-                        if par_par_parent.value > par_parent.value:
-                            par_par_parent.left = parent
+                        parent.left = grandfather
+                        parent.parent = grandfather.parent
+                        grandfather.right = NIL_LEAF
+                        grand_grandfather = grandfather.parent
+                        grandfather.parent = parent
+                        if grand_grandfather.value > grandfather.value:
+                            grand_grandfather.left = parent
                         else:
-                            par_par_parent.right = parent
+                            grand_grandfather.right = parent
                         parent.right = new_node
                         # recolor
                         parent.color = BLACK
                         new_node.color = RED
-                        par_parent.color = RED
-                        pass
-                    pass
-                elif par_parent.left.color == BLACK:
-                    # TODO: RUN
-                    pass
+                        grandfather.color = RED
+                elif uncle.color == BLACK:
+                    raise Exception('Should not be here!')
                 else:  # RED SIBLING
-                    par_parent.right.color = BLACK
-                    par_parent.left.color = BLACK
-                    if par_parent != self.root:
-                        par_parent.color = RED
-                    self._check_after_recolor(par_parent)
+                    grandfather.right.color = BLACK
+                    grandfather.left.color = BLACK
+                    if grandfather != self.root:
+                        grandfather.color = RED
+                    self._check_after_recolor(grandfather)
                     pass
                 pass
+
+    def left_right_rotation(self, node, parent, grandfather):
+        """
+        LEFT -> RIGHT ROTATION
+        """
+        # LEFT ROTATION
+        """
+        __2B__                                                    __2B__             RIGHT ROTATION (RECOLOR) TO
+     1B      ___5R___             ---LEFT  ROTATION TO-->       1B   ___5R___             __2B__
+           4B      _9B_                                             4B      9B          1B    ___5R___
+         3R       6R                                               3R      7R                4B      7B
+                   7R                                                     6B                3R     6R  9R
+        """
+        node.left = parent
+        node.parent = grandfather
+
+        parent.right = NIL_LEAF
+        parent.parent = node
+        grand_grandfather = grandfather.parent
+
+        # RIGHT ROTATION
+        node.parent = grandfather.parent
+        node.right = grandfather
+        grandfather.left = NIL_LEAF
+        grandfather.parent = node
+
+        if grand_grandfather:
+            if grandfather.value > grand_grandfather.value:
+                grand_grandfather.right = node
+            else:
+                grand_grandfather.left = node
+        else:
+            self.root = node
+
+        node.color = BLACK
+        grandfather.color = RED
+        parent.color = RED
 
     def _check_after_recolor(self, node):
         parent = node.parent
@@ -183,32 +201,10 @@ class RedBlackTree:
                         par_parent.color = RED
                         par_parent.left = NIL_LEAF
                     else:  # value is on the right
-                        # LEFT -> RIGHT ROTATION
-                        # LEFT ROTATION
-                        node.left = parent
-                        node.parent = par_parent
-                        parent.right = NIL_LEAF
-                        parent.parent = node
-                        par_par_parent = par_parent.parent
-                        # RIGHT ROTATION
-                        node.parent = par_parent.parent
-                        node.right = par_parent
-
-                        node.left = parent
-                        parent.parent = node
-                        par_parent.left = NIL_LEAF
-                        if par_parent.value > par_par_parent.value:
-                            par_par_parent.right = node
-                        else:
-                            par_par_parent.left = node
-                        par_parent.parent = node
-                        node.color = BLACK
-                        par_parent.color = RED
-                        parent.color = RED
-                        pass
-
-                    # TODO: ROTATE, RECOLOR
-                    pass
+                        """
+                        RL => Left-Right rotation
+                        """
+                        self.left_right_rotation(node, parent, grandfather)
                 elif par_parent.right.color == BLACK:
                     """
                     LL => R
