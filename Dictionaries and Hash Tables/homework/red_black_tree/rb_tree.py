@@ -88,42 +88,7 @@ class RedBlackTree:
                     # TODO: ROTATE, RECOLOR
                     pass
                 elif par_parent.right.color == BLACK:
-                    """
-                    LL => R
-                    RL => LR
-                    """
-                    # since we're here, the second letter is always L
-                    if parent.value > value:
-                        pass
-                        # TODO: LL => Right rotation
-                    else:
-                        # TODO: MOVE TO RECURSION BELOWW
-                        # TODO RL = LR => Left rotation, right rotation
-                        # Left rotation!
-                        parent.right = node.left
-                        node.left.parent = parent
-                        node.left = parent
-                        parent.parent = node
-                        node.parent = par_parent
-                        par_parent.left = node
-                        # Right rotation!
-                        par_parent.left = node.right
-                        node.right.parent = par_parent
-                        node.right = par_parent
-                        par_par_parent = par_parent.parent
-                        node.parent = par_par_parent
-                        if par_par_parent.value > par_parent:
-                            par_par_parent.left = node
-                        else:
-                            par_par_parent.right = node
-                        node.color = BLACK
-                        par_parent.color = RED
-                        node.left.color = RED
-                        # TIME: 17m
-                        # TODO: TEST
-                        pass
-                    # TODO: RUN
-                    pass
+                    raise Exception('Should not be here')
                 else:  # RED SIBLING
                     par_parent.right.color = BLACK
                     par_parent.left.color = BLACK
@@ -251,11 +216,63 @@ class RedBlackTree:
                     """
                     # since we're here, the second letter is always L
                     if parent.value > value:
-                        pass
-                        # TODO: LL => Right rotation
+                        # Right rotation with recolor!
+                        """
+                           15                          10
+                Node---> 10       should become      1   15
+                        1  12                           12
+                        """
+                        parent.left = node.right
+                        node.right.parent = parent
+                        node.right = parent
+                        grandfather = parent.parent
+                        parent.parent = node
+                        if grandfather:
+                            if grandfather.value > parent.value:
+                                grandfather.left = node
+                            else:
+                                grandfather.right = node
+                                raise Exception('Not sure, but I think we dont need to be here')
+                        else:  # grandfather was the root
+                            self.root = node
+                        node.parent = grandfather
+                        node.color = BLACK
+                        node.left.color = RED
+                        node.right.color = RED
                     else:
                         # TODO: MOVE TO RECURSION BELOWW
-                        raise Exception('Did not expect to get here')
+                        # TODO RL = LR => Left rotation, right rotation
+                        # Left rotation!
+                        parent.right = node.left
+                        node.left.parent = parent
+                        node.left = parent
+                        parent.parent = node
+                        node.parent = par_parent
+                        par_parent.left = node
+
+                        # Right rotation!
+                        par_parent.left = node.right
+                        node.right.parent = par_parent
+                        node.right = par_parent
+                        par_par_parent = par_parent.parent  # get the upper parent
+                        par_parent.parent = node  # and attach the new one
+                        node.parent = par_par_parent
+                        if par_par_parent:
+                            if par_par_parent.value > par_parent.value:
+                                par_par_parent.left = node
+                            else:
+                                par_par_parent.right = node
+                        else:  # parent was the last root
+                            self.root = node
+
+                        node.color = BLACK
+                        par_parent.color = RED
+                        node.left.color = RED
+                        # TIME: 17m
+                        # TODO: TEST
+                        pass
+                    # TODO: RUN
+                    pass
                 else:  # RED SIBLING
                     par_parent.right.color = BLACK
                     par_parent.left.color = BLACK
@@ -311,6 +328,22 @@ class RedBlackTree:
                         pass
                     pass
                 elif par_parent.left.color == BLACK:
+                    """
+                    RR => L
+                    LR => RL
+                    """
+                    # Since we're here, second letter is always R
+                    if parent.value > value:
+                        # value is at the left: LR
+                        """
+                        LR => RIGHT-LEFT ROTATION
+                        """
+                        pass
+                    else:
+                        """
+                        RR => LEFT ROTATION
+                        """
+                        pass
                     # TODO: RUN
                     pass
                 else:  # RED SIBLING
