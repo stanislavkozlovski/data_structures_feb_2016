@@ -343,6 +343,24 @@ class RedBlackTree:
                         """
                         RR => LEFT ROTATION
                         """
+                        par_parent.right = parent.left
+                        parent.left.parent = par_parent
+                        parent.left = par_parent
+                        parent.parent = par_parent.parent
+                        par_par_parent = par_parent.parent
+                        par_parent.parent = parent
+                        if par_par_parent:
+                            if par_par_parent.value > par_parent.value:
+                                par_par_parent.left = parent
+                            else:
+                                par_par_parent.right = parent
+                        else:
+                            self.root = parent
+                        parent.right = node
+                        # recolor
+                        parent.color = BLACK
+                        node.color = RED
+                        par_parent.color = RED
                         pass
                     # TODO: RUN
                     pass
