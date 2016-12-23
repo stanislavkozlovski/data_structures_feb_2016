@@ -88,6 +88,40 @@ class RedBlackTree:
                     # TODO: ROTATE, RECOLOR
                     pass
                 elif par_parent.right.color == BLACK:
+                    """
+                    LL => R
+                    RL => LR
+                    """
+                    # since we're here, the second letter is always L
+                    if parent.value > value:
+                        pass
+                        # TODO: LL => Right rotation
+                    else:
+                        # TODO: MOVE TO RECURSION BELOWW
+                        # TODO RL = LR => Left rotation, right rotation
+                        # Left rotation!
+                        parent.right = node.left
+                        node.left.parent = parent
+                        node.left = parent
+                        parent.parent = node
+                        node.parent = par_parent
+                        par_parent.left = node
+                        # Right rotation!
+                        par_parent.left = node.right
+                        node.right.parent = par_parent
+                        node.right = par_parent
+                        par_par_parent = par_parent.parent
+                        node.parent = par_par_parent
+                        if par_par_parent.value > par_parent:
+                            par_par_parent.left = node
+                        else:
+                            par_par_parent.right = node
+                        node.color = BLACK
+                        par_parent.color = RED
+                        node.left.color = RED
+                        # TIME: 17m
+                        # TODO: TEST
+                        pass
                     # TODO: RUN
                     pass
                 else:  # RED SIBLING
@@ -158,29 +192,126 @@ class RedBlackTree:
 
     def _check_after_recolor(self, node):
         parent = node.parent
+        value = node.value
         if parent is None: return
-        if parent.color == RED:
+        if parent.color == RED:  # TODO: RECOLOR
             par_parent = parent.parent
             if not par_parent: return
             if par_parent.value > parent.value:
                 # parent is on the left
                 # check right
-                if par_parent.right.color != RED:
+                if par_parent.right.color == NIL:
+                    if value < parent.value:  # TODO: RIGHT ROTATION
+                        # value is on parent's left & parent is on par_parent's left, so we do a right rotation
+                        parent.left = node
+                        parent.right = par_parent
+                        parent.color = BLACK
+
+                        par_par_parent = par_parent.parent
+                        parent.parent = par_par_parent
+                        if par_par_parent:
+                            if par_par_parent.value > par_parent.value:
+                                par_par_parent.left = parent
+                            else:
+                                par_par_parent.right = parent
+                        par_parent.parent = parent
+                        par_parent.color = RED
+                        par_parent.left = NIL_LEAF
+                    else:  # value is on the right
+                        # LEFT -> RIGHT ROTATION
+                        # LEFT ROTATION
+                        node.left = parent
+                        node.parent = par_parent
+                        parent.right = NIL_LEAF
+                        parent.parent = node
+                        par_par_parent = par_parent.parent
+                        # RIGHT ROTATION
+                        node.parent = par_parent.parent
+                        node.right = par_parent
+
+                        node.left = parent
+                        parent.parent = node
+                        par_parent.left = NIL_LEAF
+                        if par_parent.value > par_par_parent.value:
+                            par_par_parent.right = node
+                        else:
+                            par_par_parent.left = node
+                        par_parent.parent = node
+                        node.color = BLACK
+                        par_parent.color = RED
+                        parent.color = RED
+                        pass
+
                     # TODO: ROTATE, RECOLOR
                     pass
+                elif par_parent.right.color == BLACK:
+                    """
+                    LL => R
+                    RL => LR
+                    """
+                    # since we're here, the second letter is always L
+                    if parent.value > value:
+                        pass
+                        # TODO: LL => Right rotation
+                    else:
+                        # TODO: MOVE TO RECURSION BELOWW
+                        raise Exception('Did not expect to get here')
                 else:  # RED SIBLING
                     par_parent.right.color = BLACK
                     par_parent.left.color = BLACK
                     if par_parent != self.root:
                         par_parent.color = RED
                     self._check_after_recolor(par_parent)
+                    # TODO: CHECK
                     pass
                 pass
             else:
                 # parent is on the right
                 # check left
-                if par_parent.left.color != RED:
+                if par_parent.left.color == NIL:
                     # TODO: ROTATE, RECOLOR
+                    if value < parent.value: # new node is on the LEFT
+                        # RIGHT LEFT ROTATION I THINK
+                        # RIGHT
+                        par_parent.right = node
+                        node.parent = par_parent
+                        node.right = parent
+                        node.color = BLACK
+                        parent.color = RED
+                        par_parent.color = RED
+                        parent.parent = node
+                        parent.left = NIL_LEAF
+                        # LEFT
+                        par_par_parent = par_parent.parent
+                        if par_par_parent.value > par_parent.value:
+                            par_par_parent.left = node
+                        else:
+                            par_par_parent.right = node
+                        node.parent = par_par_parent
+                        node.left = par_parent
+                        par_parent.right = NIL_LEAF
+                        par_parent.parent = node
+                        pass
+                    else:  # new node is on the RIGHT
+                        # LEFT ROTATION
+                        parent.left = par_parent
+                        parent.parent = par_parent.parent
+                        par_parent.right = NIL_LEAF
+                        par_par_parent = par_parent.parent
+                        par_parent.parent = parent
+                        if par_par_parent.value > par_parent.value:
+                            par_par_parent.left = parent
+                        else:
+                            par_par_parent.right = parent
+                        parent.right = node
+                        # recolor
+                        parent.color = BLACK
+                        node.color = RED
+                        par_parent.color = RED
+                        pass
+                    pass
+                elif par_parent.left.color == BLACK:
+                    # TODO: RUN
                     pass
                 else:  # RED SIBLING
                     par_parent.right.color = BLACK
