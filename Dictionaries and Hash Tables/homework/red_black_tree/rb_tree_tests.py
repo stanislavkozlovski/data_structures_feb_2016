@@ -104,10 +104,15 @@ class RbTreeTests(unittest.TestCase):
         rb_tree.root = root
         rb_tree.add(9)
         """
+                 -->     10B                                10B
+        ORIGINAL -->  7B    20B  --LEFT ROTATION-->       8B   20B
+                 -->    8R                              7R  9R
+                 -->     9R
         We add 9, which is the right child of 8 and causes a red-red relationship
         this calls for a left rotation, so 7 becomes left child of 8 and 9 the right child of 8
         8 is black, 7 and 9 are red
         """
+        node_9 = node_8.right
 
         self.assertEqual(node_8.parent.value, 10)
         self.assertEqual(node_8.color, BLACK)
@@ -118,7 +123,6 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_7.parent.value, 8)
         self.assertEqual(node_7.left.color, NIL)
         self.assertEqual(node_7.right.color, NIL)
-        node_9 = node_8.right
         self.assertEqual(node_9.value, 9)
         self.assertEqual(node_9.color, RED)
         self.assertEqual(node_9.parent.value, 8)
@@ -488,10 +492,6 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_4.color, BLACK)
         self.assertEqual(node_4.left.value, 3)
         self.assertEqual(node_4.right.color, NIL)
-
-
-
-
 
 
 if __name__ == '__main__':
