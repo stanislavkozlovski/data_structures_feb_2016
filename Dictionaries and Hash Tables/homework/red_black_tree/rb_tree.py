@@ -43,7 +43,7 @@ class RedBlackTree:
             if par_parent.value > parent.value:
                 # parent is on the left
                 # check right
-                if par_parent.right.color != RED:
+                if par_parent.right.color == NIL:
                     if value < parent.value:  # TODO: RIGHT ROTATION
                         # value is on parent's left & parent is on par_parent's left, so we do a right rotation
                         parent.left = new_node
@@ -59,8 +59,35 @@ class RedBlackTree:
                         par_parent.parent = parent
                         par_parent.color = RED
                         par_parent.left = NIL_LEAF
+                    else:  # value is on the right
+                        # LEFT -> RIGHT ROTATION
+                        # LEFT ROTATION
+                        new_node.left = parent
+                        new_node.parent = par_parent
+                        parent.right = NIL_LEAF
+                        parent.parent = new_node
+                        par_par_parent = par_parent.parent
+                        # RIGHT ROTATION
+                        new_node.parent = par_parent.parent
+                        new_node.right = par_parent
+
+                        new_node.left = parent
+                        parent.parent = new_node
+                        par_parent.left = NIL_LEAF
+                        if par_parent.value > par_par_parent.value:
+                            par_par_parent.right = new_node
+                        else:
+                            par_par_parent.left = new_node
+                        par_parent.parent = new_node
+                        new_node.color = BLACK
+                        par_parent.color = RED
+                        parent.color = RED
+                        pass
 
                     # TODO: ROTATE, RECOLOR
+                    pass
+                elif par_parent.right.color == BLACK:
+                    # TODO: RUN
                     pass
                 else:  # RED SIBLING
                     par_parent.right.color = BLACK
@@ -74,8 +101,35 @@ class RedBlackTree:
             else:
                 # parent is on the right
                 # check left
-                if par_parent.left.color != RED:
+                if par_parent.left.color == NIL:
                     # TODO: ROTATE, RECOLOR
+                    if value < parent.value: # new node is on the LEFT
+                        # RIGHT LEFT ROTATION I THINK
+                        # RIGHT
+                        par_parent.right = new_node
+                        new_node.parent = par_parent
+                        new_node.right = parent
+                        new_node.color = BLACK
+                        parent.color = RED
+                        par_parent.color = RED
+                        parent.parent = new_node
+                        parent.left = NIL_LEAF
+                        # LEFT
+                        par_par_parent = par_parent.parent
+                        if par_par_parent.value > par_parent.value:
+                            par_par_parent.left = new_node
+                        else:
+                            par_par_parent.right = new_node
+                        new_node.parent = par_par_parent
+                        new_node.left = par_parent
+                        par_parent.right = NIL_LEAF
+                        par_parent.parent = new_node
+                        pass
+                    else:  # new node is on the RIGHT
+                        pass
+                    pass
+                elif par_parent.left.color == BLACK:
+                    # TODO: RUN
                     pass
                 else:  # RED SIBLING
                     par_parent.right.color = BLACK
