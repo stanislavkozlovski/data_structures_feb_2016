@@ -67,6 +67,65 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_m10.color, BLACK)
         self.assertEqual(node_20.color, BLACK)
 
+
+    def test_recoloring_two(self):
+        rb_tree = RedBlackTree()
+        root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        # left subtree
+        node_m10 = Node(value=-10, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_m20 = Node(value=-20, color=BLACK, parent=node_m10, left=NIL_LEAF, right=NIL_LEAF)
+        node_6 = Node(value=6, color=BLACK, parent=node_m10, left=NIL_LEAF, right=NIL_LEAF)
+        node_m10.left = node_m20
+        node_m10.right = node_6
+
+        # right subtree
+        node_20 = Node(value=20, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_15 = Node(value=15, color=BLACK, parent=node_20, left=NIL_LEAF, right=NIL_LEAF)
+        node_25 = Node(value=25, color=BLACK, parent=node_20, left=NIL_LEAF, right=NIL_LEAF)
+        node_20.left = node_15
+        node_20.right = node_25
+        node_12 = Node(value=12, color=RED, parent=node_15, left=NIL_LEAF, right=NIL_LEAF)
+        node_17 = Node(value=17, color=RED, parent=node_15, left=NIL_LEAF, right=NIL_LEAF)
+        node_15.left = node_12
+        node_15.right = node_17
+
+        root.left = node_m10
+        root.right = node_20
+        rb_tree.root = root
+        rb_tree.add(19)
+
+
+        """
+
+                 _____10B_____                                        _____10B_____
+            __-10R__        __20R__                              __-10R__        __20R__
+         -20B      6B     15B     25B     FIRST RECOLOR-->    -20B      6B     15R     25B
+                       12R  17R                                             12B  17B
+                        Add-->19R                                                 19R
+
+
+        SECOND RECOLOR
+
+
+                _____10B_____
+           __-10B__        __20B__
+        -20B      6B     15R     25B
+                      12B  17B
+                            19R
+        """
+        node_19 = node_17.right
+        self.assertEqual(node_19.value, 19)
+        self.assertEqual(node_19.color, RED)
+        self.assertEqual(node_19.parent, node_17)
+
+        self.assertEqual(node_17.color, BLACK)
+        self.assertEqual(node_12.color, BLACK)
+        self.assertEqual(node_15.color, RED)
+        self.assertEqual(node_20.color, BLACK)
+        self.assertEqual(node_25.color, BLACK)
+        self.assertEqual(node_m10.color, BLACK)
+        self.assertEqual(rb_tree.root.color, BLACK)
+
     def test_right_rotation(self):
         tree = RedBlackTree()
         root = Node(value=10, color=BLACK, parent=None)
