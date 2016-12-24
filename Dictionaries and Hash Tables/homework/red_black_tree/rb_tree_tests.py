@@ -8,6 +8,53 @@ NIL_LEAF = RedBlackTree.NIL_LEAF
 
 
 class RbTreeTests(unittest.TestCase):
+
+    def test_find_node(self):
+        """ Use the tree we get from the test_build function
+            and test the find function on each node"""
+        rb_tree = RedBlackTree()
+        rb_tree.add(2)
+        node_2 = rb_tree.root
+        rb_tree.add(1)
+        node_1 = rb_tree.root.left
+        rb_tree.add(4)
+        node_4 = rb_tree.root.right
+        rb_tree.add(5)
+        node_5 = node_4.right
+        rb_tree.add(9)
+        node_9 = node_5.right
+        rb_tree.add(3)
+        node_3 = node_4.left
+        rb_tree.add(6)
+        node_6 = node_9.left
+        rb_tree.add(7)
+        node_7 = node_5.right
+        rb_tree.add(15)
+        node_15 = node_9.right
+        """
+                            ___5B___
+                        __2R__      7R
+                      1B     4B    6B 9B
+                            3R         15R
+        """
+        # valid cases
+        self.assertEqual(rb_tree.find_node(5), node_5)
+        self.assertEqual(rb_tree.find_node(2), node_2)
+        self.assertEqual(rb_tree.find_node(1), node_1)
+        self.assertEqual(rb_tree.find_node(4), node_4)
+        self.assertEqual(rb_tree.find_node(3), node_3)
+        self.assertEqual(rb_tree.find_node(7), node_7)
+        self.assertEqual(rb_tree.find_node(6), node_6)
+        self.assertEqual(rb_tree.find_node(9), node_9)
+        self.assertEqual(rb_tree.find_node(15), node_15)
+        # invalid cases
+        self.assertIsNone(rb_tree.find_node(-1))
+        self.assertIsNone(rb_tree.find_node(52454225))
+        self.assertIsNone(rb_tree.find_node(0))
+        self.assertIsNone(rb_tree.find_node(401))
+        self.assertIsNone(rb_tree.find_node(3.00001))
+
+
     def test_recoloring_only(self):
         """
         Create a red-black tree, add a red node such that we only have to recolor
