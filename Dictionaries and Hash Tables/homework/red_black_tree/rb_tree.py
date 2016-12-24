@@ -180,6 +180,15 @@ class RedBlackTree:
     #         node.color = RED
     #         grandfather.color = RED
 
+    def find_in_order_successor(self, node):
+        right_node = node.right
+        left_node = right_node.left
+        if left_node == self.NIL_LEAF:
+            raise NotImplementedError('Not sure what to do!')
+        while left_node.left != self.NIL_LEAF:
+            left_node = left_node.left
+        return left_node
+
 
 
 
