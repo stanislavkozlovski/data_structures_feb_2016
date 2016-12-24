@@ -39,7 +39,8 @@ class RedBlackTree:
 
         if parent.color == RED:
             grandfather = parent.parent
-            if not grandfather: return
+            if not grandfather:
+                return
             if grandfather.value > parent.value:
                 # parent is on the left
                 uncle = grandfather.right
@@ -142,14 +143,15 @@ class RedBlackTree:
     def _check_after_recolor(self, node):
         parent = node.parent
         value = node.value
-        if parent is None: return
+        if parent is None or parent.parent is None:  # at the root
+            return
         if parent.color == RED:  # TODO: RECOLOR
             grandfather = parent.parent
-            if not grandfather: return
             if grandfather.value > parent.value:
                 # parent is on the left
                 # check right
                 if grandfather.right.color == NIL:
+                    raise Exception()
                     if value < parent.value:  # TODO: RIGHT ROTATION
                         # value is on parent's left & parent is on par_parent's left, so we do a right rotation
                         self.right_rotation(node, parent, grandfather, to_recolor=True)
@@ -185,34 +187,7 @@ class RedBlackTree:
                 # parent is on the right
                 # check left
                 if grandfather.left.color == NIL:
-                    # TODO: ROTATE, RECOLOR
-                    if value < parent.value: # new node is on the LEFT
-                        # RIGHT LEFT ROTATION I THINK
-                        # RIGHT
-                        # TODO: Does not enter
-                        grandfather.right = node
-                        node.parent = grandfather
-                        node.right = parent
-                        node.color = BLACK
-                        parent.color = RED
-                        grandfather.color = RED
-                        parent.parent = node
-                        parent.left = NIL_LEAF
-                        # LEFT
-                        par_par_parent = grandfather.parent
-                        if par_par_parent.value > grandfather.value:
-                            par_par_parent.left = node
-                        else:
-                            par_par_parent.right = node
-                        node.parent = par_par_parent
-                        node.left = grandfather
-                        grandfather.right = NIL_LEAF
-                        grandfather.parent = node
-                    else:
-                        """
-                        RR => Left rotation
-                        """
-                        self.left_rotation(node=node, parent=parent, grandfather=grandfather)
+                    raise Exception('Should not be here after recoloring')
                 elif grandfather.left.color == BLACK:
                     """
                     RR => L
@@ -220,20 +195,10 @@ class RedBlackTree:
                     """
                     # Since we're here, second letter is always R
                     if parent.value > value:
-                        # value is at the left: LR
                         """
                         LR => RIGHT-LEFT ROTATION
                         """
-                        # RIGHT
-                        # TODO: Does not enter!
-                        old_right = node.right
-                        grandfather.right = node
-                        node.parent = grandfather
-                        node.right = parent
-                        parent.parent = node
-                        parent.left = old_right
-                        old_right.parent = parent
-                        # LEFT
+                        self.right_rotation(node=None, parent=node, grandfather=parent)
                         # due to the prev rotation, our node is now the parent
                         self.left_rotation(node=parent, parent=node, grandfather=grandfather, to_recolor=True)
                     else:
