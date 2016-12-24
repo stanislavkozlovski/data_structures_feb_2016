@@ -39,9 +39,28 @@ class RedBlackTree:
         self.try_rebalance(new_node)
         self.count += 1
 
-
     def remove(self, value):
         node_to_remove = self.find_node(value)
+        if node_to_remove is None:
+            return
+        if node_to_remove.color == RED:
+            # TODO: THANK GOD
+            if node_to_remove.left != self.NIL_LEAF and node_to_remove.right != self.NIL_LEAF:
+                # find in order successor  # once right, left till end
+                # replace node_to_remove with successor and gg
+                successor = self.find_in_order_successor(node_to_remove)
+                if successor.color == RED:
+                    if successor.left == self.NIL_LEAF and successor.right == self.NIL_LEAF:
+                        # TODO: THANK GOD MORE
+                        # switch the value and remove the successor (they are both red)
+                        node_to_remove.value = successor.value
+                        successor.parent.left = self.NIL_LEAF
+                        del successor
+                    else:
+                        pass
+                else:  # successor is black!
+                    pass
+            pass
         pass
 
     def try_rebalance(self, node):
