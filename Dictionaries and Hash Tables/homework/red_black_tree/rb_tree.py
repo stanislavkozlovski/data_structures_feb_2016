@@ -15,58 +15,62 @@ class Node:
         return '{color} {val} Node'.format(color=self.color, val=self.value)
 
 
-NIL_LEAF = Node(value=None, color=NIL, parent=None)
-
-
 class RedBlackTree:
+    NIL_LEAF = Node(value=None, color=NIL, parent=None)
+
     def __init__(self):
         self.count = 0
         self.root = None
 
     def add(self, value):
-        # TODO: Rebalance function
         if not self.root:
-            self.root = Node(value, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+            self.root = Node(value, color=BLACK, parent=None, left=self.NIL_LEAF, right=self.NIL_LEAF)
             self.count += 1
             return
         parent, node_dir = self.__find_parent(value)
         if node_dir is None:
             return  # value is in the tree
-        new_node = Node(value=value, color=RED, parent=parent, left=NIL_LEAF, right=NIL_LEAF)
+        new_node = Node(value=value, color=RED, parent=parent, left=self.NIL_LEAF, right=self.NIL_LEAF)
         if node_dir == 'L':
             parent.left = new_node
         else:
             parent.right = new_node
+
+        self.try_rebalance(new_node)
+        self.count += 1
+
+    def try_rebalance(self, node):
+        parent = node.parent
+        value = node.value
+        if (parent is None  # what the fuck?
+            or parent.parent is None  # at the root
+            or parent.color != RED):  # no need to rebalance
+            return
         grandfather = parent.parent
-        if not grandfather:
-            return
-
+        node_dir = 'L' if parent.value > value else 'R'
         parent_dir = 'L' if grandfather.value > parent.value else 'R'
-        general_dir = node_dir + parent_dir
         uncle = grandfather.right if parent_dir == 'L' else grandfather.left
-        if parent.color != RED:
-            return
+        general_direction = node_dir + parent_dir
 
-        if uncle.color == NIL:
-            if general_dir == 'LL':  # ==> R
-                self.right_rotation(new_node, parent, grandfather, to_recolor=True)
-            elif general_dir == 'RR': # ==> L
-                self.left_rotation(new_node, parent, grandfather, to_recolor=True)
-            elif general_dir == 'LR': # ==> RL
-                self.right_rotation(node=None, parent=new_node, grandfather=parent)
+        if uncle == self.NIL_LEAF or uncle.color == BLACK:
+            # rotate
+            if general_direction == 'LL':
+                self.right_rotation(node, parent, grandfather, to_recolor=True)
+            elif general_direction == 'RR':
+                self.left_rotation(node, parent, grandfather, to_recolor=True)
+            elif general_direction == 'LR':
+                self.right_rotation(node=None, parent=node, grandfather=parent)
                 # due to the prev rotation, our node is now the parent
-                self.left_rotation(node=parent, parent=new_node, grandfather=grandfather, to_recolor=True)
-            elif general_dir == 'RL':  # ==> LR
-                self.left_rotation(node=None, parent=new_node, grandfather=parent)
-                self.right_rotation(node=parent, parent=new_node, grandfather=grandfather, to_recolor=True)
+                self.left_rotation(node=parent, parent=node, grandfather=grandfather, to_recolor=True)
+            elif general_direction == 'RL':
+                self.left_rotation(node=None, parent=node, grandfather=parent)
+                # due to the prev rotation, our node is now the parent
+                self.right_rotation(node=parent, parent=node, grandfather=grandfather, to_recolor=True)
             else:
-                raise Exception('{} is not a valid direction!'.format(general_dir))
-        elif uncle.color == BLACK:
-            raise Exception('Uncle should not be black before a recolor')
+                raise Exception("{} is not a valid direction!".format(general_direction))
         else:  # RED
             self.recolor(parent, grandfather)
-        return
-      
+
     def update_parent(self, node, parent_old_child, new_parent):
         """
         Our node 'switches' places with the old child
@@ -109,6 +113,7 @@ class RedBlackTree:
 
         grandfather.right = old_left  # save the old left values
         old_left.parent = grandfather
+
         if to_recolor:
             parent.color = BLACK
             node.color = RED
@@ -119,41 +124,7 @@ class RedBlackTree:
         grandfather.left.color = BLACK
         if grandfather != self.root:
             grandfather.color = RED
-        self._check_after_recolor(grandfather)
-
-    def _check_after_recolor(self, node):
-        parent = node.parent
-        value = node.value
-        if parent is None or parent.parent is None:  # at the root
-            return
-        if parent.color != RED:
-            return
-        grandfather = parent.parent
-        node_dir = 'L' if parent.value > value else 'R'
-        parent_dir = 'L' if grandfather.value > parent.value else 'R'
-        uncle = grandfather.right if parent_dir == 'L' else grandfather.left
-        general_direction = node_dir + parent_dir
-
-        if uncle == NIL_LEAF:
-            raise Exception('The uncle cannot be NIL after a recolor!')
-        elif uncle.color == BLACK:
-            # rotate
-            if general_direction == 'LL':
-                self.right_rotation(node, parent, grandfather, to_recolor=True)
-            elif general_direction == 'RR':
-                self.left_rotation(node, parent, grandfather, to_recolor=True)
-            elif general_direction == 'LR':
-                self.right_rotation(node=None, parent=node, grandfather=parent)
-                # due to the prev rotation, our node is now the parent
-                self.left_rotation(node=parent, parent=node, grandfather=grandfather, to_recolor=True)
-            elif general_direction == 'RL':
-                self.left_rotation(node=None, parent=node, grandfather=parent)
-                # due to the prev rotation, our node is now the parent
-                self.right_rotation(node=parent, parent=node, grandfather=grandfather, to_recolor=True)
-            else:
-                raise Exception("{} is not a valid direction!".format(general_direction))
-        else:  # RED
-            self.recolor(parent, grandfather)
+        self.try_rebalance(grandfather)
 
     def __find_parent(self, value):
         """ Finds a place for the value in our binary tree"""
@@ -172,7 +143,23 @@ class RedBlackTree:
         return __find(self.root)
 
 
-
+    # Too confusing, maybe after the tree is fully implemented.
+    # def rotate(self, node, parent, grandfather, rot_dir, to_recolor=False):
+    #     RIGHT_ROTATION = rot_dir == 'R'
+    #     grand_grandfather = grandfather.parent
+    #     self.update_parent(node=parent, parent_old_child=grandfather, new_parent=grand_grandfather)
+    #     old_value = parent.right if RIGHT_ROTATION else parent.left
+    #
+    #     parent.right = grandfather if RIGHT_ROTATION else parent.left = grandfather
+    #     grandfather.parent = parent
+    #
+    #     grandfather.left = old_value if RIGHT_ROTATION else grandfather.right = old_value
+    #     old_value.parent = grandfather
+    #
+    #     if to_recolor:
+    #         parent.color = BLACK
+    #         node.color = RED
+    #         grandfather.color = RED
 
 
 

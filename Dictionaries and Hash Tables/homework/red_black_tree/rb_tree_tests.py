@@ -1,9 +1,10 @@
 import unittest
 
-from homework.red_black_tree.rb_tree import RedBlackTree, Node, NIL_LEAF
+from homework.red_black_tree.rb_tree import RedBlackTree, Node
 BLACK = 'BLACK'
 RED = 'RED'
 NIL = 'NIL'
+NIL_LEAF = RedBlackTree.NIL_LEAF
 
 
 class RbTreeTests(unittest.TestCase):
