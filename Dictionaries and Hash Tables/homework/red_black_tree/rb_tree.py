@@ -39,6 +39,11 @@ class RedBlackTree:
         self.try_rebalance(new_node)
         self.count += 1
 
+
+    def remove(self, value):
+        node_to_remove = self.find_node(value)
+        pass
+
     def try_rebalance(self, node):
         parent = node.parent
         value = node.value
@@ -141,6 +146,20 @@ class RedBlackTree:
                 return __find(parent.left)
 
         return __find(self.root)
+
+    def find_node(self, value):
+        def __find_node(root):
+            if root == self.NIL_LEAF:
+                return None
+            if value > root.value:
+                return __find_node(root.right)
+            elif value < root.value:
+                return __find_node(root.left)
+            else:
+                return root
+
+        found_node = __find_node(self.root)
+        return found_node
 
 
     # Too confusing, maybe after the tree is fully implemented.
