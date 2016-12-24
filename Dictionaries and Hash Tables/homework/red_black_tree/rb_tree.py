@@ -242,13 +242,7 @@ class RedBlackTree:
                         """
                         self.left_rotation(node=node, parent=parent, grandfather=grandfather, to_recolor=True)
                 else:  # RED SIBLING
-                    grandfather.right.color = BLACK
-                    grandfather.left.color = BLACK
-                    if grandfather != self.root:
-                        grandfather.color = RED
-                    self._check_after_recolor(parent)
-                    pass
-                pass
+                    self.recolor(parent, grandfather)
 
     def left_rotation(self, node, parent, grandfather, to_recolor=False):
         grand_grandfather = grandfather.parent
