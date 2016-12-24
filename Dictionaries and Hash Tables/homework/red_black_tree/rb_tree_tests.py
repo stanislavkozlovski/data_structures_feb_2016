@@ -567,6 +567,84 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_4.left.value, 3)
         self.assertEqual(node_4.right, NIL_LEAF)
 
+    def test_right_left_rotation_after_recolor(self):
+        rb_tree = RedBlackTree()
+        root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        node_10 = root
+
+        # left subtree
+        node_5 = Node(value=5, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+
+        # right subtree
+        node_20 = Node(value=20, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_15 = Node(value=15, color=BLACK, parent=node_20, left=NIL_LEAF, right=NIL_LEAF)
+        node_25 = Node(value=25, color=BLACK, parent=node_20, left=NIL_LEAF, right=NIL_LEAF)
+        node_20.left = node_15
+        node_20.right = node_25
+
+        node_12 = Node(value=12, color=RED, parent=node_15, left=NIL_LEAF, right=NIL_LEAF)
+        node_17 = Node(value=17, color=RED, parent=node_15, left=NIL_LEAF, right=NIL_LEAF)
+        node_15.left = node_12
+        node_15.right = node_17
+
+        root.left = node_5
+        root.right = node_20
+        rb_tree.root = root
+        rb_tree.add(19)
+
+        """
+                    ____10B____                           ____10B____
+                   5B      __20R__                       5B      __20R__
+                      __15B__   25B   --RECOLORS TO-->      __15R__   25B
+                   12R      17R                          12B      17B
+                       Add-->19R                                   19R
+
+
+                                  ____10B____
+    LR=>RL: Right rotation to   5B          ___15R___
+                                         12B      __20R__
+                                                17B      25B
+                                                  19R
+
+
+                                     ______15B_____
+       Left rotation to           10R           __20R__
+                                5B  12B     __17B__    25B
+                                                  19R
+        """
+        node_19 = node_17.right
+
+        self.assertEqual(node_19.value, 19)
+        self.assertEqual(node_19.color, RED)
+        self.assertEqual(node_19.left, NIL_LEAF)
+        self.assertEqual(node_19.right, NIL_LEAF)
+        self.assertEqual(node_19.parent, node_17)
+
+        self.assertEqual(node_17.parent, node_20)
+        self.assertEqual(node_17.color, BLACK)
+        self.assertEqual(node_17.left, NIL_LEAF)
+        self.assertEqual(node_17.right, node_19)
+
+        self.assertEqual(node_20.parent, node_15)
+        self.assertEqual(node_20.color, RED)
+        self.assertEqual(node_20.left, node_17)
+        self.assertEqual(node_20.right, node_25)
+
+        self.assertEqual(rb_tree.root, node_15)
+        self.assertIsNone(node_15.parent)
+        self.assertEqual(node_15.left, node_10)
+        self.assertEqual(node_15.right, node_20)
+        self.assertEqual(node_15.color, BLACK)
+
+        self.assertEqual(node_10.parent, node_15)
+        self.assertEqual(node_10.color, RED)
+        self.assertEqual(node_10.right, node_12)
+        self.assertEqual(node_10.left, node_5)
+
+        self.assertEqual(node_12.color, BLACK)
+        self.assertEqual(node_12.parent, node_10)
+        self.assertEqual(node_12.left, NIL_LEAF)
+        self.assertEqual(node_12.right, NIL_LEAF)
 
 if __name__ == '__main__':
     unittest.main()
