@@ -226,11 +226,13 @@ class RedBlackTree:
                         """
                         # RIGHT
                         # TODO: Does not enter!
+                        old_right = node.right
                         grandfather.right = node
                         node.parent = grandfather
                         node.right = parent
                         parent.parent = node
-                        parent.left = NIL_LEAF
+                        parent.left = old_right
+                        old_right.parent = parent
                         # LEFT
                         # due to the prev rotation, our node is now the parent
                         self.left_rotation(node=parent, parent=node, grandfather=grandfather, to_recolor=True)
