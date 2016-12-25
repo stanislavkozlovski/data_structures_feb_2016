@@ -16,6 +16,8 @@ class Node:
 
     def has_children(self) -> bool:
         """ Returns a boolean indicating if the node has children """
+        if self.color == NIL:
+            return False
         return self.left.color != NIL or self.right.color != NIL
 
 
@@ -239,6 +241,10 @@ class RedBlackTree:
             left_node = left_node.left
         return left_node
 
+    def get_sibling(self, node):
+        parent = node.parent
+        sibling = parent.left if node.value > parent.value else parent.right
+        return sibling
 
 
 
