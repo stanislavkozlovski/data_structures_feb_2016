@@ -129,7 +129,31 @@ class RedBlackTree:
         self.case_6(node)
 
     def case_6(self, node):
-        raise NotImplementedError()
+        sibling, direction = self.get_sibling(node)
+        if direction == 'R':
+            if (sibling.color == BLACK
+               and sibling.right.color == RED):
+                parent_color = sibling.parent.color
+                self.left_rotation(node=None, parent=sibling, grandfather=sibling.parent)
+                # new parent is sibling
+                sibling.color = parent_color
+                sibling.right.color = BLACK
+                sibling.left.color = BLACK
+                node.parent.left = self.NIL_LEAF
+                return
+        else:
+            if (sibling.color == BLACK
+               and sibling.left.color == RED):
+                parent_color = sibling.parent.color
+                self.right_rotation(node=None, parent=sibling, grandfather=sibling.parent)
+                # new parent is sibling
+                sibling.color = parent_color
+                sibling.right.color = BLACK
+                sibling.left.color = BLACK
+                node.parent.right = self.NIL_LEAF
+                return
+
+        raise Exception('We should have ended here, something is wrong')
 
     def try_rebalance(self, node):
         parent = node.parent
