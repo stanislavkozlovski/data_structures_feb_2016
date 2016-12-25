@@ -94,9 +94,18 @@ class RedBlackTree:
                     raise Exception('Black successor cannot have a black right child, black height is invalid')
                 pass
         else:
-            # TODO: You have 0 or 1 children
+            # You have 0 or 1 children
+            if self.root == node_to_remove:
+                # basically remove the root by making its one child the new root
+                left_child, right_child = self.root.left, self.root.right
+                if left_child != self.NIL_LEAF:
+                    left_child.parent = None
+                    self.root = left_child
+                else:
+                    right_child.parent = None
+                    self.root = right_child
+                return
             self.f_remove(node_to_remove)
-            pass
 
     def f_remove(self, node):
         # recursively call each case
