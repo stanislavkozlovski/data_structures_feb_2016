@@ -841,6 +841,7 @@ class RbTreeTests(unittest.TestCase):
              3R      8R                3R
         """
         rb_tree.root = root
+        rb_tree.remove(8)
         rb_tree.remove(5)
 
         node_8 = rb_tree.root
@@ -854,6 +855,25 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_3.parent, node_8)
         self.assertEqual(node_3.left, NIL_LEAF)
         self.assertEqual(node_3.right, NIL_LEAF)
+
+    def test_deletion_root_2_nodes(self):
+        rb_tree = RedBlackTree()
+        root = Node(value=5, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        right_child = Node(value=8, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        root.right = right_child
+        rb_tree.root = root
+        rb_tree.remove(5)
+        """
+                __5B__ <-- REMOVE        __8B__
+                     \      Should become--^
+                     8R
+        """
+        root = rb_tree.root
+        self.assertEqual(root.value, 8)
+        self.assertEqual(root.parent, None)
+        self.assertEqual(root.color, BLACK)
+        self.assertEqual(root.left, NIL_LEAF)
+        self.assertEqual(root.right, NIL_LEAF)
 
     def test_deletion_red_node_red_successor_no_children(self):
         """
