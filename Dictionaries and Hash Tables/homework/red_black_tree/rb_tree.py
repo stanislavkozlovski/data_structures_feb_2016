@@ -97,6 +97,10 @@ class RedBlackTree:
         # recursively call each case
         # if the case is not terminating, call case_1 again and go through the chain of cases
         self.case_1(node)
+        if node.value > node.parent.value:
+            node.parent.right = self.NIL_LEAF
+        else:
+            node.parent.left = self.NIL_LEAF
 
     def case_1(self, node):
         if self.root == node:
@@ -118,10 +122,7 @@ class RedBlackTree:
                 node.parent.color = BLACK
                 sibling.color = RED
                 # remove the double black node
-                if node.value > node.parent.value:
-                    node.parent.right = self.NIL_LEAF
-                else:
-                    node.parent.left = self.NIL_LEAF
+
                 return
         self.case_5(node)
 
@@ -139,7 +140,6 @@ class RedBlackTree:
                 sibling.color = parent_color
                 sibling.right.color = BLACK
                 sibling.left.color = BLACK
-                node.parent.left = self.NIL_LEAF
                 return
         else:
             if (sibling.color == BLACK
@@ -150,7 +150,6 @@ class RedBlackTree:
                 sibling.color = parent_color
                 sibling.right.color = BLACK
                 sibling.left.color = BLACK
-                node.parent.right = self.NIL_LEAF
                 return
 
         raise Exception('We should have ended here, something is wrong')
