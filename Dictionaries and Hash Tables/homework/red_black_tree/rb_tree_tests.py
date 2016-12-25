@@ -1081,6 +1081,123 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_30.left, NIL_LEAF)
         self.assertEqual(node_30.right, NIL_LEAF)
 
+    def test_deletion_black_node_no_successor_case_3_then_5_then_6(self):
+        """
+        We're going to delete a black node which will cause a case 3 deletion
+        which in turn would pass the double black node up into a case 5, which
+        will restructure the tree in such a way that a case 6 rotation becomes possible
+        """
+        rb_tree = RedBlackTree()
+        root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        # left subtree
+        node_m30 = Node(value=-30, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_m40 = Node(value=-40, color=BLACK, parent=node_m30, left=NIL_LEAF, right=NIL_LEAF)
+        node_m20 = Node(value=-20, color=BLACK, parent=node_m30, left=NIL_LEAF, right=NIL_LEAF)
+        node_m30.left = node_m40
+        node_m30.right = node_m20
+        # right subtree
+        node_50 = Node(value=50, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_30 = Node(value=30, color=RED, parent=node_50, left=NIL_LEAF, right=NIL_LEAF)
+        node_70 = Node(value=70, color=BLACK, parent=node_50, left=NIL_LEAF, right=NIL_LEAF)
+        node_50.left = node_30
+        node_50.right = node_70
+        node_15 = Node(value=15, color=BLACK, parent=node_30, left=NIL_LEAF, right=NIL_LEAF)
+        node_40 = Node(value=40, color=BLACK, parent=node_30, left=NIL_LEAF, right=NIL_LEAF)
+        node_30.left = node_15
+        node_30.right = node_40
+
+        root.left = node_m30
+        root.right = node_50
+        rb_tree.root = root
+        rb_tree.remove(-40)
+        """
+        In mirror cases, this'd be mirrored
+        |node| - double black node
+                    ___10B___                                 ___10B___
+                   /         \               DOUBLE          /         \
+                -30B         50B             BLACK-->   |-30B|        50B
+               /    \       /   \                        /    \       /   \
+  REMOVE-->|-40B|  -20B   30R   70B     --CASE 3--> REMOVED  -20R   30R   70B
+                         /   \                                     /   \
+                       15B   40B                                 15B   40B
+
+
+
+      --CASE 5-->                              ___10B___
+      parent is black        still double     /         \
+      sibling is black         black -->  |-30B|        30B
+      sibling.left is red                     \        /   \
+      sibling.right is black                  -20R   15B   50R
+      left rotation on sibling.left                       /   \
+                                                        40B   70B
+
+
+      What we've done here is we've simply
+      restructured the tree to be eligible
+      for a case 6 solution :)                              ___30B___
+      --CASE 6-->                                          /         \
+      parent color DOESNT MATTER                         10B         50B
+      sibling is black                                  /   \       /   \
+      sibling.left DOESNT MATTER                     -30B   15B   40B   70B
+      sibling.right is RED                              \
+      left rotation on sibling (30B on the above)       -20R
+      where the sibling gets the color of the parent
+          and the parent is now to the left of sibling and
+          repainted BLACK
+          the sibling's right also gets repainted black
+        """
+        node_30 = rb_tree.root
+        self.assertEqual(node_30.value, 30)
+        self.assertEqual(node_30.parent, None)
+        self.assertEqual(node_30.color, BLACK)
+        self.assertEqual(node_30.left.value, 10)
+        self.assertEqual(node_30.right.value, 50)
+
+        # test left subtree
+        node_10 = node_30.left
+        self.assertEqual(node_10.value, 10)
+        self.assertEqual(node_10.color, BLACK)
+        self.assertEqual(node_10.parent, node_30)
+        self.assertEqual(node_10.left.value, -30)
+        self.assertEqual(node_10.right.value, 15)
+        node_m30 = node_10.left
+        self.assertEqual(node_m30.value, -30)
+        self.assertEqual(node_m30.color, BLACK)
+        self.assertEqual(node_m30.parent, node_10)
+        self.assertEqual(node_m30.left, NIL_LEAF)
+        self.assertEqual(node_m30.right.value, -20)
+        node_15 = node_10.right
+        self.assertEqual(node_15.value, 15)
+        self.assertEqual(node_15.color, BLACK)
+        self.assertEqual(node_15.parent, node_10)
+        self.assertEqual(node_15.left, NIL_LEAF)
+        self.assertEqual(node_15.right, NIL_LEAF)
+        node_m20 = node_m30.right
+        self.assertEqual(node_m20.value, -20)
+        self.assertEqual(node_m20.color, RED)
+        self.assertEqual(node_m20.parent, node_m30)
+        self.assertEqual(node_m20.left, NIL_LEAF)
+        self.assertEqual(node_m20.right, NIL_LEAF)
+
+        # test right subtree
+        node_50 = node_30.right
+        self.assertEqual(node_50.value, 50)
+        self.assertEqual(node_50.color, BLACK)
+        self.assertEqual(node_50.parent, node_30)
+        self.assertEqual(node_50.left.value, 40)
+        self.assertEqual(node_50.right.value, 70)
+        node_40 = node_50.left
+        self.assertEqual(node_40.value, 40)
+        self.assertEqual(node_40.parent, node_50)
+        self.assertEqual(node_40.color, BLACK)
+        self.assertEqual(node_40.left, NIL_LEAF)
+        self.assertEqual(node_40.right, NIL_LEAF)
+        node_70 = node_50.right
+        self.assertEqual(node_70.value, 70)
+        self.assertEqual(node_70.color, BLACK)
+        self.assertEqual(node_70.parent, node_50)
+        self.assertEqual(node_70.left, NIL_LEAF)
+        self.assertEqual(node_70.right, NIL_LEAF)
 
 if __name__ == '__main__':
     unittest.main()
