@@ -877,6 +877,62 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_38.parent.value, 36)
         self.assertEqual(node_38.left, NIL_LEAF)
 
+    def test_deletion_black_node_black_successor_right_red_child(self):
+        """ fuck it i don't even know anymore """
+        rb_tree = RedBlackTree()
+        root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        # left subtree
+        node_5 = Node(value=5, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_m5 = Node(value=-5, color=BLACK, parent=node_5, left=NIL_LEAF, right=NIL_LEAF)
+        node_7 = Node(value=7, color=BLACK, parent=node_5, left=NIL_LEAF, right=NIL_LEAF)
+        node_5.left = node_m5
+        node_5.right = node_7
+        # right subtree
+        node_30 = Node(value=30, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_20 = Node(value=20, color=BLACK, parent=node_30, left=NIL_LEAF, right=NIL_LEAF)
+        node_38 = Node(value=38, color=RED, parent=node_30, left=NIL_LEAF, right=NIL_LEAF)
+        node_30.left = node_20
+        node_30.right = node_38
+        # 38 subtree
+        node_32 = Node(value=32, color=BLACK, parent=node_38, left=NIL_LEAF, right=NIL_LEAF)
+        node_41 = Node(value=41, color=BLACK, parent=node_38, left=NIL_LEAF, right=NIL_LEAF)
+        node_38.left = node_32
+        node_38.right = node_41
+        node_35 = Node(value=35, color=RED, parent=node_32, left=NIL_LEAF, right=NIL_LEAF)
+        node_32.right = node_35
+
+        root.left = node_5
+        root.right = node_30
+
+        rb_tree.root = root
+        rb_tree.remove(30)
+        """
+                         ___10B___                                             ___10B___
+                        /         \                                           /         \
+                       5B         30B  <------- REMOVE THIS                  5B         32B  <----
+                      /  \       /   \                                      /  \       /   \
+                    -5B  7B    20B   38R                                  -5B  7B    20B   38R
+                                    /   \                                                 /   \
+                   successor ---> 32B    41B                                       -->  35B    41B
+                                     \             30B becomes 32B
+                                     35R           old 32B becomes 35B
+        """
+        node_32 = node_30
+        self.assertEqual(node_32.value, 32)
+        self.assertEqual(node_32.parent.value, 10)
+        self.assertEqual(node_32.color, BLACK)
+        self.assertEqual(node_32.left, node_20)
+        self.assertEqual(node_32.right, node_38)
+
+        node_35 = node_38.left
+        self.assertEqual(node_35.value, 35)
+        self.assertEqual(node_35.parent.value, 38)
+        self.assertEqual(node_35.color, BLACK)
+        self.assertEqual(node_35.left, NIL_LEAF)
+        self.assertEqual(node_35.right, NIL_LEAF)
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
