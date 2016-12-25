@@ -175,9 +175,9 @@ class RedBlackTree:
     def case_5(self, node):
         # TODO: Case 5 is always followed by 6 methinks
         sibling, direction = self.get_sibling(node)
-        if node.parent.color == BLACK and sibling.color == BLACK:
+        if node.parent.color != NIL and sibling.color == BLACK:  # HUH?
             if direction == 'L':
-                if sibling.left.color == BLACK and sibling.right.color == RED:
+                if sibling.left.color != RED and sibling.right.color == RED:
                     right_sib = sibling.right
                     self.left_rotation(node=None, parent=sibling.right, grandfather=sibling)
                     right_sib.color = BLACK
@@ -185,7 +185,7 @@ class RedBlackTree:
                     return self.case_1(node)
             else:
                 # sibling is at the right
-                if sibling.left.color == RED and sibling.right.color == BLACK:
+                if sibling.left.color == RED and sibling.right.color != RED:
                     left_sib = sibling.left
                     self.right_rotation(node=None, parent=sibling.left, grandfather=sibling)
                     left_sib.color = BLACK
