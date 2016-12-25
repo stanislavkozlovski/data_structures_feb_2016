@@ -941,7 +941,6 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_48.left.value, 41)
         self.assertIsNone(rb_tree.find_node(49))  # assure its not in the tree
 
-
     def test_deletion_red_node_red_successor_no_children(self):
         """
         This must be the easiest deletion yet!
@@ -1751,6 +1750,15 @@ class RbTreeTests(unittest.TestCase):
 
         root.left = node_10
         root.right = node_38
+        """
+                        ______20______
+                       /              \
+                     10B           ___38R___
+                    /   \         /         \
+                  5R    15R      28B         48B
+                                /  \        /   \
+                              23R  29R     41R   49R
+        """
         rb_tree.root = root
         rb_tree.remove(49)
         rb_tree.remove(38)
@@ -1759,16 +1767,62 @@ class RbTreeTests(unittest.TestCase):
         rb_tree.remove(5)
         rb_tree.remove(15)
         rb_tree.remove(48)
+        """
+            We're left with
+                            __23B__
+                           /       \
+                         20B       41B
+                                  /
+                                 29R
+        """
+        node_23 = rb_tree.root
+        self.assertEqual(node_23.value, 23)
+        self.assertEqual(node_23.color, BLACK)
+        self.assertEqual(node_23.parent, None)
+        self.assertEqual(node_23.left.value, 20)
+        self.assertEqual(node_23.right.value, 41)
+        node_20 = node_23.left
+        self.assertEqual(node_20.color, BLACK)
+        self.assertEqual(node_20.parent, node_23)
+        self.assertEqual(node_20.left, NIL_LEAF)
+        self.assertEqual(node_20.right, NIL_LEAF)
+        node_41 = node_23.right
+        self.assertEqual(node_41.color, BLACK)
+        self.assertEqual(node_41.parent, node_23)
+        self.assertEqual(node_41.value, 41)
+        self.assertEqual(node_41.left.value, 29)
+        self.assertEqual(node_41.right, NIL_LEAF)
+        node_29 = node_41.left
+        self.assertEqual(node_29.value, 29)
+        self.assertEqual(node_29.color, RED)
+        self.assertEqual(node_29.left, NIL_LEAF)
+        self.assertEqual(node_29.right, NIL_LEAF)
         rb_tree.remove(20)
         """
-                ______20______
-               /              \
-             10B           ___38R___
-            /   \         /         \
-          5R    15R      28B         48B
-                        /  \        /   \
-                      23R  29R     41R   49R
+            _29B_
+           /     \
+          23B    41B
         """
+        node_29 = rb_tree.root
+        self.assertEqual(node_29.value, 29)
+        self.assertEqual(node_29.color, BLACK)
+        self.assertEqual(node_29.parent, None)
+        self.assertEqual(node_29.left.value, 23)
+        self.assertEqual(node_29.right.value, 41)
+        node_23 = node_29.left
+        self.assertEqual(node_23.parent, node_29)
+        self.assertEqual(node_23.color, BLACK)
+        self.assertEqual(node_23.left, NIL_LEAF)
+        self.assertEqual(node_23.right, NIL_LEAF)
+        node_41 = node_29.right
+        self.assertEqual(node_41.parent, node_29)
+        self.assertEqual(node_41.color, BLACK)
+        self.assertEqual(node_41.left, NIL_LEAF)
+        self.assertEqual(node_41.right, NIL_LEAF)
+        # GOOD
+        rb_tree.remove(29)
+        # PROBLEM
+        self.assertTrue(rb_tree.root.value == 23 or rb_tree.root.right.value == 23)
 
 
 if __name__ == '__main__':
