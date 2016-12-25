@@ -874,6 +874,30 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(root.left, NIL_LEAF)
         self.assertEqual(root.right, NIL_LEAF)
 
+    def test_delete_single_child(self):
+        #  TODO: More complex example
+        rb_tree = RedBlackTree()
+        root = Node(value=5, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        left_child = Node(value=1, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        right_child = Node(value=6, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        root.left = left_child
+        root.right = right_child
+        rb_tree.root = root
+        rb_tree.remove(6)
+        """
+           5                        5B
+          / \   should become      /
+        1R   6R                   1R
+        """
+        self.assertEqual(root.right, NIL_LEAF)
+        self.assertEqual(root.value, 5)
+        self.assertEqual(root.color, BLACK)
+        self.assertEqual(root.parent, None)
+        self.assertEqual(root.left.value, 1)
+        node_1 = root.left
+        self.assertEqual(node_1.left, NIL_LEAF)
+        self.assertEqual(node_1.right, NIL_LEAF)
+
     def test_deletion_red_node_red_successor_no_children(self):
         """
         This must be the easiest deletion yet!
