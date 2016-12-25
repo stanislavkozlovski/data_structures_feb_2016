@@ -112,7 +112,7 @@ class RedBlackTree:
 
     def case_4(self, node):
         if node.parent.color == RED:
-            sibling = self.get_sibling(node)
+            sibling, direction = self.get_sibling(node)
             if sibling.color == BLACK and (sibling.left.color != RED and sibling.right.color != RED):
                 # switch colors
                 node.parent.color = BLACK
@@ -278,8 +278,13 @@ class RedBlackTree:
 
     def get_sibling(self, node):
         parent = node.parent
-        sibling = parent.left if node.value > parent.value else parent.right
-        return sibling
+        if node.value > parent.value:
+            sibling = parent.left
+            direction = 'L'
+        else:
+            sibling = parent.right
+            direction = 'R'
+        return sibling, direction
 
 
 
