@@ -54,6 +54,8 @@ class RbTreeTests(unittest.TestCase):
         self.assertIsNone(rb_tree.find_node(401))
         self.assertIsNone(rb_tree.find_node(3.00001))
 
+    ### TEST INSERTIONS ###
+
     def test_recoloring_only(self):
         """
         Create a red-black tree, add a red node such that we only have to recolor
@@ -821,6 +823,37 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_m9.parent, node_m20)
         self.assertEqual(node_m9.left, NIL_LEAF)
         self.assertEqual(node_m9.right, NIL_LEAF)
+
+    ### TEST INSERTIONS ###
+
+    ### TEST DELETIONS ###
+
+    def test_deletion_root(self):
+        rb_tree = RedBlackTree()
+        root = Node(value=5, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        left_child = Node(value=3, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        right_child = Node(value=8, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        root.left = left_child
+        root.right = right_child
+        """
+      REMOVE--> __5__                     __8B__
+               /     \     --Result-->   /
+             3R      8R                3R
+        """
+        rb_tree.root = root
+        rb_tree.remove(5)
+
+        node_8 = rb_tree.root
+        self.assertEqual(node_8.value, 8)
+        self.assertEqual(node_8.color, BLACK)
+        self.assertEqual(node_8.parent, None)
+        self.assertEqual(node_8.left.value, 3)
+        self.assertEqual(node_8.right, NIL_LEAF)
+        node_3 = node_8.left
+        self.assertEqual(node_3.color, RED)
+        self.assertEqual(node_3.parent, node_8)
+        self.assertEqual(node_3.left, NIL_LEAF)
+        self.assertEqual(node_3.right, NIL_LEAF)
 
     def test_deletion_red_node_red_successor_no_children(self):
         """
