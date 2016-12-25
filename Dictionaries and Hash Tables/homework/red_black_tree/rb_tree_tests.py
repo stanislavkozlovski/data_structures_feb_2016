@@ -984,7 +984,6 @@ class RbTreeTests(unittest.TestCase):
                  /  \     /   \
               -5B   7B   20B  38B
         """
-        # TODO: Add mirror test case on the left subtree
         # Careful with reference equals
         node_36 = rb_tree.root.right
         self.assertEqual(node_36.value, 36)
@@ -1109,7 +1108,6 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_35.right, NIL_LEAF)
 
     def test_deletion_black_node_black_successor_no_child_case_4(self):
-        # TODO: MIRROR
         rb_tree = RedBlackTree()
         root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
         # left subtree
@@ -1159,7 +1157,6 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_38.right, NIL_LEAF)
 
     def test_deletion_black_node_no_successor_case_6(self):
-        # TODO: MIRROR
         rb_tree = RedBlackTree()
         root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
         # left subtree
@@ -1215,6 +1212,52 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_40.color, BLACK)
         self.assertEqual(node_40.left, NIL_LEAF)
         self.assertEqual(node_40.right, NIL_LEAF)
+
+    def test_mirror_deletion_black_node_no_successor_case_6(self):
+        rb_tree = RedBlackTree()
+        root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        node_12 = Node(value=12, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_5 = Node(value=5, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_1 = Node(value=1, color=RED, parent=node_5, left=NIL_LEAF, right=NIL_LEAF)
+        node_7 = Node(value=7, color=RED, parent=node_5, left=NIL_LEAF, right=NIL_LEAF)
+        node_5.left = node_1
+        node_5.right = node_7
+        root.left = node_5
+        root.right = node_12
+        rb_tree.root = root
+        rb_tree.remove(12)
+        """
+                   __10B__                                           __5B__
+                   /      \                                         /      \
+                 5B       12B  <--- REMOVE                        1B        10B
+                /  \              has no successors                        /
+              1R   7R                                                    7R
+                            case 6 applies, so we left rotate at 5b
+        """
+        node_5 = rb_tree.root
+        self.assertEqual(node_5.value, 5)
+        self.assertEqual(node_5.color, BLACK)
+        self.assertEqual(node_5.parent, None)
+        self.assertEqual(node_5.left.value, 1)
+        self.assertEqual(node_5.right.value, 10)
+        node_1 = node_5.left
+        self.assertEqual(node_1.value, 1)
+        self.assertEqual(node_1.parent, node_5)
+        self.assertEqual(node_1.color, BLACK)
+        self.assertEqual(node_1.left, NIL_LEAF)
+        self.assertEqual(node_1.right, NIL_LEAF)
+        node_10 = node_5.right
+        self.assertEqual(node_10.value, 10)
+        self.assertEqual(node_10.parent, node_5)
+        self.assertEqual(node_10.color, BLACK)
+        self.assertEqual(node_10.left.value, 7)
+        self.assertEqual(node_10.right, NIL_LEAF)
+        node_7 = node_10.left
+        self.assertEqual(node_7.value, 7)
+        self.assertEqual(node_7.parent, node_10)
+        self.assertEqual(node_7.color, RED)
+        self.assertEqual(node_7.left, NIL_LEAF)
+        self.assertEqual(node_7.right, NIL_LEAF)
 
     def test_deletion_black_node_no_successor_case_3_then_1(self):
         """
