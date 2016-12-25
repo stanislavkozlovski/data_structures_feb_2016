@@ -112,6 +112,18 @@ class RedBlackTree:
         self.case_3(node)
 
     def case_3(self, node):
+        parent = node.parent
+        sibling, _ = self.get_sibling(node)
+        if (sibling.color == BLACK
+           and sibling.left.color != RED
+           and sibling.right.color != RED
+           and parent.color == BLACK):
+            # color the sibling red and forward the double black node upwards
+            # (call the cases again for the parent)
+            sibling.color = RED
+            self.case_1(parent)
+            return
+
         self.case_4(node)
 
     def case_4(self, node):
