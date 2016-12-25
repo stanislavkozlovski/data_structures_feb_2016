@@ -90,6 +90,7 @@ class RedBlackTree:
                 pass
         else:
             # TODO: You have 0 or 1 children
+            self.f_remove(node_to_remove)
             pass
 
     def f_remove(self, node):
