@@ -94,20 +94,29 @@ class RedBlackTree:
                     raise Exception('Black successor cannot have a black right child, black height is invalid')
                 pass
         else:
-            # You have 0 or 1 children
-            if self.root == node_to_remove:
-                # basically remove the root by making its one child the new root
-                left_child, right_child = self.root.left, self.root.right
-                if left_child != self.NIL_LEAF:
-                    left_child.parent = None
-                    left_child.color = BLACK
-                    self.root = left_child
+            if node_to_remove.color == RED:
+                if node_to_remove.left == self.NIL_LEAF and node_to_remove.right == self.NIL_LEAF:
+                    # TODO: THANK GOD
+                    # remove the node_to_remove from the tree
+                    if node_to_remove.value > node_to_remove.parent.value:
+                        node_to_remove.parent.right = self.NIL_LEAF
+                    else:
+                        node_to_remove.parent.left = self.NIL_LEAF
+                    del node_to_remove
+            else:
+                right_node = node_to_remove.right
+                if right_node.has_children(): raise Exception(
+                    'The red right child of a black node_to_remove cannot have children, otherwise the black height of the tree becomes invalid! ')
+                if node_to_remove.right.color == RED:
+                    # swap the values with the right node and remove the right node
+                    node_to_remove.value = right_node.value
+                    node_to_remove.right = self.NIL_LEAF
+                    del right_node
+                elif node_to_remove.right == self.NIL_LEAF:
+                    # 6 cases :o
+                    self.f_remove(node_to_remove)
                 else:
-                    right_child.color = BLACK
-                    right_child.parent = None
-                    self.root = right_child
-                return
-            self.f_remove(node_to_remove)
+                    raise Exception('Black node with one child cannot have a black right child, black height is invalid')
 
     def f_remove(self, node):
         # recursively call each case
