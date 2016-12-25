@@ -83,18 +83,52 @@ class RedBlackTree:
                     successor.right = self.NIL_LEAF
                     del right_node
                 elif successor.right == self.NIL_LEAF:
-                    pass
+                    # 6 cases :o
+                    self.f_remove(successor)
                 else:
                     raise Exception('Black successor cannot have a black right child, black height is invalid')
-                self.f_remove(successor)
                 pass
         else:
             # TODO: You have 0 or 1 children
             pass
 
     def f_remove(self, node):
-        pass
+        # recursively call each case
+        # if the case is not terminating, call case_1 again and go through the chain of cases
+        self.case_1(node)
 
+    def case_1(self, node):
+        if self.root == node:
+            node.color = BLACK
+            return
+        self.case_2(node)
+
+    def case_2(self, node):
+        self.case_3(node)
+
+    def case_3(self, node):
+        self.case_4(node)
+
+    def case_4(self, node):
+        if node.parent.color == RED:
+            sibling = self.get_sibling(node)
+            if sibling.color == BLACK and (sibling.left.color != RED and sibling.right.color != RED):
+                # switch colors
+                node.parent.color = BLACK
+                sibling.color = RED
+                # remove the double black node
+                if node.value > node.parent.value:
+                    node.parent.right = self.NIL_LEAF
+                else:
+                    node.parent.left = self.NIL_LEAF
+                return
+        self.case_5(node)
+
+    def case_5(self, node):
+        self.case_6(node)
+
+    def case_6(self, node):
+        raise NotImplementedError()
 
     def try_rebalance(self, node):
         parent = node.parent
