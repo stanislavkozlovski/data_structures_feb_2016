@@ -932,6 +932,7 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_35.right, NIL_LEAF)
 
     def test_deletion_black_node_black_successor_no_child_case_4(self):
+        # TODO: MIRROR
         rb_tree = RedBlackTree()
         root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
         # left subtree
@@ -979,6 +980,64 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_38.color, RED)
         self.assertEqual(node_38.left, NIL_LEAF)
         self.assertEqual(node_38.right, NIL_LEAF)
+
+    def test_deletion_black_node_no_successor_case_6(self):
+        # TODO: MIRROR
+        rb_tree = RedBlackTree()
+        root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        # left subtree
+        node_m10 = Node(value=-10, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        # right subtree
+        node_30 = Node(value=30, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_25 = Node(value=25, color=RED, parent=node_30, left=NIL_LEAF, right=NIL_LEAF)
+        node_40 = Node(value=40, color=RED, parent=node_30, left=NIL_LEAF, right=NIL_LEAF)
+        node_30.left = node_25
+        node_30.right = node_40
+
+        root.left = node_m10
+        root.right = node_30
+        rb_tree.root = root
+        rb_tree.remove(-10)
+
+        """
+                        ___10B___
+                       /         \           Case 6 applies here, since
+         REMOVE-->  -10B         30B         The parent's color does not matter
+         Double Black           /   \        The sibling's color is BLACK
+                              25R    40R     The sibling's right child is RED (in the MIRROR CASE - left child should be RED)
+        Here we do a left rotation and change the colors such that
+            the sibling gets the parent's color (30 gets 10's color)
+            the parent(now sibling's left) and sibling's right become BLACK
+
+
+                 ___30B___
+                /         \
+              10B         40B
+            /    \
+         NULL    25R
+        -10B
+        would be here
+        but we're removing it
+        """
+        self.assertEqual(rb_tree.root.color, BLACK)
+        self.assertEqual(rb_tree.root.value, 30)
+        node_10 = rb_tree.root.left
+        self.assertEqual(node_10.value, 10)
+        self.assertEqual(node_10.color, BLACK)
+        self.assertEqual(node_10.parent, rb_tree.root)
+        self.assertEqual(node_10.left, NIL_LEAF)
+        node_25 = node_10.right
+        self.assertEqual(node_25.value, 25)
+        self.assertEqual(node_25.color, RED)
+        self.assertEqual(node_25.parent, node_10)
+        self.assertEqual(node_25.left, NIL_LEAF)
+        self.assertEqual(node_25.right, NIL_LEAF)
+        node_40 = rb_tree.root.right
+        self.assertEqual(node_40.value, 40)
+        self.assertEqual(node_40.parent, rb_tree.root)
+        self.assertEqual(node_40.color, BLACK)
+        self.assertEqual(node_40.left, NIL_LEAF)
+        self.assertEqual(node_40.right, NIL_LEAF)
 
 
 
