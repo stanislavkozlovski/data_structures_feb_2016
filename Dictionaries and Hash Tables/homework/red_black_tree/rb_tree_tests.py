@@ -940,7 +940,7 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_48.color, BLACK)
         self.assertEqual(node_48.left.value, 41)
         self.assertIsNone(rb_tree.find_node(49))  # assure its not in the tree
-        
+
 
     def test_deletion_red_node_red_successor_no_children(self):
         """
@@ -1471,6 +1471,53 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_50.parent, node_40)
         self.assertEqual(node_50.left, NIL_LEAF)
         self.assertEqual(node_50.right, NIL_LEAF)
+
+    def test_delete_tree_one_by_one(self):
+        rb_tree = RedBlackTree()
+        root = Node(value=20, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        # left subtree
+        node_10 = Node(value=10, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_5 = Node(value=5, color=RED, parent=node_10, left=NIL_LEAF, right=NIL_LEAF)
+        node_15 = Node(value=15, color=RED, parent=node_10, left=NIL_LEAF, right=NIL_LEAF)
+        node_10.left = node_5
+        node_10.right = node_15
+        # right subtree
+        node_38 = Node(value=38, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_28 = Node(value=28, color=BLACK, parent=node_38, left=NIL_LEAF, right=NIL_LEAF)
+        node_48 = Node(value=48, color=BLACK, parent=node_38, left=NIL_LEAF, right=NIL_LEAF)
+        node_38.left = node_28
+        node_38.right = node_48
+        # node_28 subtree
+        node_23 = Node(value=23, color=RED, parent=node_28, left=NIL_LEAF, right=NIL_LEAF)
+        node_29 = Node(value=29, color=RED, parent=node_28, left=NIL_LEAF, right=NIL_LEAF)
+        node_28.left = node_23
+        node_28.right = node_29
+        # node 48 subtree
+        node_41 = Node(value=41, color=RED, parent=node_48, left=NIL_LEAF, right=NIL_LEAF)
+        node_49 = Node(value=49, color=RED, parent=node_48, left=NIL_LEAF, right=NIL_LEAF)
+        node_48.left = node_41
+        node_48.right = node_49
+
+        root.left = node_10
+        root.right = node_38
+        rb_tree.root = root
+        rb_tree.remove(49)
+        rb_tree.remove(38)
+        rb_tree.remove(28)
+        rb_tree.remove(10)
+        rb_tree.remove(5)
+        rb_tree.remove(15)
+        rb_tree.remove(48)
+        rb_tree.remove(20)
+        """
+                ______20______
+               /              \
+             10B           ___38R___
+            /   \         /         \
+          5R    15R      28B         48B
+                        /  \        /   \
+                      23R  29R     41R   49R
+        """
 
 
 if __name__ == '__main__':
