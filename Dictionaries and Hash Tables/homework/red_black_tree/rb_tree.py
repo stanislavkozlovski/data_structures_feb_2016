@@ -100,8 +100,10 @@ class RedBlackTree:
                 left_child, right_child = self.root.left, self.root.right
                 if left_child != self.NIL_LEAF:
                     left_child.parent = None
+                    left_child.color = BLACK
                     self.root = left_child
                 else:
+                    right_child.color = BLACK
                     right_child.parent = None
                     self.root = right_child
                 return

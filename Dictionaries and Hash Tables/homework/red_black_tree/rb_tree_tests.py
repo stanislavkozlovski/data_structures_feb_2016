@@ -841,7 +841,6 @@ class RbTreeTests(unittest.TestCase):
              3R      8R                3R
         """
         rb_tree.root = root
-        rb_tree.remove(8)
         rb_tree.remove(5)
 
         node_8 = rb_tree.root
