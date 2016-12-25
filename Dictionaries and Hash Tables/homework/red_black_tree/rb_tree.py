@@ -57,11 +57,22 @@ class RedBlackTree:
                         successor.parent.left = self.NIL_LEAF
                         del successor
                     else:
-                        pass
+                        """
+                        Since the successor is red he cannot have children
+                        1. Cannot have a left child, otherwise he wouldn't be a successor
+                        2. Cannot have a right child either
+                            1. If he has a right child, it must be black, otherwise red-red
+                            2. Since he has a right black child, his left child must also be black,
+                                otherwise the black height of the tree is invalid
+                        """
+                        raise Exception('Unexpected behavior')
                 else:  # successor is black!
                     pass
+            else:
+                pass
+        else:
             pass
-        pass
+
 
     def try_rebalance(self, node):
         parent = node.parent
@@ -203,7 +214,7 @@ class RedBlackTree:
         right_node = node.right
         left_node = right_node.left
         if left_node == self.NIL_LEAF:
-            raise NotImplementedError('Not sure what to do!')
+            return right_node
         while left_node.left != self.NIL_LEAF:
             left_node = left_node.left
         return left_node

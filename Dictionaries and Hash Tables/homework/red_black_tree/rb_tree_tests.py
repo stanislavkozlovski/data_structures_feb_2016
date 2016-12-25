@@ -864,6 +864,7 @@ class RbTreeTests(unittest.TestCase):
                  /  \     /   \
               -5B   7B   20B  38B
         """
+        # TODO: Add mirror test case on the left subtree
         # Careful with reference equals
         node_36 = rb_tree.root.right
         self.assertEqual(node_36.value, 36)
@@ -875,6 +876,7 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_20.parent.value, 36)
         self.assertEqual(node_38.parent.value, 36)
         self.assertEqual(node_38.left, NIL_LEAF)
+
 
 if __name__ == '__main__':
     unittest.main()
