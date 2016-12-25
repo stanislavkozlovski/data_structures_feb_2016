@@ -14,6 +14,10 @@ class Node:
     def __repr__(self):
         return '{color} {val} Node'.format(color=self.color, val=self.value)
 
+    def has_children(self) -> bool:
+        """ Returns a boolean indicating if the node has children """
+        return self.left.color != NIL or self.right.color != NIL
+
 
 class RedBlackTree:
     NIL_LEAF = Node(value=None, color=NIL, parent=None)
@@ -43,35 +47,51 @@ class RedBlackTree:
         node_to_remove = self.find_node(value)
         if node_to_remove is None:
             return
-        if node_to_remove.color == RED:
-            # TODO: THANK GOD
-            if node_to_remove.left != self.NIL_LEAF and node_to_remove.right != self.NIL_LEAF:
-                # find in order successor  # once right, left till end
-                # replace node_to_remove with successor and gg
-                successor = self.find_in_order_successor(node_to_remove)
-                if successor.color == RED:
-                    if successor.left == self.NIL_LEAF and successor.right == self.NIL_LEAF:
-                        # TODO: THANK GOD MORE
-                        # switch the value and remove the successor (they are both red)
-                        node_to_remove.value = successor.value
-                        successor.parent.left = self.NIL_LEAF
-                        del successor
-                    else:
-                        """
-                        Since the successor is red he cannot have children
-                        1. Cannot have a left child, otherwise he wouldn't be a successor
-                        2. Cannot have a right child either
-                            1. If he has a right child, it must be black, otherwise red-red
-                            2. Since he has a right black child, his left child must also be black,
-                                otherwise the black height of the tree is invalid
-                        """
-                        raise Exception('Unexpected behavior')
-                else:  # successor is black!
+        """
+        1.Always try to find a successor so that the node has 0 or 1 children :)
+        2.Replace value with said successor
+        """
+        if node_to_remove.left != self.NIL_LEAF and node_to_remove.right != self.NIL_LEAF:
+            # find in order successor  # once right, left till end
+            # replace node_to_remove with successor and gg
+            successor = self.find_in_order_successor(node_to_remove)
+            node_to_remove.value = successor.value  # switch the value
+            if successor.color == RED:
+                if successor.left == self.NIL_LEAF and successor.right == self.NIL_LEAF:
+                    # TODO: THANK GOD
+                    # remove the successor from the tree
+                    successor.parent.left = self.NIL_LEAF
+                    del successor
+                else:
+                    """
+                    Since the successor is red he cannot have children
+                    1. Cannot have a left child, otherwise he wouldn't be a successor
+                    2. Cannot have a right child either
+                        1. If he has a right child, it must be black, otherwise red-red
+                        2. Since he has a right black child, his left child must also be black,
+                            otherwise the black height of the tree is invalid
+                    """
+                    raise Exception('Unexpected behavior')
+            else:  # successor is black!
+                right_node = successor.right
+                if right_node.has_children(): raise Exception('The red right child of a black successor cannot have children, otherwise the black height of the tree becomes invalid! ')
+                if successor.right.color == RED:
+                    # swap the values with the right node and remove the right node
+                    successor.value = right_node.value
+                    successor.right = self.NIL_LEAF
+                    del right_node
+                elif successor.right == self.NIL_LEAF:
                     pass
-            else:
+                else:
+                    raise Exception('Black successor cannot have a black right child, black height is invalid')
+                self.f_remove(successor)
                 pass
         else:
+            # TODO: You have 0 or 1 children
             pass
+
+    def f_remove(self, node):
+        pass
 
 
     def try_rebalance(self, node):
