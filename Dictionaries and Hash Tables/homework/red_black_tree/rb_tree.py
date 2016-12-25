@@ -109,6 +109,18 @@ class RedBlackTree:
         self.case_2(node)
 
     def case_2(self, node):
+        parent = node.parent
+        sibling, direction = self.get_sibling(node)
+        if sibling.color == RED and parent.color == BLACK and (sibling.left.color != RED and sibling.right.color != RED):
+            if direction == 'R':
+                self.left_rotation(node=None, parent=sibling, grandfather=parent)
+                parent.color = RED
+                sibling.color = BLACK
+            else:
+                self.right_rotation(node=None, parent=sibling, grandfather=parent)
+                parent.color = RED
+                sibling.color = BLACK
+            return self.case_1(node)
         self.case_3(node)
 
     def case_3(self, node):
