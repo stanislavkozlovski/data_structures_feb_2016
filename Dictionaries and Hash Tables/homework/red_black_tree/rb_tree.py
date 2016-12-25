@@ -62,7 +62,12 @@ class RedBlackTree:
                 if successor.left == self.NIL_LEAF and successor.right == self.NIL_LEAF:
                     # TODO: THANK GOD
                     # remove the successor from the tree
-                    successor.parent.left = self.NIL_LEAF
+                    if successor.value == successor.parent.value:
+                        # in those weird cases where
+                        # the successor is the right node
+                        successor.parent.right = self.NIL_LEAF
+                    else:
+                        successor.parent.left = self.NIL_LEAF
                     del successor
                 else:
                     """
