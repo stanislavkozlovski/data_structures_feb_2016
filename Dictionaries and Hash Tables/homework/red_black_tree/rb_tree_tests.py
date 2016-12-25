@@ -931,6 +931,54 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_35.left, NIL_LEAF)
         self.assertEqual(node_35.right, NIL_LEAF)
 
+    def test_deletion_black_node_black_successor_no_child_case_4(self):
+        rb_tree = RedBlackTree()
+        root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        # left subtree
+        node_m10 = Node(value=-10, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        # right subtree
+        node_30 = Node(value=30, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_20 = Node(value=20, color=BLACK, parent=node_30, left=NIL_LEAF, right=NIL_LEAF)
+        node_38 = Node(value=38, color=BLACK, parent=node_30, left=NIL_LEAF, right=NIL_LEAF)
+        node_30.left = node_20
+        node_30.right = node_38
+
+        root.left = node_m10
+        root.right = node_30
+        rb_tree.root = root
+        rb_tree.remove(10)
+
+        """
+                  ___10B___   <----- REMOVE THIS       ___20B___
+                 /         \                          /         \
+               -10B        30R                      -10B        30R
+                          /   \                                /   \
+         successor --> 20B    38B                double black DB  38B
+                                                Case 4 applies, since the sibling is black, has no red children and
+                                                the parent is RED
+                                                So, we simply exchange colors of the parent and the sibling
+
+
+                       ___20B___
+                      /         \
+                    -10B        30B        DONE
+                                   \
+                                  38R
+
+        """
+        self.assertEqual(rb_tree.root.value, 20)
+        self.assertEqual(rb_tree.root.color, BLACK)
+        node_30 = rb_tree.root.right
+        self.assertEqual(node_30.parent.value, 20)
+        self.assertEqual(node_30.value, 30)
+        self.assertEqual(node_30.color, BLACK)
+        self.assertEqual(node_30.left, NIL_LEAF)
+        self.assertEqual(node_30.right.value, 38)
+        node_38 = node_30.right
+        self.assertEqual(node_38.value, 38)
+        self.assertEqual(node_38.color, RED)
+        self.assertEqual(node_38.left, NIL_LEAF)
+        self.assertEqual(node_38.right, NIL_LEAF)
 
 
 
