@@ -133,12 +133,28 @@ class RedBlackTree:
                 # switch colors
                 node.parent.color = BLACK
                 sibling.color = RED
-                # remove the double black node
-
                 return
         self.case_5(node)
 
     def case_5(self, node):
+        # TODO: Case 5 is always followed by 6 methinks
+        sibling, direction = self.get_sibling(node)
+        if node.parent.color == BLACK and sibling.color == BLACK:
+            if direction == 'L':
+                if sibling.left.color == BLACK and sibling.right.color == RED:
+                    self.right_rotation(node=None, parent=sibling.right, grandfather=sibling)
+                    sibling.right.color = BLACK
+                    sibling.color = RED
+                    return self.case_1(node)
+            else:
+                # sibling is at the right
+                if sibling.left.color == RED and sibling.right.color == BLACK:
+                    left_sib = sibling.left
+                    self.right_rotation(node=None, parent=sibling.left, grandfather=sibling)
+                    left_sib.color = BLACK
+                    sibling.color = RED
+                    return self.case_1(node)
+
         self.case_6(node)
 
     def case_6(self, node):
