@@ -92,7 +92,6 @@ class RedBlackTree:
                     self.f_remove(successor)
                 else:
                     raise Exception('Black successor cannot have a black right child, black height is invalid')
-                pass
         else:
             if node_to_remove.color == RED:
                 if node_to_remove.left == self.NIL_LEAF and node_to_remove.right == self.NIL_LEAF:
@@ -179,8 +178,9 @@ class RedBlackTree:
         if node.parent.color == BLACK and sibling.color == BLACK:
             if direction == 'L':
                 if sibling.left.color == BLACK and sibling.right.color == RED:
-                    self.right_rotation(node=None, parent=sibling.right, grandfather=sibling)
-                    sibling.right.color = BLACK
+                    right_sib = sibling.right
+                    self.left_rotation(node=None, parent=sibling.right, grandfather=sibling)
+                    right_sib.color = BLACK
                     sibling.color = RED
                     return self.case_1(node)
             else:
