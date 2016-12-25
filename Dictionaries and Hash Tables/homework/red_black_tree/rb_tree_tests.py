@@ -1039,6 +1039,47 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_40.left, NIL_LEAF)
         self.assertEqual(node_40.right, NIL_LEAF)
 
+    def test_deletion_black_node_no_successor_case_3_then_1(self):
+        """
+        Delete a node such that case 3 is called, which pushesh
+        the double black node upwards into a case 1 problem
+        """
+        rb_tree = RedBlackTree()
+        root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        # left subtree
+        node_m10 = Node(value=-10, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        # right subtree
+        node_30 = Node(value=30, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+
+        root.left = node_m10
+        root.right = node_30
+        rb_tree.root = root
+        rb_tree.remove(-10)
+
+        """                                             Double
+                                                        Black
+                    ___10B___                         __|10B|__
+                   /         \     ---->             /         \
+    REMOVE-->   -10B         30B                  REMOVED      30R  <--- COLORED RED
+
+            We color the sibling red and try to resolve the double black problem in the root.
+            We go through the cases 1-6 and find that case 1 is what we're looking for
+            Case 1 simply recolors the root to black and we are done
+                ___10B___
+                         \
+                         30R
+        """
+        node_10 = rb_tree.root
+        self.assertEqual(node_10.color, BLACK)
+        self.assertEqual(node_10.parent, None)
+        self.assertEqual(node_10.left, NIL_LEAF)
+        self.assertEqual(node_10.right.value, 30)
+        node_30 = node_10.right
+        self.assertEqual(node_30.value, 30)
+        self.assertEqual(node_30.color, RED)
+        self.assertEqual(node_30.parent, node_10)
+        self.assertEqual(node_30.left, NIL_LEAF)
+        self.assertEqual(node_30.right, NIL_LEAF)
 
 
 if __name__ == '__main__':
