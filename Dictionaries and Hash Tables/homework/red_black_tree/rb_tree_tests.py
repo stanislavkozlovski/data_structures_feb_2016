@@ -831,7 +831,7 @@ class RbTreeTests(unittest.TestCase):
         # Left subtree
         node_5 = Node(value=5, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
         node_m5 = Node(value=-5, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
-        node_7 = Node(value=7, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_7 = Node(value=7, color=BLACK, parent=node_5, left=NIL_LEAF, right=NIL_LEAF)
         node_5.left = node_m5
         node_5.right = node_7
 
@@ -876,6 +876,63 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_20.parent.value, 36)
         self.assertEqual(node_38.parent.value, 36)
         self.assertEqual(node_38.left, NIL_LEAF)
+
+    def test_mirror_deletion_red_node_red_successor_no_children(self):
+        """
+        This must be the easiest deletion yet!
+        """
+        rb_tree = RedBlackTree()
+        root = Node(value=10, color=BLACK, parent=None, left=NIL_LEAF, right=NIL_LEAF)
+        # Left subtree
+        node_5 = Node(value=5, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_m5 = Node(value=-5, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_7 = Node(value=7, color=BLACK, parent=node_5, left=NIL_LEAF, right=NIL_LEAF)
+        node_5.left = node_m5
+        node_5.right = node_7
+        node_6 = Node(value=6, color=RED, parent=node_7, left=NIL_LEAF, right=NIL_LEAF)
+        node_7.left = node_6
+
+        # right subtree
+        node_35 = Node(value=35, color=RED, parent=root, left=NIL_LEAF, right=NIL_LEAF)
+        node_20 = Node(value=20, color=BLACK, parent=node_35, left=NIL_LEAF, right=NIL_LEAF)
+        node_38 = Node(value=38, color=BLACK, parent=node_35, left=NIL_LEAF, right=NIL_LEAF)
+        node_35.left = node_20
+        node_35.right = node_38
+        node_36 = Node(value=36, color=RED, parent=node_38, left=NIL_LEAF, right=NIL_LEAF)
+        node_38.left = node_36
+
+        root.left = node_5
+        root.right = node_35
+        rb_tree.root = root
+        rb_tree.remove(5)
+
+        """
+                    10B
+                  /     \
+    REMOVE -->  5R       35R
+               /  \     /   \
+            -5B   7B   20B  38B   We get it's in-order successor, which is 6
+                 /         /
+               6R         36R      6 Is red and has no children,
+                                    so we easily swap it's value with 5 and remove 6
+
+                      10B
+                    /     \
+     RESULT IS    6R       36R
+                 /  \     /   \
+              -5B   7B   20B  38B
+        """
+        node_6 = rb_tree.root.left
+        self.assertEqual(node_6.value, 6)
+        self.assertEqual(node_6.color, RED)
+        self.assertEqual(node_6.parent, rb_tree.root)
+        self.assertEqual(node_6.left.value, -5)
+        self.assertEqual(node_6.right.value, 7)
+        node_7 = node_6.right
+        self.assertEqual(node_7.color, BLACK)
+        self.assertEqual(node_7.parent, node_6)
+        self.assertEqual(node_7.left, NIL_LEAF)
+        self.assertEqual(node_7.right, NIL_LEAF)
 
     def test_deletion_black_node_black_successor_right_red_child(self):
         """ fuck it i don't even know anymore """
