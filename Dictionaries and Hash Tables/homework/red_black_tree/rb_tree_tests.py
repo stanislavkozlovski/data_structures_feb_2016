@@ -1940,20 +1940,24 @@ class RbTreeTests(unittest.TestCase):
         rb_tree = RedBlackTree()
         for i in range(100):
             rb_tree.add(i)
+            self.assertEqual(rb_tree.count, i+1)
         for i in range(99, -1, -1):
             self.assertTrue(rb_tree.contains(i))
             rb_tree.remove(i)
             self.assertFalse(rb_tree.contains(i))
+            self.assertEqual(rb_tree.count, i)
         self.assertIsNone(rb_tree.root)
 
     def test_add_delete_0_to_100_delete_0_to_100(self):
         rb_tree = RedBlackTree()
         for i in range(100):
             rb_tree.add(i)
+            self.assertEqual(rb_tree.count, i+1)
         for i in range(100):
             self.assertTrue(rb_tree.contains(i))
             rb_tree.remove(i)
             self.assertFalse(rb_tree.contains(i))
+            self.assertEqual(rb_tree.count, 99-i)
         self.assertIsNone(rb_tree.root)
 
 if __name__ == '__main__':
