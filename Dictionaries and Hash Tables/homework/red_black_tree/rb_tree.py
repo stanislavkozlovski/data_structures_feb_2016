@@ -47,6 +47,8 @@ class RedBlackTree:
         }
 
     def __iter__(self):
+        if not self.root:
+            return list()
         yield from self.root.__iter__()
 
     def add(self, value):
