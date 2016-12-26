@@ -122,8 +122,14 @@ class RedBlackTree:
                 if node_to_remove.right.color == RED:
                     # swap the values with the right node and remove the right node
                     node_to_remove.value = right_node.value
-                    node_to_remove.right = self.NIL_LEAF
+                    node_to_remove.left = right_node.left
+                    node_to_remove.right = right_node.right
                     del right_node
+                elif node_to_remove.left.color == RED:
+                    left_child = node_to_remove.left
+                    node_to_remove.value = left_child.value
+                    node_to_remove.left = left_child.left
+                    node_to_remove.right = left_child.right
                 elif node_to_remove.right == self.NIL_LEAF:
                     # 6 cases :o
                     self.f_remove(node_to_remove)
