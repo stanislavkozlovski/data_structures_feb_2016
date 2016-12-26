@@ -14,7 +14,6 @@ The set should be foreach-able (just like arrays, lists and other data structure
 Implement the IEnumerable<T> interface to achieve this. The set should yield all elements, sorted, in ascending order.
 Tip: Use in-order traversal.
 """
-from collections import deque
 
 
 class Node:
