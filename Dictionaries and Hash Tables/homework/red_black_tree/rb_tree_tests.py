@@ -110,6 +110,10 @@ class RbTreeTests(unittest.TestCase):
             6 should turn to red,
             -10 and 20 should turn to black
             10 should try to turn to red, but since it's the root it can't be black"""
+        expected_values = [-20, -10, 2, 4, 6, 8, 10, 15, 20, 25]
+        values = list(tree)
+        self.assertEqual(values, expected_values)
+
         self.assertEqual(node_2.color, BLACK)
         self.assertEqual(node_8.color, BLACK)
         self.assertEqual(node_6.color, RED)
@@ -161,6 +165,10 @@ class RbTreeTests(unittest.TestCase):
                       12B  17B
                             19R
         """
+        expected_values = [-20, -10, 6, 10, 12, 15, 17, 19, 20, 25]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_19 = node_17.right
         self.assertEqual(node_19.value, 19)
         self.assertEqual(node_19.color, RED)
@@ -200,6 +208,10 @@ class RbTreeTests(unittest.TestCase):
                  7R       15R                                           7R      13R 20R
                  Add -> 13R
         """
+        expected_values = [-10, 7, 10, 13, 15, 20]
+        values = list(tree)
+        self.assertEqual(values, expected_values)
+
         node_20 = node_15.right
         node_13 = node_15.left
 
@@ -242,6 +254,10 @@ class RbTreeTests(unittest.TestCase):
         this calls for a left rotation, so 7 becomes left child of 8 and 9 the right child of 8
         8 is black, 7 and 9 are red
         """
+        expected_values = [7, 8, 9, 10, 20]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_9 = node_8.right
 
         self.assertEqual(node_9.value, 9)
@@ -290,6 +306,10 @@ class RbTreeTests(unittest.TestCase):
                                                                             -10 becomes the right child of -11
         -11's parent is root, -11 is black, -10,-12 are RED
         """
+        expected_values = [-12, -11, -10, 10, 15, 20]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_m12 = node_m11.left
         self.assertEqual(rb_tree.root.left.value, -11)
 
@@ -343,6 +363,10 @@ class RbTreeTests(unittest.TestCase):
         Then, a right rotation should be done so 17 is the parent of 20(15's prev parent)
         Also, a recoloring should be done such that 17 is now black and his children are red
         """
+        expected_values = [-10, 7, 10, 15, 17, 20]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_15 = node_15
         node_20 = node_20
         node_17 = node_15.parent
@@ -400,6 +424,10 @@ class RbTreeTests(unittest.TestCase):
         Second a left rotation should happen, so that 2 becomes the parent of -10 and 7
         2 is black, -10 and 7 are now red. 2's parent is the root - 10
         """
+        expected_values = [-10, 2, 7, 10, 15, 20]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_2 = node_7.parent
         self.assertEqual(node_2.parent.value, 10)
         self.assertEqual(node_2.color, BLACK)
@@ -461,6 +489,10 @@ class RbTreeTests(unittest.TestCase):
         We see that our direction is RightLeft (RL) and do a Left Rotation followed by a Right Rotation
         -10 becomes 6's left child and 1 becomes -10's right child
         """
+        expected_values = [-20, -10, 1, 4, 6, 9, 10, 15, 20, 30]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_10 = rb_tree.root.right
         node_4 = node_1.right
 
@@ -498,11 +530,19 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(rb_tree.root.color, BLACK)
         node_2 = rb_tree.root
         """ 2 """
+        expected_values = [2]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         rb_tree.add(1)
         """
             2B
            1R
         """
+        expected_values = [1, 2]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_1 = rb_tree.root.left
         self.assertEqual(node_1.value, 1)
         self.assertEqual(node_1.color, RED)
@@ -512,6 +552,10 @@ class RbTreeTests(unittest.TestCase):
             2B
           1R  4R
         """
+        expected_values = [1, 2, 4]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_4 = rb_tree.root.right
         self.assertEqual(node_4.value, 4)
         self.assertEqual(node_4.color, RED)
@@ -524,6 +568,10 @@ class RbTreeTests(unittest.TestCase):
           1R  4R    ---CAUSES RECOLOR-->  1B  4B
                5R                              5R
         """
+        expected_values = [1, 2, 4, 5]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_5 = node_4.right
         self.assertEqual(node_5.value, 5)
         self.assertEqual(node_4.color, BLACK)
@@ -537,6 +585,10 @@ class RbTreeTests(unittest.TestCase):
                 5R                                          4R  9R
                  9R
         """
+        expected_values = [1, 2, 4, 5, 9]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_9 = node_5.right
         self.assertEqual(node_9.value, 9)
         self.assertEqual(node_9.color, RED)
@@ -560,6 +612,10 @@ class RbTreeTests(unittest.TestCase):
                 4R  9R                                  4B  9B
                3R                                      3R
         """
+        expected_values = [1, 2, 3, 4, 5, 9]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_3 = node_4.left
         self.assertEqual(node_3.value, 3)
         self.assertEqual(node_3.color, RED)
@@ -586,6 +642,10 @@ class RbTreeTests(unittest.TestCase):
                4B    _9B
               3R    6R
         """
+        expected_values = [1, 2, 3, 4, 5, 6, 9]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_6 = node_9.left
         self.assertEqual(node_6.value, 6)
         self.assertEqual(node_6.color, RED)
@@ -606,6 +666,10 @@ class RbTreeTests(unittest.TestCase):
                     4B      7B
                    3R     6R  9R
         """
+        expected_values = [1, 2, 3, 4, 5, 6, 7, 9]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_7 = node_5.right
         self.assertEqual(node_7.value, 7)
         self.assertEqual(node_7.color, BLACK)
@@ -642,6 +706,10 @@ class RbTreeTests(unittest.TestCase):
                       1B     4B    6B 9B
                             3R         15R
         """
+        expected_values = [1, 2, 3, 4, 5, 6, 7, 9, 15]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_15 = node_9.right
         self.assertEqual(node_15.color, RED)
         self.assertEqual(node_15.parent.value, 9)
@@ -719,6 +787,10 @@ class RbTreeTests(unittest.TestCase):
                                 5B  12B     __17B__    25B
                                                   19R
         """
+        expected_values = [5, 10, 12, 15, 17, 19, 20, 25]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_19 = node_17.right
 
         self.assertEqual(node_19.value, 19)
@@ -764,9 +836,9 @@ class RbTreeTests(unittest.TestCase):
         node_m10.left = node_m20
         node_m10.right = node_6
         node_m21 = Node(value=-21, color=RED, parent=node_m20, left=NIL_LEAF, right=NIL_LEAF)
-        node_m9 = Node(value=-9, color=RED, parent=node_m20, left=NIL_LEAF, right=NIL_LEAF)
+        node_m19 = Node(value=-19, color=RED, parent=node_m20, left=NIL_LEAF, right=NIL_LEAF)
         node_m20.left = node_m21
-        node_m20.right = node_m9
+        node_m20.right = node_m19
         # right subtree
         node_20 = Node(value=20, color=BLACK, parent=root, left=NIL_LEAF, right=NIL_LEAF)
         node_15 = Node(value=15, color=RED, parent=node_20, left=NIL_LEAF, right=NIL_LEAF)
@@ -782,19 +854,30 @@ class RbTreeTests(unittest.TestCase):
         """
 
                     _____10_____                                               _____10_____
+                   /            \                                             /            \
                 -10R           20B                                         -10R           20B
+               /    \          /   \                                      /   \          /    \
             -20B    6B       15R  25R     --RECOLOR TO-->              -20R    6B       15R  25R
-          -21R -9R                                                   -21B -9B
+            /   \                                                       /  \
+          -21R -19R                                                   -21B -19B
+           /                                                         /
  Add-> -22R                                                        22R
 
 
 
-                                       _____-10B______
+                                        ____-10B_____
+                                       /             \
                                      -20R          __10R__
-        Right rotation to->       -21B  -9B       6B  __20B__
-                                -22R               15R     25R
+                                     /   \        /       \
+        Right rotation to->       -21B  -19B     6B    __20B__
+                                   /                  /       \
+                                -22R                 15R     25R
 
         """
+        expected_values = [-22, -21, -20, -19, -10, 6, 10, 15, 20, 25]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         self.assertEqual(rb_tree.root, node_m10)
         self.assertEqual(node_m10.parent, None)
         self.assertEqual(node_m10.left, node_m20)
@@ -809,7 +892,7 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_m20.parent, node_m10)
         self.assertEqual(node_m20.color, RED)
         self.assertEqual(node_m20.left, node_m21)
-        self.assertEqual(node_m20.right, node_m9)
+        self.assertEqual(node_m20.right, node_m19)
 
         self.assertEqual(node_m21.color, BLACK)
         self.assertEqual(node_m21.left.value, -22)
@@ -819,10 +902,10 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_6.left, NIL_LEAF)
         self.assertEqual(node_6.right, NIL_LEAF)
 
-        self.assertEqual(node_m9.color, BLACK)
-        self.assertEqual(node_m9.parent, node_m20)
-        self.assertEqual(node_m9.left, NIL_LEAF)
-        self.assertEqual(node_m9.right, NIL_LEAF)
+        self.assertEqual(node_m19.color, BLACK)
+        self.assertEqual(node_m19.parent, node_m20)
+        self.assertEqual(node_m19.left, NIL_LEAF)
+        self.assertEqual(node_m19.right, NIL_LEAF)
 
     # ***************TEST INSERTIONS***************
 
@@ -842,6 +925,10 @@ class RbTreeTests(unittest.TestCase):
         """
         rb_tree.root = root
         rb_tree.remove(5)
+
+        expected_values = [3, 8]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
 
         node_8 = rb_tree.root
         self.assertEqual(node_8.value, 8)
@@ -867,6 +954,10 @@ class RbTreeTests(unittest.TestCase):
                      \      Should become--^
                      8R
         """
+        expected_values = [8]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         root = rb_tree.root
         self.assertEqual(root.value, 8)
         self.assertEqual(root.parent, None)
@@ -888,6 +979,10 @@ class RbTreeTests(unittest.TestCase):
           / \   should become      /
         1R   6R                   1R
         """
+        expected_values = [1, 5]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         self.assertEqual(root.right, NIL_LEAF)
         self.assertEqual(root.value, 5)
         self.assertEqual(root.color, BLACK)
@@ -936,6 +1031,10 @@ class RbTreeTests(unittest.TestCase):
                         /  \        /   \
                       23R  29R     41R   49R    <--- REMOVE
         """
+        expected_values = [5, 10, 15, 20, 23, 28, 29, 38, 41, 48]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         self.assertEqual(node_48.right, NIL_LEAF)
         self.assertEqual(node_48.color, BLACK)
         self.assertEqual(node_48.left.value, 41)
@@ -983,6 +1082,10 @@ class RbTreeTests(unittest.TestCase):
                  /  \     /   \
               -5B   7B   20B  38B
         """
+        expected_values = [-5, 5, 7, 10, 20, 36, 38]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         # Careful with reference equals
         node_36 = rb_tree.root.right
         self.assertEqual(node_36.value, 36)
@@ -1036,10 +1139,16 @@ class RbTreeTests(unittest.TestCase):
 
                       10B
                     /     \
-     RESULT IS    6R       36R
+     RESULT IS    6R       35R
                  /  \     /   \
               -5B   7B   20B  38B
+                             /
+                            36R
         """
+        expected_values = [-5, 6, 7, 10, 20, 35, 36, 38]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_6 = rb_tree.root.left
         self.assertEqual(node_6.value, 6)
         self.assertEqual(node_6.color, RED)
@@ -1092,6 +1201,10 @@ class RbTreeTests(unittest.TestCase):
                                      \             30B becomes 32B
                                      35R           old 32B becomes 35B
         """
+        expected_values = [-5, 5, 7, 10, 20, 32, 35, 38, 41]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_32 = node_30
         self.assertEqual(node_32.value, 32)
         self.assertEqual(node_32.parent.value, 10)
@@ -1141,6 +1254,10 @@ class RbTreeTests(unittest.TestCase):
                                   38R
 
         """
+        expected_values = [-10, 20, 30, 38]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         self.assertEqual(rb_tree.root.value, 20)
         self.assertEqual(rb_tree.root.color, BLACK)
         node_30 = rb_tree.root.right
@@ -1481,6 +1598,10 @@ class RbTreeTests(unittest.TestCase):
          right in mirror)                                                  70R
          is RED!
         """
+        expected_values = [20, 30, 34, 35, 37, 50, 70, 80]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_35 = rb_tree.root
         self.assertEqual(node_35.value, 35)
         self.assertEqual(node_35.parent, None)
@@ -1575,6 +1696,10 @@ class RbTreeTests(unittest.TestCase):
         redness down to the sibling                      /   \
         and remove node                      REMOVED--> X    50R
         """
+        expected_values = [-20, -10, -5, 20, 40, 50, 60, 80]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_20 = rb_tree.root
         self.assertEqual(node_20.value, 20)
         self.assertEqual(node_20.parent, None)
@@ -1897,6 +2022,10 @@ class RbTreeTests(unittest.TestCase):
                                  /       \                 \
                                14R       49R               93R
         """
+        expected_values = [14, 24, 49, 57, 60, 93]
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
+
         node_57 = rb_tree.root
         self.assertEqual(node_57.value, 57)
         self.assertEqual(node_57.parent, None)
@@ -1941,6 +2070,9 @@ class RbTreeTests(unittest.TestCase):
         for i in range(100):
             rb_tree.add(i)
             self.assertEqual(rb_tree.count, i+1)
+        expected_values = list(range(100))
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
         for i in range(99, -1, -1):
             self.assertTrue(rb_tree.contains(i))
             rb_tree.remove(i)
@@ -1953,6 +2085,9 @@ class RbTreeTests(unittest.TestCase):
         for i in range(100):
             rb_tree.add(i)
             self.assertEqual(rb_tree.count, i+1)
+        expected_values = list(range(100))
+        values = list(rb_tree)
+        self.assertEqual(values, expected_values)
         for i in range(100):
             self.assertTrue(rb_tree.contains(i))
             rb_tree.remove(i)
