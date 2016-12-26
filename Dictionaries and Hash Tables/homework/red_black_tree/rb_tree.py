@@ -337,7 +337,7 @@ class RedBlackTree:
 
     def find_node(self, value):
         def __find_node(root):
-            if root == self.NIL_LEAF:
+            if root == self.NIL_LEAF or root is None:
                 return None
             if value > root.value:
                 return __find_node(root.right)
