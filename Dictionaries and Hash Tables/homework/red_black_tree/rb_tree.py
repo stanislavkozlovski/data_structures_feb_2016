@@ -46,95 +46,80 @@ class RedBlackTree:
         self.count += 1
 
     def remove(self, value):
+        """
+        Try to get a node with 0 or 1 children.
+        Either the node we're given has 0 or 1 children or we get its successor.
+        """
         node_to_remove = self.find_node(value)
-        if node_to_remove is None:
+        if node_to_remove is None:  # node is not in the tree
             return
-        """
-        1.Always try to find a successor so that the node has 0 or 1 children :)
-        2.Replace value with said successor
-        """
         if node_to_remove.left != self.NIL_LEAF and node_to_remove.right != self.NIL_LEAF:
-            # find in order successor  # once right, left till end
-            # replace node_to_remove with successor and gg
+            # find the in-order successor and replace its value.
+            # then, remove the successor
             successor = self.find_in_order_successor(node_to_remove)
             node_to_remove.value = successor.value  # switch the value
-            if successor.color == RED:
-                if successor.left == self.NIL_LEAF and successor.right == self.NIL_LEAF:
-                    # TODO: THANK GOD
-                    # remove the successor from the tree
-                    if successor.value == successor.parent.value:
-                        # in those weird cases where
-                        # the successor is the right node
-                        successor.parent.right = self.NIL_LEAF
-                    else:
-                        successor.parent.left = self.NIL_LEAF
-                    del successor
-                else:
-                    """
-                    Since the successor is red he cannot have children
-                    1. Cannot have a left child, otherwise he wouldn't be a successor
-                    2. Cannot have a right child either
-                        1. If he has a right child, it must be black, otherwise red-red
-                        2. Since he has a right black child, his left child must also be black,
-                            otherwise the black height of the tree is invalid
-                    """
-                    raise Exception('Unexpected behavior')
-            else:  # successor is black!
-                right_node = successor.right
-                if right_node.has_children(): raise Exception('The red right child of a black successor cannot have children, otherwise the black height of the tree becomes invalid! ')
-                if successor.right.color == RED:
-                    # swap the values with the right node and remove the right node
-                    successor.value = right_node.value
-                    successor.right = self.NIL_LEAF
-                    del right_node
-                elif successor.right == self.NIL_LEAF:
-                    # 6 cases :o
-                    self.f_remove(successor)
-                else:
-                    raise Exception('Black successor cannot have a black right child, black height is invalid')
-        else:
-            # has 0 or 1 children!
-            if node_to_remove == self.root:
-                if self.root.left != self.NIL_LEAF:
-                    self.root = self.root.left
-                elif self.root.right != self.NIL_LEAF:
-                    self.root = self.root.right
-                else:
-                    self.root = None
-                    return
-                self.root.parent = None
-                self.root.color = BLACK
-                return
+            node_to_remove = successor
 
-            if node_to_remove.color == RED:
-                if node_to_remove.left == self.NIL_LEAF and node_to_remove.right == self.NIL_LEAF:
-                    # TODO: THANK GOD
-                    # remove the node_to_remove from the tree
-                    if node_to_remove.value > node_to_remove.parent.value:
-                        node_to_remove.parent.right = self.NIL_LEAF
-                    else:
-                        node_to_remove.parent.left = self.NIL_LEAF
-                    del node_to_remove
+        # has 0 or 1 children!
+        self.__remove(node_to_remove)
+        self.count -= 1
+
+    def __remove(self, node):
+        """
+        Receives a node with 0 or 1 children (typically some sort of successor)
+        and removes it according to its color/children
+        :param node: Node with 0 or 1 children
+        :return:
+        """
+        if node == self.root:
+            if self.root.left != self.NIL_LEAF:
+                self.root = self.root.left
+            elif self.root.right != self.NIL_LEAF:
+                self.root = self.root.right
             else:
-                right_node = node_to_remove.right
-                if right_node.has_children(): raise Exception(
-                    'The red right child of a black node_to_remove cannot have children, otherwise the black height of the tree becomes invalid! ')
-                if node_to_remove.right.color == RED:
-                    # swap the values with the right node and remove the right node
-                    node_to_remove.value = right_node.value
-                    node_to_remove.left = right_node.left
-                    node_to_remove.right = right_node.right
-                    del right_node
-                elif node_to_remove.left.color == RED:
-                    left_child = node_to_remove.left
-                    node_to_remove.value = left_child.value
-                    node_to_remove.left = left_child.left
-                    node_to_remove.right = left_child.right
-                elif node_to_remove.right == self.NIL_LEAF:
-                    # 6 cases :o
-                    self.f_remove(node_to_remove)
+                self.root = None
+                return
+            self.root.parent = None
+            self.root.color = BLACK
+            return
+        elif node.color == RED:
+            if node.left == self.NIL_LEAF and node.right == self.NIL_LEAF:
+                # Red node with no children, the simplest remove
+                if node.value >= node.parent.value:
+                    # in those weird cases where
+                    # the node is the right node
+                    node.parent.right = self.NIL_LEAF
                 else:
-                    raise Exception('Black node with one child cannot have a black right child, black height is invalid')
+                    node.parent.left = self.NIL_LEAF
+                del node
+            else:
+                """
+                Since the node is red he cannot have a child.
+                If he had a child, it'd need to be black, but that would mean that
+                the black height would be bigger on the one side and that would make our tree invalid
+                """
+                raise Exception('Unexpected behavior')
+        else:  # node is black!
+            left_child = node.left
+            right_child = node.right
+            if right_child.has_children() or left_child.has_children(): raise Exception(
+                'The red child of a black node with 0 or 1 children'
+                ' cannot have children, otherwise the black height of the tree becomes invalid! ')
+            if node.right.color == RED:
+                # swap the values with the right node and remove the right node
+                node.value = right_child.value
+                node.left = right_child.left
+                node.right = right_child.right
+                del right_child
+            elif left_child.color == RED:
+                node.value = left_child.value
+                node.left = left_child.left
+                node.right = left_child.right
+            elif node.right == self.NIL_LEAF:
+                # 6 cases :o
+                self.f_remove(node)
+            else:
+                raise Exception('Black successor cannot have a black right child, black height is invalid')
 
     def f_remove(self, node):
         # recursively call each case

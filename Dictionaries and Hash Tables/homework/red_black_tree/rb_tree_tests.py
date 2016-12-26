@@ -54,7 +54,7 @@ class RbTreeTests(unittest.TestCase):
         self.assertIsNone(rb_tree.find_node(401))
         self.assertIsNone(rb_tree.find_node(3.00001))
 
-    ### TEST INSERTIONS ###
+    # ***************TEST INSERTIONS***************
 
     def test_recoloring_only(self):
         """
@@ -824,9 +824,9 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_m9.left, NIL_LEAF)
         self.assertEqual(node_m9.right, NIL_LEAF)
 
-    ### TEST INSERTIONS ###
+    # ***************TEST INSERTIONS***************
 
-    ### TEST DELETIONS ###
+    # ***************TEST DELETIONS***************
 
     def test_deletion_root(self):
         rb_tree = RedBlackTree()
@@ -1848,6 +1848,8 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_23.right, NIL_LEAF)
         rb_tree.remove(23)
         self.assertEqual(rb_tree.root, None)
+
+    # ***************TEST DELETIONS***************
 
     def test_add_delete_random_order(self):
         """
