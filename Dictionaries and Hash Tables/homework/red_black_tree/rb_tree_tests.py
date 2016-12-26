@@ -1849,7 +1849,90 @@ class RbTreeTests(unittest.TestCase):
         rb_tree.remove(23)
         self.assertEqual(rb_tree.root, None)
 
+    def test_add_delete_random_order(self):
+        """
+        What I add here I'll also add at a site for red black tree visualization
+        https://www.cs.usfca.edu/~galles/visualization/RedBlack.html
+        and then see if they're the same
+        """
+        rb_tree = RedBlackTree()
+        rb_tree.add(90)
+        rb_tree.add(70)
+        rb_tree.add(43)
+        rb_tree.remove(70)
+        rb_tree.add(24)
+        rb_tree.add(14)
+        rb_tree.add(93)
+        rb_tree.add(47)
+        rb_tree.remove(47)
+        rb_tree.remove(90)
+        rb_tree.add(57)
+        rb_tree.add(1)
+        rb_tree.add(60)
+        rb_tree.add(47)
+        rb_tree.remove(47)
+        rb_tree.remove(1)
+        rb_tree.remove(43)
+        rb_tree.add(49)
+        """
+        well, the results aren't the same, but I'll assume that the algorithms are different
+        Nevertheless, what we're left with is a perfectly valid RedBlack Tree, and, I'd argue, even betterly
+        balanced than the one from the visualization
 
+                                    VISUALIZATION TREE
+                                       ____24B____
+                                      /           \
+                                    14B           60R
+                                                 /   \
+                                               57B    93B
+                                              /
+                                            49R
+
+                                       OUR TREE
+                                       ______57B______
+                                      /               \
+                                  __24B__           __60B__
+                                 /       \                 \
+                               14R       49R               93R
+        """
+        node_57 = rb_tree.root
+        self.assertEqual(node_57.value, 57)
+        self.assertEqual(node_57.parent, None)
+        self.assertEqual(node_57.color, BLACK)
+        self.assertEqual(node_57.left.value, 24)
+        self.assertEqual(node_57.right.value, 60)
+        # right subtree
+        node_60 = node_57.right
+        self.assertEqual(node_60.value, 60)
+        self.assertEqual(node_60.color, BLACK)
+        self.assertEqual(node_60.parent, node_57)
+        self.assertEqual(node_60.right.value, 93)
+        self.assertEqual(node_60.left, NIL_LEAF)
+        node_93 = node_60.right
+        self.assertEqual(node_93.value, 93)
+        self.assertEqual(node_93.color, RED)
+        self.assertEqual(node_93.parent, node_60)
+        self.assertEqual(node_93.left, NIL_LEAF)
+        self.assertEqual(node_93.right, NIL_LEAF)
+        # left subtree
+        node_24 = node_57.left
+        self.assertEqual(node_24.value, 24)
+        self.assertEqual(node_24.parent, node_57)
+        self.assertEqual(node_24.color, BLACK)
+        self.assertEqual(node_24.left.value, 14)
+        self.assertEqual(node_24.right.value, 49)
+        node_14 = node_24.left
+        self.assertEqual(node_14.value, 14)
+        self.assertEqual(node_14.parent, node_24)
+        self.assertEqual(node_14.color, RED)
+        self.assertEqual(node_14.left, NIL_LEAF)
+        self.assertEqual(node_14.right, NIL_LEAF)
+        node_49 = node_24.right
+        self.assertEqual(node_49.value, 49)
+        self.assertEqual(node_49.parent, node_24)
+        self.assertEqual(node_49.color, RED)
+        self.assertEqual(node_49.left, NIL_LEAF)
+        self.assertEqual(node_49.right, NIL_LEAF)
 
 if __name__ == '__main__':
     unittest.main()
