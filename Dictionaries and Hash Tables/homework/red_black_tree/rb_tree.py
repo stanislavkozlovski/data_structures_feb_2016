@@ -349,6 +349,10 @@ class RedBlackTree:
         found_node = __find_node(self.root)
         return found_node
 
+    def contains(self, value) -> bool:
+        """ Returns a boolean indicating if the given value is present in the tree """
+        return bool(self.find_node(value))
+
 
     # Too confusing, maybe after the tree is fully implemented.
     # def rotate(self, node, parent, grandfather, rot_dir, to_recolor=False):
