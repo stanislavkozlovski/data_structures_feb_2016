@@ -1934,7 +1934,7 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_49.left, NIL_LEAF)
         self.assertEqual(node_49.right, NIL_LEAF)
 
-    def test_add_delete_0_to_100(self):
+    def test_add_0_to_100_delete_100_to_0(self):
         rb_tree = RedBlackTree()
         for i in range(100):
             rb_tree.add(i)
@@ -1942,6 +1942,17 @@ class RbTreeTests(unittest.TestCase):
             self.assertTrue(rb_tree.contains(i))
             rb_tree.remove(i)
             self.assertFalse(rb_tree.contains(i))
+        self.assertIsNone(rb_tree.root)
+
+    def test_add_delete_0_to_100_delete_0_to_100(self):
+        rb_tree = RedBlackTree()
+        for i in range(100):
+            rb_tree.add(i)
+        for i in range(100):
+            self.assertTrue(rb_tree.contains(i))
+            rb_tree.remove(i)
+            self.assertFalse(rb_tree.contains(i))
+        self.assertIsNone(rb_tree.root)
 
 if __name__ == '__main__':
     unittest.main()
