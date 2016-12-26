@@ -93,6 +93,19 @@ class RedBlackTree:
                 else:
                     raise Exception('Black successor cannot have a black right child, black height is invalid')
         else:
+            # has 0 or 1 children!
+            if node_to_remove == self.root:
+                if self.root.left != self.NIL_LEAF:
+                    self.root = self.root.left
+                elif self.root.right != self.NIL_LEAF:
+                    self.root = self.root.right
+                else:
+                    self.root = None
+                    return
+                self.root.parent = None
+                self.root.color = BLACK
+                return
+
             if node_to_remove.color == RED:
                 if node_to_remove.left == self.NIL_LEAF and node_to_remove.right == self.NIL_LEAF:
                     # TODO: THANK GOD
