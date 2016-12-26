@@ -71,27 +71,21 @@ class RedBlackTree:
         :param node: Node with 0 or 1 children
         :return:
         """
+        left_child = node.left
+        right_child = node.right
+        not_nil_child = left_child if left_child != self.NIL_LEAF else right_child
         if node == self.root:
-            if self.root.left != self.NIL_LEAF:
-                self.root = self.root.left
-            elif self.root.right != self.NIL_LEAF:
-                self.root = self.root.right
+            if not_nil_child != self.NIL_LEAF:
+                self.root = not_nil_child
             else:
                 self.root = None
                 return
             self.root.parent = None
             self.root.color = BLACK
-            return
         elif node.color == RED:
-            if node.left == self.NIL_LEAF and node.right == self.NIL_LEAF:
+            if not node.has_children():
                 # Red node with no children, the simplest remove
-                if node.value >= node.parent.value:
-                    # in those weird cases where
-                    # the node is the right node
-                    node.parent.right = self.NIL_LEAF
-                else:
-                    node.parent.left = self.NIL_LEAF
-                del node
+                self.__remove_leaf(node)
             else:
                 """
                 Since the node is red he cannot have a child.
@@ -100,35 +94,33 @@ class RedBlackTree:
                 """
                 raise Exception('Unexpected behavior')
         else:  # node is black!
-            left_child = node.left
-            right_child = node.right
-            if right_child.has_children() or left_child.has_children(): raise Exception(
-                'The red child of a black node with 0 or 1 children'
-                ' cannot have children, otherwise the black height of the tree becomes invalid! ')
-            if node.right.color == RED:
-                # swap the values with the right node and remove the right node
-                node.value = right_child.value
-                node.left = right_child.left
-                node.right = right_child.right
-                del right_child
-            elif left_child.color == RED:
-                node.value = left_child.value
-                node.left = left_child.left
-                node.right = left_child.right
-            elif node.right == self.NIL_LEAF:
+            if right_child.has_children() or left_child.has_children():
+                raise Exception('The red child of a black node with 0 or 1 children'
+                                ' cannot have children, otherwise the black height of the tree becomes invalid! ')
+            if not_nil_child.color == RED:
+                # swap the values with the red child and remove it  (basically un-link it)
+                node.value = not_nil_child.value
+                node.left = not_nil_child.left
+                node.right = not_nil_child.right
+            else:  # BLACK child
                 # 6 cases :o
-                self.f_remove(node)
-            else:
-                raise Exception('Black successor cannot have a black right child, black height is invalid')
+                self.__remove_black_node(node)
 
-    def f_remove(self, node):
-        # recursively call each case
-        # if the case is not terminating, call case_1 again and go through the chain of cases
-        self.case_1(node)
-        if node.value >= node.parent.value:
-            node.parent.right = self.NIL_LEAF
+    def __remove_leaf(self, leaf):
+        """ Simply removes a leaf node by making it's parent point to a NIL LEAF"""
+        if leaf.value >= leaf.parent.value:
+            # in those weird cases where they're equal due to the successor swap
+            leaf.parent.right = self.NIL_LEAF
         else:
-            node.parent.left = self.NIL_LEAF
+            leaf.parent.left = self.NIL_LEAF
+
+    def __remove_black_node(self, node):
+        """
+        Loop through each case recursively until we reach a terminating case.
+        What we're left with is a leaf node which is ready to be deleted without consequences
+        """
+        self.case_1(node)
+        self.__remove_leaf(node)
 
     def case_1(self, node):
         if self.root == node:
