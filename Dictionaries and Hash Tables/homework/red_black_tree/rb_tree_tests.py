@@ -1819,10 +1819,36 @@ class RbTreeTests(unittest.TestCase):
         self.assertEqual(node_41.color, BLACK)
         self.assertEqual(node_41.left, NIL_LEAF)
         self.assertEqual(node_41.right, NIL_LEAF)
-        # GOOD
         rb_tree.remove(29)
-        # PROBLEM
-        self.assertTrue(rb_tree.root.value == 23 or rb_tree.root.right.value == 23)
+        """
+            41B
+           /
+         23R
+        """
+        node_41 = rb_tree.root
+        self.assertEqual(node_41.value, 41)
+        self.assertEqual(node_41.color, BLACK)
+        self.assertEqual(node_41.parent, None)
+        self.assertEqual(node_41.right, NIL_LEAF)
+        node_23 = node_41.left
+        self.assertEqual(node_23.value, 23)
+        self.assertEqual(node_23.color, RED)
+        self.assertEqual(node_23.parent, node_41)
+        self.assertEqual(node_23.left, NIL_LEAF)
+        self.assertEqual(node_23.right, NIL_LEAF)
+        rb_tree.remove(41)
+        """
+            23B
+        """
+        node_23 = rb_tree.root
+        self.assertEqual(node_23.value, 23)
+        self.assertEqual(node_23.color, BLACK)
+        self.assertEqual(node_23.parent, None)
+        self.assertEqual(node_23.left, NIL_LEAF)
+        self.assertEqual(node_23.right, NIL_LEAF)
+        rb_tree.remove(23)
+        self.assertEqual(rb_tree.root, None)
+
 
 
 if __name__ == '__main__':
