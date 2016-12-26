@@ -16,9 +16,13 @@ class Node:
 
     def has_children(self) -> bool:
         """ Returns a boolean indicating if the node has children """
+        return bool(self.get_children_count())
+
+    def get_children_count(self) -> int:
+        """ Returns the number of NOT NIL children the node has """
         if self.color == NIL:
-            return False
-        return self.left.color != NIL or self.right.color != NIL
+            return 0
+        return sum([int(self.left.color != NIL), int(self.right.color != NIL)])
 
 
 class RedBlackTree:
@@ -27,6 +31,11 @@ class RedBlackTree:
     def __init__(self):
         self.count = 0
         self.root = None
+        self.ROTATIONS = {
+            # Used for deletion and uses the sibling's relationship with his parent as a guide to the rotation
+            'L': self.right_rotation,
+            'R': self.left_rotation
+        }
 
     def add(self, value):
         if not self.root:
@@ -53,7 +62,7 @@ class RedBlackTree:
         node_to_remove = self.find_node(value)
         if node_to_remove is None:  # node is not in the tree
             return
-        if node_to_remove.left != self.NIL_LEAF and node_to_remove.right != self.NIL_LEAF:
+        if node_to_remove.get_children_count() == 2:
             # find the in-order successor and replace its value.
             # then, remove the successor
             successor = self.find_in_order_successor(node_to_remove)
@@ -131,87 +140,74 @@ class RedBlackTree:
     def case_2(self, node):
         parent = node.parent
         sibling, direction = self.get_sibling(node)
-        if sibling.color == RED and parent.color == BLACK and (sibling.left.color != RED and sibling.right.color != RED):
-            if direction == 'R':
-                self.left_rotation(node=None, parent=sibling, grandfather=parent)
-                parent.color = RED
-                sibling.color = BLACK
-            else:
-                self.right_rotation(node=None, parent=sibling, grandfather=parent)
-                parent.color = RED
-                sibling.color = BLACK
+        if sibling.color == RED and parent.color == BLACK and sibling.left.color != RED and sibling.right.color != RED:
+            self.ROTATIONS[direction](node=None, parent=sibling, grandfather=parent)
+            parent.color = RED
+            sibling.color = BLACK
             return self.case_1(node)
         self.case_3(node)
 
     def case_3(self, node):
         parent = node.parent
         sibling, _ = self.get_sibling(node)
-        if (sibling.color == BLACK
-           and sibling.left.color != RED
-           and sibling.right.color != RED
-           and parent.color == BLACK):
+        if (sibling.color == BLACK and parent.color == BLACK
+           and sibling.left.color != RED and sibling.right.color != RED):
             # color the sibling red and forward the double black node upwards
             # (call the cases again for the parent)
             sibling.color = RED
-            self.case_1(parent)
-            return
+            return self.case_1(parent)  # start again
 
         self.case_4(node)
 
     def case_4(self, node):
-        if node.parent.color == RED:
+        """
+        If the parent is red and the sibling is black with no red children,
+        simply swap their colors
+        DB-Double Black
+                __10R__                   __10B__        The black height of the left subtree has been incremented
+               /       \                 /       \       And the one below stays the same
+             DB        15B      ===>    X        15R     No consequences, we're done!
+                      /   \                     /   \
+                    12B   17B                 12B   17B
+        """
+        parent = node.parent
+        if parent.color == RED:
             sibling, direction = self.get_sibling(node)
-            if sibling.color == BLACK and (sibling.left.color != RED and sibling.right.color != RED):
-                # switch colors
-                node.parent.color = BLACK
-                sibling.color = RED
-                return
+            if sibling.color == BLACK and sibling.left.color != RED and sibling.right.color != RED:
+                parent.color, sibling.color = sibling.color, parent.color  # switch colors
+                return  # Terminating
         self.case_5(node)
 
     def case_5(self, node):
-        # TODO: Case 5 is always followed by 6 methinks
         sibling, direction = self.get_sibling(node)
-        if node.parent.color != NIL and sibling.color == BLACK:  # HUH?
+        closer_node = sibling.right if direction == 'L' else sibling.left
+        outer_node = sibling.left if direction == 'L' else sibling.right
+        if closer_node.color == RED and outer_node.color != RED and sibling.color == BLACK:
             if direction == 'L':
-                if sibling.left.color != RED and sibling.right.color == RED:
-                    right_sib = sibling.right
-                    self.left_rotation(node=None, parent=sibling.right, grandfather=sibling)
-                    right_sib.color = BLACK
-                    sibling.color = RED
-                    return self.case_1(node)
+                self.left_rotation(node=None, parent=closer_node, grandfather=sibling)
             else:
-                # sibling is at the right
-                if sibling.left.color == RED and sibling.right.color != RED:
-                    left_sib = sibling.left
-                    self.right_rotation(node=None, parent=sibling.left, grandfather=sibling)
-                    left_sib.color = BLACK
-                    sibling.color = RED
-                    return self.case_1(node)
+                self.right_rotation(node=None, parent=closer_node, grandfather=sibling)
+            closer_node.color = BLACK
+            sibling.color = RED
 
         self.case_6(node)
 
     def case_6(self, node):
+        # Terminating
         sibling, direction = self.get_sibling(node)
-        if direction == 'R':
-            if (sibling.color == BLACK
-               and sibling.right.color == RED):
-                parent_color = sibling.parent.color
-                self.left_rotation(node=None, parent=sibling, grandfather=sibling.parent)
-                # new parent is sibling
-                sibling.color = parent_color
-                sibling.right.color = BLACK
-                sibling.left.color = BLACK
-                return
-        else:
-            if (sibling.color == BLACK
-               and sibling.left.color == RED):
-                parent_color = sibling.parent.color
-                self.right_rotation(node=None, parent=sibling, grandfather=sibling.parent)
-                # new parent is sibling
-                sibling.color = parent_color
-                sibling.right.color = BLACK
-                sibling.left.color = BLACK
-                return
+
+        def __case_6_rotation(direction):
+            parent_color = sibling.parent.color
+            self.ROTATIONS[direction](node=None, parent=sibling, grandfather=sibling.parent)
+            # new parent is sibling
+            sibling.color = parent_color
+            sibling.right.color = BLACK
+            sibling.left.color = BLACK
+
+        if sibling.color == BLACK and (sibling.right.color == RED or sibling.left.color == RED):
+            # even though the condition above has the potential to accept a case 5, we know it never will
+            # because case 6 always gets called after case 5
+            return __case_6_rotation(direction)
 
         raise Exception('We should have ended here, something is wrong')
 
