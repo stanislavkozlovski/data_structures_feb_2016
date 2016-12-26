@@ -14,6 +14,15 @@ class Node:
     def __repr__(self):
         return '{color} {val} Node'.format(color=self.color, val=self.value)
 
+    def __iter__(self):
+        if self.left.color != NIL:
+            yield from self.left.__iter__()
+
+        yield self.value
+
+        if self.right.color != NIL:
+            yield from self.right.__iter__()
+
     def has_children(self) -> bool:
         """ Returns a boolean indicating if the node has children """
         return bool(self.get_children_count())
@@ -36,6 +45,9 @@ class RedBlackTree:
             'L': self.__right_rotation,
             'R': self.__left_rotation
         }
+
+    def __iter__(self):
+        yield from self.root.__iter__()
 
     def add(self, value):
         if not self.root:
