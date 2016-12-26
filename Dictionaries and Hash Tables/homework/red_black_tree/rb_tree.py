@@ -121,7 +121,7 @@ class RedBlackTree:
         # recursively call each case
         # if the case is not terminating, call case_1 again and go through the chain of cases
         self.case_1(node)
-        if node.value > node.parent.value:
+        if node.value >= node.parent.value:
             node.parent.right = self.NIL_LEAF
         else:
             node.parent.left = self.NIL_LEAF
@@ -366,7 +366,7 @@ class RedBlackTree:
 
     def get_sibling(self, node):
         parent = node.parent
-        if node.value > parent.value:
+        if node.value >= parent.value:
             sibling = parent.left
             direction = 'L'
         else:
