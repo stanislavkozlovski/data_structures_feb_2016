@@ -30,7 +30,6 @@ from datetime import datetime
 from sortedcontainers import SortedDict
 import dateparser
 
-
 def main():
     events = read_events(int(input()))  # type: SortedDict
     process_events_in_given_date(events, int(input()))
