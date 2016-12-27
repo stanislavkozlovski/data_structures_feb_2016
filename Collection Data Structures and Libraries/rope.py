@@ -2,8 +2,8 @@ from math import floor
 
 
 class Rope:
-    MAX_NODE_LENGTH = 4
-    MIN_NODE_LENGTH = 3  # the minimum amount of charachters a node should store
+    MAX_NODE_LENGTH = 1000
+    MIN_NODE_LENGTH = 500  # the minimum amount of charachters a node should store
     REBALANCE_RATIO = 1.2
 
     def __init__(self, value: str):
@@ -183,12 +183,3 @@ class Rope:
                 # recursively go downwards to check for rebalancing
                 self._left.rebalance_subtree()
                 self._right.rebalance_subtree()
-
-
-
-
-
-vuje = Rope('The brown stanislav')
-vuje.insert(5, 'lala')
-print(vuje)
-print(vuje[:3:-1])
