@@ -8,7 +8,7 @@ class Node:
         self.balance_factor = 0
 
     def __repr__(self):
-        return 'Node {val}'.format(val=self.value)
+        return 'Node {val} with BF {bf}'.format(val=self.value, bf=self.balance_factor)
 
     def print_node(self, tab=0):
         if self.right is not None:
@@ -38,6 +38,20 @@ class AvlTree:
             parent.left = new_node
         else:
             parent.right = new_node
+        self.modify_balance_factor(new_node)
+
+    def modify_balance_factor(self, node):
+        """ Modifies the balance factor for each node upwards of the given one"""
+        parent = node.parent
+        if parent is None:
+            return
+        direction = 'L' if parent.value > node.value else 'R'
+        if direction == 'L':
+            parent.balance_factor += 1
+        else:
+            parent.balance_factor += -1
+        if parent.balance_factor != 0:
+            self.modify_balance_factor(parent)
 
     def _find_parent(self, value):
         """ Find the appropriate parent for a newly-added value """
@@ -62,4 +76,6 @@ avl.add(2)
 avl.add(3)
 avl.add(1)
 avl.add(5)
+avl.add(2.5)
+avl.add(6)
 avl.print_tree()
