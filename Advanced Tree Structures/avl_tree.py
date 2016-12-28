@@ -7,6 +7,13 @@ class Node:
         self.right = right
         self.balance_factor = 0
 
+    def __iter__(self):
+        if self.left is not None:
+            yield from self.left.__iter__()
+        yield self.value
+        if self.right is not None:
+            yield from self.right.__iter__()
+
     def __repr__(self):
         return 'Node {val} with BF {bf}'.format(val=self.value, bf=self.balance_factor)
 
@@ -22,6 +29,12 @@ class AvlTree:
     def __init__(self):
         self.root = None
         self.count = 0
+
+    def __len__(self):
+        return self.count
+
+    def __iter__(self):
+        yield from self.root.__iter__()
 
     def print_tree(self):
         if self.root is not None:
