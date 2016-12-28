@@ -76,7 +76,7 @@ class AvlTree:
                         node_dir = 'L'
                     general_dir = node_dir + parent_dir
                     if general_dir == 'LL':
-                        # TODO: RIGHT ROTATION
+                        self.right_rotation(node, parent)
                         pass
                     elif general_dir == 'RL':
                         # TODO: LEFT-RIGHT ROTATION
@@ -103,6 +103,23 @@ class AvlTree:
         parent.balance_factor += 2
         node.balance_factor += 1
 
+    def right_rotation(self, node: Node, parent: Node):
+        grand_parent = parent.parent
+        old_right = node.right
+        node.right = parent
+        parent.left = old_right
+        parent.parent = node
+        node.parent = grand_parent
+        if grand_parent is None:
+            self.root = node
+        else:
+            if grand_parent.value > node.value:
+                grand_parent.left = node
+            else:
+                grand_parent.right = node
+        parent.balance_factor += -2
+        node.balance_factor += -1
+
     def _find_parent(self, value):
         """ Find the appropriate parent for a newly-added value """
         def _find(root: Node):
@@ -122,13 +139,12 @@ class AvlTree:
         return _find(self.root)
 
 avl = AvlTree()
-avl.add(2)
-avl.add(3)
-avl.add(1)
-avl.add(5)
-avl.add(2.5)
-avl.add(6)
+avl.add(10)
 avl.add(7)
-avl.add(8)
-avl.add(9)
+avl.add(15)
+avl.add(2)
+avl.add(1)
+avl.add(0.5)
+avl.add(17)
+avl.add(0.2)
 avl.print_tree()
