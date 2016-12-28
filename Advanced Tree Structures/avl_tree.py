@@ -46,12 +46,15 @@ class AvlTree:
             self.count += 1
             return
         parent, direction = self._find_parent(value)
+        if parent is None:
+            return  # value is already in the tree
         new_node = Node(value=value, parent=parent)
         if direction == 'L':
             parent.left = new_node
         else:
             parent.right = new_node
         self.modify_balance_factor(new_node)
+        self.count += 1
 
     def modify_balance_factor(self, node):
         """ Modifies the balance factor for each node upwards of the given one"""
@@ -75,12 +78,10 @@ class AvlTree:
                     general_dir = node_dir + parent_dir
                     if general_dir == 'RR':
                         self.left_rotation(node=node, parent=parent)
-                        pass
                     elif general_dir == 'LR':
                         # TODO: RIGHT-LEFT ROTATION
                         self.right_rotation(node.left, node)
                         self.left_rotation(node.parent, parent)
-                        pass
                     else:
                         raise Exception('Unexpected behavior!')
                 else:
@@ -118,7 +119,7 @@ class AvlTree:
             else:
                 grand_parent.right = node
         parent.balance_factor = 0
-        node.balance_factor += 1
+        node.balance_factor = 0
 
     def right_rotation(self, node: Node, parent: Node):
         grand_parent = parent.parent
@@ -135,7 +136,7 @@ class AvlTree:
             else:
                 grand_parent.right = node
         parent.balance_factor = 0
-        node.balance_factor += -1
+        node.balance_factor = 0
 
     def _find_parent(self, value):
         """ Find the appropriate parent for a newly-added value """
@@ -154,11 +155,11 @@ class AvlTree:
                     return root, 'R'
 
         return _find(self.root)
-
-avl = AvlTree()
-avl.add(20)
-avl.add(10)
-avl.add(25)
-avl.add(30)
-avl.add(27)
-avl.print_tree()
+#
+# avl = AvlTree()
+# avl.add(20)
+# avl.add(10)
+# avl.add(25)
+# avl.add(30)
+# avl.add(27)
+# print(list(avl))
