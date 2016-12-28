@@ -51,7 +51,40 @@ class AvlTree:
         else:
             parent.balance_factor += -1
         if parent.balance_factor != 0:
-            self.modify_balance_factor(parent)
+            if parent.balance_factor in [-2, 2]:
+                # TODO: ROTATE :)
+                if parent.balance_factor == -2:
+                    parent_dir = 'R'
+                    if node.balance_factor == -1:
+                        node_dir = 'R'
+                    else:
+                        node_dir = 'L'
+                    general_dir = node_dir + parent_dir
+                    if general_dir == 'RR':
+                        # TODO: LEFT ROTATION
+                        pass
+                    elif general_dir == 'LR':
+                        # TODO: RIGHT-LEFT ROTATION
+                        pass
+                    else:
+                        raise Exception('Unexpected behavior!')
+                else:
+                    parent_dir = 'L'
+                    if node.balance_factor == -1:
+                        node_dir = 'R'
+                    else:
+                        node_dir = 'L'
+                    general_dir = node_dir + parent_dir
+                    if general_dir == 'LL':
+                        # TODO: RIGHT ROTATION
+                        pass
+                    elif general_dir == 'RL':
+                        # TODO: LEFT-RIGHT ROTATION
+                        pass
+                    else:
+                        raise Exception('Unexpected behavior!')
+            else:
+                self.modify_balance_factor(parent)
 
     def _find_parent(self, value):
         """ Find the appropriate parent for a newly-added value """
@@ -77,5 +110,5 @@ avl.add(3)
 avl.add(1)
 avl.add(5)
 avl.add(2.5)
-avl.add(6)
+# avl.add(6)
 avl.print_tree()
