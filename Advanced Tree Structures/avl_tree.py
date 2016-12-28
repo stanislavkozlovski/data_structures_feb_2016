@@ -82,6 +82,7 @@ class AvlTree:
                         # TODO: RIGHT-LEFT ROTATION
                         self.right_rotation(node.left, node)
                         self.left_rotation(node.parent, parent)
+
                     else:
                         raise Exception('Unexpected behavior!')
                 else:
@@ -93,12 +94,10 @@ class AvlTree:
                     general_dir = node_dir + parent_dir
                     if general_dir == 'LL':
                         self.right_rotation(node, parent)
-                        pass
                     elif general_dir == 'RL':
                         # TODO: LEFT-RIGHT ROTATION
                         self.left_rotation(node.right, node)
                         self.right_rotation(node.parent, parent)
-                        pass
                     else:
                         raise Exception('Unexpected behavior!')
             else:
@@ -109,6 +108,8 @@ class AvlTree:
         old_left = node.left
         node.left = parent
         parent.right = old_left
+        if old_left is not None:
+            old_left.parent = parent
         parent.parent = node
         node.parent = grand_parent
         if grand_parent is None:
@@ -126,6 +127,8 @@ class AvlTree:
         old_right = node.right
         node.right = parent
         parent.left = old_right
+        if old_right is not None:
+            old_right.parent = parent
         parent.parent = node
         node.parent = grand_parent
         if grand_parent is None:
