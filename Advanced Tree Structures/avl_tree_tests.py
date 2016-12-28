@@ -25,6 +25,14 @@ class AvlInsertTests(unittest.TestCase):
         self.assertEqual(list(avl_tree), list(sorted(nums)))
         self.assertEqual(len(avl_tree), len(nums))
 
+    def test_add_multiple_items_random_order_should_be_sorted_2(self):
+        avl_tree = AvlTree()
+        nums = [20, 21, 22, 21, 24, 16, 5, 29, 23, 9, 2, 7, 3, 23, 8, 7, 10, 10, 18, 26, 4, 17, 12, 11, 21, 23, 24, 19, 9, 0]
+        expected_nums = list(sorted(set(nums)))
+        for num in nums:
+            avl_tree.add(num)
+        self.assertEqual(list(avl_tree), expected_nums)
+
     def test_add_many_random_elements_should_return_sorted_ascending(self):
         num_count = 1000
         avl_tree = AvlTree()
