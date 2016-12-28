@@ -26,6 +26,7 @@ class Node:
 
 
 class AvlTree:
+    # TODO: REFACTOR!
     def __init__(self):
         self.root = None
         self.count = 0
@@ -158,11 +159,18 @@ class AvlTree:
                     return root, 'R'
 
         return _find(self.root)
-#
-# avl = AvlTree()
-# avl.add(20)
-# avl.add(10)
-# avl.add(25)
-# avl.add(30)
-# avl.add(27)
-# print(list(avl))
+
+    def range(self, start, end):
+        items = []
+
+        def in_order_dfs(node):
+            nonlocal items
+            if node.value > start and node.left is not None:
+                in_order_dfs(node.left)
+            if end >= node.value >= start:
+                items.append(node.value)
+            if node.value < end and node.right is not None:
+                in_order_dfs(node.right)
+
+        in_order_dfs(self.root)
+        return items
