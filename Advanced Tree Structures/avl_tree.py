@@ -6,6 +6,7 @@ class Node:
         self.left = left
         self.right = right
         self.balance_factor = 0
+        self.index = 0
 
     def __iter__(self):
         if self.left is not None:
@@ -37,6 +38,28 @@ class AvlTree:
     def __iter__(self):
         yield from self.root.__iter__()
 
+    def __getitem__(self, index):
+        # some pathetic support for negative indexing
+        if index < 0:
+            index += self.count
+
+        def get_node(node):
+            if index == node.index:
+                return node
+            elif index < node.index:
+                if node.left is not None:
+                    return get_node(node.left)
+                else:
+                    return None
+            else:
+                if node.right is not None:
+                    return get_node(node.right)
+                else:
+                    return None
+        node = get_node(self.root)
+        if node is not None:
+            return node.value
+
     def print_tree(self):
         if self.root is not None:
             self.root.print_node()
@@ -55,6 +78,7 @@ class AvlTree:
         else:
             parent.right = new_node
         self.modify_balance_factor(new_node)
+        self.update_indexes()
         self.count += 1
 
     def modify_balance_factor(self, node):
@@ -160,6 +184,20 @@ class AvlTree:
 
         return _find(self.root)
 
+    def update_indexes(self):
+        """ Go through the whole tree in-order and modify the indexes of each node """
+        index = 0
+
+        def update_index(node):
+            nonlocal index
+            if node.left is not None:
+                update_index(node.left)
+            node.index = index
+            index += 1
+            if node.right is not None:
+                update_index(node.right)
+        update_index(self.root)
+
     def range(self, start, end):
         items = []
 
@@ -174,3 +212,12 @@ class AvlTree:
 
         in_order_dfs(self.root)
         return items
+
+tr = AvlTree()
+tr.add(1)
+tr.add(2)
+tr.add(-4)
+tr.add(-50)
+tr.add(4)
+tr.add(3)
+print(tr[-1])
