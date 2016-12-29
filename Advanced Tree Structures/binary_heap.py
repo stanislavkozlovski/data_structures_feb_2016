@@ -10,9 +10,23 @@ class BinaryHeap:
         return self.count
 
     def insert(self, value):
+        """ Add the value at the end and heapify up from there """
         self._elements.append(value)
         new_value_idx = len(self._elements) - 1
         self._heapify_up(new_value_idx)
+        self.count += 1
+
+    def extract_max(self):
+        """ Remove the max element by placing the last element on it's place and heapifying down"""
+        max_el = self._elements[0]
+        last_idx = len(self._elements) - 1
+
+        self._elements[0] = self._elements[last_idx]
+        self._elements = self._elements[:last_idx]
+        self._heapify_down(0)
+        self.count -= 1
+
+        return max_el
 
     def _heapify_up(self, idx):
         parent_idx = (idx - 1) // 2
@@ -43,15 +57,3 @@ class BinaryHeap:
             # swap
             self._elements[idx], self._elements[max_idx] = self._elements[max_idx], self._elements[idx]
             self._heapify_down(max_idx)
-
-    def extract_max(self):
-        max_el = self._elements[0]
-        last_idx = len(self._elements) - 1
-        self._elements[0] = self._elements[last_idx]
-        self._elements = self._elements[:last_idx]
-        self._heapify_down(0)
-        return max_el
-
-bb = BinaryHeap([1,2,3,4,5])
-print(bb.extract_max())
-print()
