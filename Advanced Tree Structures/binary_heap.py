@@ -23,5 +23,35 @@ class BinaryHeap:
             self._elements[parent_idx], self._elements[idx] = self._elements[idx], self._elements[parent_idx]
             self._heapify_up(parent_idx)
 
+    def _heapify_down(self, idx):
+        """
+        Heapify the value down by getting it's bigger child and swapping values. Then continue heapifying down
+        until we find children that are not bigger than the value.
+        """
+        l_child_idx, r_child_idx = (idx*2) + 1, (idx*2) + 2
+
+        if l_child_idx < len(self._elements):
+            # get the index of the bigger child
+            if r_child_idx < len(self._elements) and self._elements[r_child_idx] > self._elements[l_child_idx]:
+                max_idx = r_child_idx
+            else:
+                max_idx = l_child_idx
+            # check if the child is bigger than the value, if not, stop
+            if self._elements[max_idx] <= self._elements[idx]:
+                return
+
+            # swap
+            self._elements[idx], self._elements[max_idx] = self._elements[max_idx], self._elements[idx]
+            self._heapify_down(max_idx)
+
     def extract_max(self):
-        pass
+        max_el = self._elements[0]
+        last_idx = len(self._elements) - 1
+        self._elements[0] = self._elements[last_idx]
+        self._elements = self._elements[:last_idx]
+        self._heapify_down(0)
+        return max_el
+
+bb = BinaryHeap([1,2,3,4,5])
+print(bb.extract_max())
+print()
