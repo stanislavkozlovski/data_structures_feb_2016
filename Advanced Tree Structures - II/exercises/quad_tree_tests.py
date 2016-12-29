@@ -1,4 +1,6 @@
 import unittest
+import random
+
 from quad_tree import QuadTree, BoundableObject
 
 
@@ -64,6 +66,45 @@ class QuadTreeTests(unittest.TestCase):
             self.assertEqual(self.tree.max_depth, depth)
 
         self.tree.foreach_dfs(assert_function)
+
+    def test_report_many_random_elements_should_return_all_colliders(self):
+        object_count = 10000
+        shepherd = BoundableObject(10, 20, 20, 30)
+        items = []
+        self.tree.add_object(shepherd)
+        for _ in range(object_count):
+            x = random.randint(0, self.tree.x2-11)
+            x2 = x + 10
+            y = random.randint(0, self.tree.y2-11)
+            y2 = y + 10
+            obj = BoundableObject(x, y, x2, y2)
+            items.append(obj)
+            self.tree.add_object(obj)
+
+        expected_collisions = self.search_for_collisions_in_a_list(shepherd, items)
+        result_collisions = self.search_for_collisions_in_a_tree(shepherd)
+
+        self.assertEqual(len(expected_collisions), len(result_collisions))
+        print(expected_collisions)
+        self.assertCountEqual(expected_collisions, result_collisions)
+
+    def search_for_collisions_in_a_tree(self, shepherd):
+        result = []
+        collision_candidates = self.tree.report(shepherd)
+        for col_candidate in collision_candidates:
+            if col_candidate.intersects(shepherd) and col_candidate != shepherd:
+                result.append(col_candidate)
+
+        return result
+
+    def search_for_collisions_in_a_list(self, shepherd, objs):
+        result = []
+
+        for obj in objs:
+            if shepherd.intersects(obj) and shepherd != obj:
+                result.append(obj)
+
+        return result
 
 if __name__ == '__main__':
     unittest.main()
