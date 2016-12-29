@@ -82,6 +82,22 @@ class Cell(BoundableObject):
             cell_3 = Cell(x1=self.mid_x, y1=self.y1, x2=self.x2, y2=self.mid_y, depth=self.depth+1)
             self.children = [cell_0, cell_1, cell_2, cell_3]
 
+    def report(self, subquandrant=None):
+        """
+        return objects that intersect with the given obj
+        :param subquandrant:
+        :return:
+        """
+        objects_in_subquandrant = []
+        for obj in self.objects:
+            if obj.intersects(subquandrant):
+                objects_in_subquandrant.append(obj)
+        for child in self.children:
+            if child.intersects(subquandrant):
+                objects_in_subquandrant.extend(child.report(subquandrant))
+
+        return objects_in_subquandrant
+
 
 class QuadTree(Cell):
 
@@ -103,7 +119,3 @@ class QuadTree(Cell):
             raise Exception('There are no subquandrants made yet!')
         return self.children[idx-1]
 
-    def report(self, subquandrant: Cell=None):
-        if subquandrant is None:
-            return self.get_objects()
-        return subquandrant.get_objects()
