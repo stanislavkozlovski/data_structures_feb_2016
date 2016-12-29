@@ -107,7 +107,6 @@ class Cell(BoundableObject):
 
 
 class QuadTree(Cell):
-
     def __init__(self, x1, y1, x2, y2):
         super().__init__(x1, y1, x2, y2)
         self.count = 0
@@ -125,4 +124,3 @@ class QuadTree(Cell):
         if not self.children:
             raise Exception('There are no subquandrants made yet!')
         return self.children[idx-1]
-
