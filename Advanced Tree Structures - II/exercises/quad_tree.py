@@ -27,9 +27,11 @@ class BoundableObject:
 
 class Cell(BoundableObject):
     max_objects = 4
+    max_depth = 5
 
-    def __init__(self, x1, y1, x2, y2):
+    def __init__(self, x1, y1, x2, y2, depth=0):
         super().__init__(x1, y1, x2, y2)
+        self.depth = depth
         self.objects = []
         self.children = []
 
@@ -54,6 +56,13 @@ class Cell(BoundableObject):
                 for obj_to_remove in objs_to_remove:
                     self.objects.remove(obj_to_remove)
 
+    def get_objects(self):
+        """ Returns all objects from this cell"""
+        if self.children:
+            return [obj for child in self.children for obj in child.get_objects()] + self.objects
+        else:
+            return self.objects
+
     def _create_children(self):
         """        midX, Y2
    X1,Y2------------------------------X2, Y2
@@ -66,16 +75,35 @@ class Cell(BoundableObject):
                     midX, Y1
 
         """
-        if not self.children:
-            cell_0 = Cell(x1=self.mid_x, y1=self.mid_y, x2=self.x2, y2=self.y2)
-            cell_1 = Cell(x1=self.x1, y1=self.mid_y, x2=self.mid_x, y2=self.y2)
-            cell_2 = Cell(x1=self.x1, y1=self.y1, x2=self.mid_x, y2=self.mid_y)
-            cell_3 = Cell(x1=self.mid_x, y1=self.y1, x2=self.x2, y2=self.mid_y)
+        if not self.children and self.depth < self.max_depth:
+            cell_0 = Cell(x1=self.mid_x, y1=self.mid_y, x2=self.x2, y2=self.y2, depth=self.depth+1)
+            cell_1 = Cell(x1=self.x1, y1=self.mid_y, x2=self.mid_x, y2=self.y2, depth=self.depth+1)
+            cell_2 = Cell(x1=self.x1, y1=self.y1, x2=self.mid_x, y2=self.mid_y, depth=self.depth+1)
+            cell_3 = Cell(x1=self.mid_x, y1=self.y1, x2=self.x2, y2=self.mid_y, depth=self.depth+1)
             self.children = [cell_0, cell_1, cell_2, cell_3]
 
-bru = Cell(100, 0, 200, 70)
-bru.add_object(BoundableObject(120, 20, 130, 25))
-bru.add_object(BoundableObject(120, 20, 124, 25))
-bru.add_object(BoundableObject(120, 20, 130, 25))
-bru.add_object(BoundableObject(120, 20, 130, 25))
-print(bru)
+
+class QuadTree(Cell):
+
+    def __init__(self, x1, y1, x2, y2):
+        super().__init__(x1, y1, x2, y2)
+        self.count = 0
+
+    def __len__(self):
+        return self.count
+
+    def add_object(self, obj):
+        super().add_object(obj)
+        self.count += 1
+
+    def get_subquandrant(self, idx):
+        if idx <= 0 or idx > 4:
+            raise Exception('Subquandrants are 4 only!')
+        if not self.children:
+            raise Exception('There are no subquandrants made yet!')
+        return self.children[idx-1]
+
+    def report(self, subquandrant: Cell=None):
+        if subquandrant is None:
+            return self.get_objects()
+        return subquandrant.get_objects()
