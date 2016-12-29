@@ -55,5 +55,15 @@ class QuadTreeTests(unittest.TestCase):
         fourth_q_elements = self.tree.report(fourth_quadrant)
         self.assertEqual(fourth_q_elements, expected_quadrant_items[3])
 
+    def test_foreach_dfs_should_fuck_you(self):
+        items = [BoundableObject(2, 2, 3, 3)] * 100
+        for item in items:
+            self.tree.add_object(item)
+
+        def assert_function(_, __, depth):
+            self.assertEqual(self.tree.max_depth, depth)
+
+        self.tree.foreach_dfs(assert_function)
+
 if __name__ == '__main__':
     unittest.main()
