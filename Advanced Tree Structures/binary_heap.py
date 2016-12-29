@@ -2,8 +2,9 @@ class BinaryHeap:
     def __init__(self, elements=None):
         self._elements = []
         self.count = 0
-        if elements is not None:
-            pass
+        if elements is not None and isinstance(elements, list):
+            for el in elements:
+                self.insert(el)
 
     def __len__(self):
         return self.count
