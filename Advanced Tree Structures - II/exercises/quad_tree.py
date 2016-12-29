@@ -35,6 +35,13 @@ class Cell(BoundableObject):
         self.objects = []
         self.children = []
 
+    def foreach_dfs(self, func, quadrant=0):
+        if self.objects:
+            func(self.objects, quadrant, self.depth)
+        if self.children:
+            for idx, child in enumerate(self.children):
+                child.foreach_dfs(func, idx)
+
     def add_object(self, obj):
         if len(self.children) > 0:
             for cell in self.children:
