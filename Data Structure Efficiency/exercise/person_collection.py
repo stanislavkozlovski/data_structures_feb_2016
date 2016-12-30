@@ -33,6 +33,9 @@ class PersonCollection:
         # key: age, value: Dict{key:town, value:SortedDict(key:email, value:person)
         self.people_by_age_and_town = SortedDict()
 
+    def __len__(self):
+        return len(self.people)
+
     def add_person(self, person):
         if person.email in self.people:
             return False
