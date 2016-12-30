@@ -46,6 +46,23 @@ class PersonCollection:
         # add to the age_town dict
         self._add_to_age_town_dict(person)
 
+    def delete_person(self, email: str):
+        """ Returns true (successfully deleted) or false (not found) """
+        if email not in self.people:
+            return False
+        person = self.people[email]
+
+        # remove from the main dict
+        del self.people[person.email]
+        # remove from the email domain dictionary
+        self._delete_person_from_email_domain(person)
+        # remove from the name_town dictionary
+        self._delete_person_from_name_town_dict(person)
+        # remove from the age dictionary
+        self._delete_person_from_age_dict(person)
+        # remove from the age_town dictionary
+        self._delete_person_from_age_town_dict(person)
+
     def find_person(self, email: str):
         """ Return the person object or None if he does not exist"""
         if email in self.people:
@@ -79,6 +96,7 @@ class PersonCollection:
                 if town in self.people_by_age_and_town[age]
                 for person in self.people_by_age_and_town[age][town].values())  # check if there is a key for that town
 
+    #  ---------------------PROTECTED FUNCTIONS---------------------
     def _add_to_email_domain(self, person):
         """ Add the person to the dictionary of email domains and e-mails"""
         person_email_domain = person.email.split('@')[-1]
@@ -87,6 +105,11 @@ class PersonCollection:
 
         self.people_email_domain[person_email_domain][person.email] = person
 
+    def _delete_person_from_email_domain(self, person):
+        person_email_domain = person.email.split('@')[-1]
+
+        del self.people_email_domain[person_email_domain][person.email]
+
     def _add_to_name_town_dict(self, person):
         """ Add the person to the dictionary holding people by their name+town """
         person_name_town = person.name + person.town
@@ -94,12 +117,20 @@ class PersonCollection:
             self.people_by_name_town[person_name_town] = SortedDict()
         self.people_by_name_town[person_name_town][person.email] = person
 
+    def _delete_person_from_name_town_dict(self, person):
+        person_name_town = person.name + person.town
+
+        del self.people_by_name_town[person_name_town][person.email]
+
     def _add_to_age_dict(self, person):
         """ Add the person to the age dictionary """
         if person.age not in self.people_by_age:
             self.people_by_age[person.age] = SortedDict()
 
         self.people_by_age[person.age][person.email] = person
+
+    def _delete_person_from_age_dict(self, person):
+        del self.people_by_age[person.age][person.email]
 
     def _add_to_age_town_dict(self, person):
         """ add a person to the dictionary holding people by
@@ -110,3 +141,6 @@ class PersonCollection:
             self.people_by_age_and_town[person.age][person.town] = SortedDict()
 
         self.people_by_age_and_town[person.age][person.town][person.email] = person
+
+    def _delete_person_from_age_town_dict(self, person):
+        del self.people_by_age_and_town[person.age][person.town][person.email]
