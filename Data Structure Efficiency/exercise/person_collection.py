@@ -30,33 +30,46 @@ class PersonCollection:
         if person.email in self.people:
             return False
         self.people[person.email] = person
-
         # add to the email domains
+        self._add_to_email_domain(person)
+        # add to the name_town dict
+        self._add_to_name_town_dict(person)
+        # add to the age dict
+        self._add_to_age_dict(person)
+        # add to the age_town dict
+        self._add_to_age_town_dict(person)
+
+    def _add_to_email_domain(self, person):
+        """ Add the person to the dictionary of email domains and e-mails"""
         person_email_domain = person.email.split('@')[-1]
         if person_email_domain not in self.people_email_domain:
             self.people_email_domain[person_email_domain] = SortedDict()
 
         self.people_email_domain[person_email_domain][person.email] = person
 
-        # add to the name_town dict
+    def _add_to_name_town_dict(self, person):
+        """ Add the person to the dictionary holding people by their name+town """
         person_name_town = person.name + person.town
         if person_name_town not in self.people_by_name_town:
             self.people_by_name_town[person_name_town] = SortedDict()
         self.people_by_name_town[person_name_town][person.email] = person
 
-        # add to the age dict
+    def _add_to_age_dict(self, person):
+        """ Add the person to the age dictionary """
         if person.age not in self.people_by_age:
             self.people_by_age[person.age] = SortedDict()
 
         self.people_by_age[person.age][person.email] = person
 
-        # add to the age_town dict
+    def _add_to_age_town_dict(self, person):
+        """ add a person to the dictionary holding people by
+            their age and then by their town """
         if person.age not in self.people_by_age_and_town:
             self.people_by_age_and_town[person.age] = dict()
         if person.town not in self.people_by_age_and_town[person.age]:
             self.people_by_age_and_town[person.age][person.town] = SortedDict()
-        if person.email not in self.people_by_age_and_town[person.age][person.town]:
-            self.people_by_age_and_town[person.age][person.town][person.email] = person
+
+        self.people_by_age_and_town[person.age][person.town][person.email] = person
 
 
 jeffrey = Person(email="jeff@real_on_the-rise.com", name="Jeffrey", age=34, town="North Side of Philly")
