@@ -16,6 +16,13 @@ class Person:
     def __hash__(self):
         return hash(self.email)
 
+    def __str__(self):
+        return '{name} aged {age} from {town} - {email}'.format(name=self.name, age=self.age,
+                                                                town=self.town, email=self.email)
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class PersonCollection:
     def __init__(self):
@@ -38,6 +45,39 @@ class PersonCollection:
         self._add_to_age_dict(person)
         # add to the age_town dict
         self._add_to_age_town_dict(person)
+
+    def find_person(self, email: str):
+        """ Return the person object or None if he does not exist"""
+        if email in self.people:
+            return self.people[email]
+        return None
+
+    def find_people_by_email_domain(self, email_domain: str):
+        """ Returns a sequence of matches people sorted by their email"""
+        if email_domain in self.people_email_domain:
+            return (person for person in self.people_email_domain[email_domain].values())
+
+    def find_people_by_name_and_town(self, name: str, town: str):
+        name_and_town = name + town
+        if name_and_town in self.people_by_name_town:
+            return (person for person in self.people_by_name_town[name_and_town].values())
+
+    def find_people_in_age_group(self, start_age: int, end_age: int):
+        if start_age < 0 or start_age > end_age:
+            raise Exception('Invalid age group!')
+
+        keys = self.people_by_age.irange(start_age, end_age)
+        return (person for age in keys for person in self.people_by_age[age].values())
+
+    def find_people_in_age_group_from_town(self, start_age: int, end_age: int, town: str) -> iter:
+        """Returns a sequence of matched persons sorted by age, then by email (as second criteria)"""
+        if start_age < 0 or start_age > end_age:
+            raise Exception('Invalid age group!')
+
+        ages = self.people_by_age_and_town.irange(start_age, end_age)
+        return (person for age in ages
+                if town in self.people_by_age_and_town[age]
+                for person in self.people_by_age_and_town[age][town].values())  # check if there is a key for that town
 
     def _add_to_email_domain(self, person):
         """ Add the person to the dictionary of email domains and e-mails"""
@@ -70,14 +110,3 @@ class PersonCollection:
             self.people_by_age_and_town[person.age][person.town] = SortedDict()
 
         self.people_by_age_and_town[person.age][person.town][person.email] = person
-
-
-jeffrey = Person(email="jeff@real_on_the-rise.com", name="Jeffrey", age=34, town="North Side of Philly")
-mike = Person(email="mike@real_on_the-rise.com", name="Mikey", age=14, town="North Side of Philly")
-mike_two = Person(email="arr@real_on_the-rise.com", name="Mikey", age=41, town="North Side of Philly")
-
-rappers = PersonCollection()
-rappers.add_person(jeffrey)
-rappers.add_person(mike)
-rappers.add_person(mike_two)
-print()
