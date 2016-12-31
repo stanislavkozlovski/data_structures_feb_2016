@@ -1,79 +1,94 @@
-import timeout_decorator
 import unittest
 from exercise.person_collection import Person, PersonCollection
 
-class PersonCollectionTests(unittest.TestCase):
 
+class PersonCollectionTests(unittest.TestCase):
     def setUp(self):
         self.people = PersonCollection()
 
-    def add_people(self, count):
-        for i in range(count):
-            self.people.add_person(
-                Person(name="Pesho{0}".format(str(i % 100)),
-                       email="pesho{0}@gmail{1}.com".format(str(i), str(i % 100)),
-                       age=i % 100,
-                       town="yambol{0}".format(str(i % 100)))
-            )
+    def test_add_person_should_work(self):
+        is_added = self.people.add_person(Person(
+            name="Sunshine",
+            email="little_rain@hotmail.com",
+            age=30,
+            town="next"
+        ))
 
-    @timeout_decorator.timeout(250)
-    def test_performance_add_person(self):
-        self.add_people(5000)
-        self.assertEqual(5000, len(self.people))
+        self.assertTrue(is_added)
+        self.assertEqual(len(self.people), 1)
 
-    @timeout_decorator.timeout(200)
-    def test_performance_find_person(self):
-        self.add_people(5000)
+    def test_add_person_duplicate_email_should_work(self):
+        is_added = self.people.add_person(Person(
+            name="Sunshine",
+            email="little_rain@hotmail.com",
+            age=30,
+            town="next"
+        ))
+        is_added_second = self.people.add_person(Person(
+            name="NoDiff",
+            email="little_rain@hotmail.com",
+            age=31,
+            town="neext"
+        ))
 
-        for _ in range(100000):
-            existing_person = self.people.find_person("pesho1@gmail1.com")
-            self.assertIsNotNone(existing_person)
-            non_existing_person = self.people.find_person("non-existing email")
-            self.assertIsNone(non_existing_person)
+        self.assertTrue(is_added)
+        self.assertFalse(is_added_second)
+        self.assertEqual(len(self.people), 1)
 
-    @timeout_decorator.timeout(300)
-    def test_performance_find_people_by_email(self):
-        self.add_people(5000)
+    def test_find_existing_person_should_return_him(self):
+        self.people.add_person(Person(
+            name="Sunshine",
+            email="little_rain@hotmail.com",
+            age=30,
+            town="next"
+        ))
+        person = self.people.find_person("little_rain@hotmail.com")
 
-        for _ in range(10000):
-            existing_people = list(self.people.find_people_by_email_domain("gmail1.com"))
-            self.assertEqual(len(existing_people), 50)
+        self.assertIsNotNone(person)
 
-            non_existing_people = self.people.find_people_by_email_domain("non-existing email")
-            self.assertIsNone(non_existing_people)
+    def test_find_non_existing_person_should_return_none(self):
+        person = self.people.find_person("real_on_the_rise@abv.bg")
+        self.assertIsNone(person)
 
-    @timeout_decorator.timeout(300)
-    def test_performance_find_people_by_name_and_town(self):
-        self.add_people(5000)
+    def test_delete_person_should_work(self):
+        person_email = "ventsislavelud@abv.bg"
+        self.people.add_person(
+            Person(name="Hell", email=person_email, age=34, town="yambol, grada na otkachenite")
+        )
 
-        for _ in range(10000):
-            existing_people = list(self.people.find_people_by_name_and_town("Pesho1", "yambol1"))
-            self.assertEqual(len(existing_people), 50)
-            non_existing_people = self.people.find_people_by_name_and_town("Non", "Existing")
-            self.assertIsNone(non_existing_people)
+        has_deleted_existing = self.people.delete_person(person_email)
+        has_deleted_non_existing = self.people.delete_person(person_email)
+        self.assertTrue(has_deleted_existing)
+        self.assertFalse(has_deleted_non_existing)
+        self.assertEqual(len(self.people), 0)
 
-    @timeout_decorator.timeout(300)
-    def test_performance_find_people_by_age_group(self):
-        self.add_people(5000)
+    def test_find_people_by_email_domain_should_return_matching_people(self):
+        self.people.add_person(Person(
+            email="pesho@gmail.com", name="Pesho", age=20, town="Plovdiv"
+        ))
+        self.people.add_person(Person(
+            email="kiro@yahoo.co.uk", name="Kiril", age=22, town="Sofia"
+        ))
+        self.people.add_person(Person(
+            email="mary@gmail.com", name="Maria", age=21, town="Plovdiv"
+        ))
+        self.people.add_person(Person(
+            email="ani@gmail.com", name="Anna", age=19, town="Bourgas"
+        ))
 
-        for _ in range(2000):
-            existing_people = list(self.people.find_people_in_age_group(20, 21))
-            self.assertEqual(len(existing_people), 100)
-            non_existing_people = list(self.people.find_people_in_age_group(500, 600))
-            self.assertEqual(len(non_existing_people), 0)
+        gmail_people = self.people.find_people_by_email_domain("gmail.com")
+        yahoo_people = self.people.find_people_by_email_domain("yahoo.co.uk")
+        hoo_people = self.people.find_people_by_email_domain("hoo.co.uk")
 
-    @timeout_decorator.timeout(300)
-    def test_performance_find_people_by_town_and_age_group(self):
-        self.add_people(5000)
-
-        for _ in range(5000):
-            existing_people = list(self.people.find_people_in_age_group_from_town(18, 22, "yambol20"))
-            self.assertEqual(len(existing_people), 50)
-            non_existing_town_people = list(self.people.find_people_in_age_group_from_town(20, 30, "Missing Town"))
-            self.assertEqual(len(non_existing_town_people), 0)
-            non_existing_age_people = list(self.people.find_people_in_age_group_from_town(200, 300, "yambol20"))
-            self.assertEqual(len(non_existing_age_people), 0)
-
+        self.assertEqual(
+            [person.email for person in gmail_people],
+            ["ani@gmail.com", "mary@gmail.com", "pesho@gmail.com"]
+        )
+        self.assertEqual(
+            [person.email for person in yahoo_people],
+            ["kiro@yahoo.co.uk"]
+        )
+        self.assertEqual(hoo_people, [])
 
 if __name__ == '__main__':
     unittest.main()

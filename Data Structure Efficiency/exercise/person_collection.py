@@ -48,6 +48,7 @@ class PersonCollection:
         self._add_to_age_dict(person)
         # add to the age_town dict
         self._add_to_age_town_dict(person)
+        return True
 
     def delete_person(self, email: str):
         """ Returns true (successfully deleted) or false (not found) """
@@ -77,10 +78,14 @@ class PersonCollection:
         if email_domain in self.people_email_domain:
             return (person for person in self.people_email_domain[email_domain].values())
 
+        return []
+
     def find_people_by_name_and_town(self, name: str, town: str):
         name_and_town = name + town
         if name_and_town in self.people_by_name_town:
             return (person for person in self.people_by_name_town[name_and_town].values())
+
+        return []
 
     def find_people_in_age_group(self, start_age: int, end_age: int):
         if start_age < 0 or start_age > end_age:
