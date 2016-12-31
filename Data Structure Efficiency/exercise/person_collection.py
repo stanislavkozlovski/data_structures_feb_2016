@@ -67,6 +67,8 @@ class PersonCollection:
         # remove from the age_town dictionary
         self._delete_person_from_age_town_dict(person)
 
+        return True
+
     def find_person(self, email: str):
         """ Return the person object or None if he does not exist"""
         if email in self.people:
@@ -81,6 +83,9 @@ class PersonCollection:
         return []
 
     def find_people_by_name_and_town(self, name: str, town: str):
+        if name is None or town is None:
+            return []
+
         name_and_town = name + town
         if name_and_town in self.people_by_name_town:
             return (person for person in self.people_by_name_town[name_and_town].values())
