@@ -1,0 +1,62 @@
+Game registered
+Game registered
+Game registered
+Game registered
+chess, chicho
+chess, chicho
+No matches
+Duplicated game
+Game registered
+chess, chicho, chooseMe
+Cannot delete game
+chess, chicho, chooseMe
+Game deleted
+chicho, chooseMe
+Game deleted
+chicho
+Cannot delete game
+chicho
+No matches
+Game registered
+zany
+zany
+zany
+Game deleted
+No matches
+No matches
+No matches
+Game registered
+Game registered
+zany, zumba
+Duplicated game
+zany
+Cannot delete game
+zany
+Game registered
+Game registered
+Game registered
+Game registered
+Game registered
+Game registered
+Game registered
+Game registered
+Game registered
+Game registered
+Game registered
+Game registered
+Game registered
+Game registered
+Game registered
+Game registered
+cat1, cat2, cat3, cat4, cat5, cat6, cat7, cat8, ch1, ch2
+ch1, ch2, ch3, ch4, ch5, ch6, ch7, ch8, chicho
+Game deleted
+Game deleted
+Game deleted
+Game deleted
+Game deleted
+Game deleted
+Game deleted
+Game deleted
+cat1, cat2, cat3, cat4, cat5, cat6, cat7, cat8, chicho
+chicho

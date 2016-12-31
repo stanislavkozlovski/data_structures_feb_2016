@@ -1,0 +1,7 @@
+RegisterUser peter ppp
+RegisterGame chess ccc
+AddScore peter ppp chess ccc 50
+AddScore peter ppp chess ccc 1500
+AddScore peter ppp chess ccc 400
+ShowScoreboard chess
+End

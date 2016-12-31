@@ -1,0 +1,71 @@
+RegisterGame tetris ttt
+RegisterGame musaka mmm
+RegisterGame chicho ccc
+RegisterGame chess ccc
+
+ListGamesByPrefix c
+ListGamesByPrefix ch
+ListGamesByPrefix chalga
+RegisterGame chess ccc
+RegisterGame chooseMe ccc
+ListGamesByPrefix ch
+DeleteGame chess invalidPass
+ListGamesByPrefix ch
+DeleteGame chess ccc
+ListGamesByPrefix c
+DeleteGame chooseMe ccc
+ListGamesByPrefix c
+DeleteGame chooseMe ccc
+ListGamesByPrefix c
+
+ListGamesByPrefix z
+RegisterGame zany zzz
+ListGamesByPrefix z
+ListGamesByPrefix zan
+ListGamesByPrefix zany
+DeleteGame zany zzz
+ListGamesByPrefix z
+ListGamesByPrefix zan
+ListGamesByPrefix zany
+RegisterGame zany zzz123
+RegisterGame zumba zumba123
+ListGamesByPrefix z
+
+RegisterGame zany zzz255
+ListGamesByPrefix za
+DeleteGame zany zzz
+ListGamesByPrefix za
+
+RegisterGame ch1 ccc
+RegisterGame ch2 ccc
+RegisterGame ch3 ccc
+RegisterGame ch4 ccc
+RegisterGame ch5 ccc
+RegisterGame ch6 ccc
+RegisterGame ch7 ccc
+RegisterGame ch8 ccc
+RegisterGame cat1 ccc
+RegisterGame cat2 ccc
+RegisterGame cat3 ccc
+RegisterGame cat4 ccc
+RegisterGame cat5 ccc
+RegisterGame cat6 ccc
+RegisterGame cat7 ccc
+RegisterGame cat8 ccc
+
+ListGamesByPrefix c
+ListGamesByPrefix ch
+
+DeleteGame ch1 ccc
+DeleteGame ch2 ccc
+DeleteGame ch3 ccc
+DeleteGame ch4 ccc
+DeleteGame ch5 ccc
+DeleteGame ch6 ccc
+DeleteGame ch7 ccc
+DeleteGame ch8 ccc
+
+ListGamesByPrefix c
+ListGamesByPrefix ch
+
+End

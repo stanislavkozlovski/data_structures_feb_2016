@@ -1,0 +1,9 @@
+RegisterGame table ttt
+RegisterGame table DuplicatedTable
+RegisterGame chess ccc
+RegisterGame chess DuplicatedChess
+RegisterGame Table ttt123
+RegisterGame Chess ccc123
+RegisterGame Table DuplicatedTable
+RegisterGame Chess DuplicatedChess
+End

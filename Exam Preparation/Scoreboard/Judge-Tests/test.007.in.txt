@@ -1,0 +1,4 @@
+ShowScoreboard chess
+RegisterGame chess ccc
+ShowScoreboard chess
+End

@@ -1,0 +1,34 @@
+RegisterUser peter ppp
+RegisterUser asya aaa
+RegisterUser zizi zzz
+
+RegisterGame chess ccc
+RegisterGame tetris ttt
+
+AddScore zizi zzz chess ccc 50
+AddScore zizi zzz chess ccc 1500
+AddScore zizi zzz chess ccc 400
+AddScore asya aaa chess ccc 50
+AddScore asya aaa chess ccc 1500
+AddScore asya aaa chess ccc 400
+AddScore peter ppp chess ccc 50
+AddScore peter ppp chess ccc 1500
+AddScore peter ppp chess ccc 400
+AddScore zizi zzz chess ccc 3000
+AddScore zizi zzz chess ccc 3000
+AddScore asya aaa chess invalidGamePass 50000
+
+AddScore zizi zzz tetris ttt 233
+AddScore asya aaa tetris ttt 150
+AddScore zizi zzz tetris ttt 700
+AddScore asya aaa tetris ttt 150
+AddScore asya aaa tetris ttt 50
+AddScore asya invalidUserPass tetris ttt 50000
+
+ShowScoreboard chess
+
+RegisterGame tetris ttt
+
+ShowScoreboard tetris
+
+End

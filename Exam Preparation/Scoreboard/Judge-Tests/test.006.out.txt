@@ -1,0 +1,22 @@
+User registered
+User registered
+User registered
+Game registered
+Score added
+Score added
+Score added
+Score added
+Score added
+Score added
+Score added
+Score added
+Score added
+#1 asya 1500
+#2 peter 1500
+#3 zizi 1500
+#4 asya 400
+#5 peter 400
+#6 zizi 400
+#7 asya 50
+#8 peter 50
+#9 zizi 50

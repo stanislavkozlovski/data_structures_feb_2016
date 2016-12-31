@@ -1,0 +1,154 @@
+ShowScoreboard chess
+ListGamesByPrefix c
+
+RegisterGame tetris ttt
+RegisterGame musaka mmm
+RegisterGame cat ccc
+RegisterGame chess ccc
+RegisterGame chess1 ccc
+RegisterGame chess2 ccc
+RegisterGame chess3 ccc
+RegisterGame chess4 ccc
+RegisterGame chess5 ccc
+RegisterGame chess6 ccc
+RegisterGame chess7 ccc
+RegisterGame chess8 ccc
+RegisterGame chess9 ccc
+RegisterGame chess9 Duplicated
+
+ListGamesByPrefix c
+ListGamesByPrefix ch
+ShowScoreboard chess
+
+DeleteGame chess1 ccc
+DeleteGame chess2 ccc
+DeleteGame chess3 ccc
+DeleteGame chess4 ccc
+DeleteGame chess5 ccc
+
+ListGamesByPrefix c
+ListGamesByPrefix ch
+ListGamesByPrefix chess1
+
+RegisterUser peter ppp
+RegisterUser maria mmm
+RegisterUser asen aaa
+RegisterUser asen DuplicatedUser
+RegisterUser asya aaa
+RegisterUser zizi zzz
+
+ShowScoreboard tetris
+AddScore zizi zzz tetris ttt 150
+AddScore zizi zzz tetris ttt 233
+AddScore asya aaa tetris ttt 150
+AddScore zizi zzz tetris ttt 700
+AddScore asya aaa tetris ttt 150
+AddScore asya aaa tetris ttt 50
+AddScore asya aaa tetris ttt 150
+ShowScoreboard tetris
+AddScore zizi zzz tetris ttt 150
+AddScore zizi zzz tetris ttt 233
+AddScore asya aaa tetris ttt 150
+ShowScoreboard tetris
+AddScore zizi zzz tetris ttt 150
+AddScore asya aaa tetris ttt 160
+AddScore zizi zzz tetris ttt 160
+AddScore zizi zzz tetris ttt 700
+ShowScoreboard tetris
+AddScore asya aaa tetris ttt 150
+AddScore asya aaa tetris ttt 50
+AddScore asya aaa tetris ttt 150
+AddScore asya invalidUserPass tetris ttt 50000
+AddScore asya aaa tetris invaidGamePass 50000
+ShowScoreboard tetris
+
+ShowScoreboard chess
+AddScore zizi zzz chess ccc 1500
+AddScore zizi zzz chess ccc 233
+AddScore asya aaa chess ccc 150
+AddScore zizi zzz chess ccc 7000
+AddScore asya aaa chess ccc 150
+AddScore asya aaa chess ccc 50
+AddScore asya aaa chess ccc 150
+ShowScoreboard chess
+AddScore zizi zzz chess ccc 150
+AddScore zizi zzz chess ccc 2330
+AddScore asya aaa chess ccc 150
+ShowScoreboard chess
+AddScore zizi zzz chess ccc 150
+AddScore asya aaa chess ccc 1600
+AddScore zizi zzz chess ccc 1600
+AddScore zizi zzz chess ccc 700
+ShowScoreboard chess
+AddScore asya aaa chess ccc 1500000
+AddScore asya aaa chess ccc 50
+AddScore asya aaa chess ccc 150
+AddScore asya invalidUserPass chess ccc 50000
+AddScore asya aaa chess invaidGamePass 50000
+ShowScoreboard chess
+
+AddScore zizi zzz chess ccc 9150
+AddScore asen aaa tetris ttt 9233
+AddScore asya aaa chess ccc 91600
+AddScore asya aaa tetris ttt 9150
+AddScore peter ppp chess ccc 91600
+AddScore maria mmm tetris ttt 9150
+AddScore zizi zzz chess ccc 700
+AddScore asen aaa tetris ttt 12345
+AddScore asen aaa chess ccc 12345
+ShowScoreboard chess
+ShowScoreboard tetris
+
+ListGamesByPrefix c
+ListGamesByPrefix c
+ListGamesByPrefix t
+ListGamesByPrefix te
+
+DeleteGame chess ccc
+ShowScoreboard chess
+ListGamesByPrefix c
+ListGamesByPrefix c
+ListGamesByPrefix t
+ListGamesByPrefix te
+
+DeleteGame tetris ttt
+ShowScoreboard chess
+ShowScoreboard tetris
+ShowScoreboard chess9
+
+ListGamesByPrefix c
+ListGamesByPrefix che
+ListGamesByPrefix t
+ListGamesByPrefix te
+ListGamesByPrefix chess
+ListGamesByPrefix chess9
+
+DeleteGame chess9 ccc
+ListGamesByPrefix che
+ListGamesByPrefix chess9
+
+AddScore zizi zzz tetris ttt 233
+AddScore asya aaa tetris ttt 150
+AddScore zizi zzz chess9 ccc 233
+AddScore asya aaa chess9 ccc 150
+ShowScoreboard tetris
+ShowScoreboard chess9
+
+RegisterGame tetris ttt
+RegisterGame chess9 ccc
+
+ShowScoreboard tetris
+ShowScoreboard chess9
+
+AddScore asya aaa chess9 ccc 233
+AddScore asya aaa tetris ttt 150
+AddScore asya aaa tetris ttt 150
+AddScore asya invalidPass tetris ttt 150
+AddScore zizi zzz chess9 ccc 233
+AddScore zizi zzz chess9 invalidPass 233
+AddScore zizi zzz tetris ttt 233
+AddScore asya aaa chess9 ccc 150
+ShowScoreboard tetris
+ShowScoreboard chess9
+
+End

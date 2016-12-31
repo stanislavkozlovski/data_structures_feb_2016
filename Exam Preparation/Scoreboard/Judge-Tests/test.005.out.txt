@@ -1,0 +1,8 @@
+User registered
+Game registered
+Score added
+Score added
+Score added
+#1 peter 1500
+#2 peter 400
+#3 peter 50

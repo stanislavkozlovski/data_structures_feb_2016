@@ -1,0 +1,8 @@
+RegisterGame tetris ttt
+RegisterGame chess ccc
+RegisterGame minesweeper mmm
+RegisterGame chess DuplicatedChess
+DeleteGame chess ccc
+RegisterGame chess newPass
+RegisterGame tetris DuplicatedTetris
+End

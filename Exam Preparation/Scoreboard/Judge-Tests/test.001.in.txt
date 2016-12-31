@@ -1,0 +1,7 @@
+RegisterUser peter p123
+RegisterUser maria m123
+RegisterUser maria DuplicatedMaria
+RegisterUser peter DiplicatedPeter
+RegisterUser Peter ppp
+RegisterUser Maria mmm
+End

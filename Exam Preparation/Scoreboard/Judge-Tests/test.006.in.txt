@@ -1,0 +1,15 @@
+RegisterUser peter ppp
+RegisterUser asya aaa
+RegisterUser zizi zzz
+RegisterGame chess ccc
+AddScore zizi zzz chess ccc 50
+AddScore zizi zzz chess ccc 1500
+AddScore zizi zzz chess ccc 400
+AddScore asya aaa chess ccc 50
+AddScore asya aaa chess ccc 1500
+AddScore asya aaa chess ccc 400
+AddScore peter ppp chess ccc 50
+AddScore peter ppp chess ccc 1500
+AddScore peter ppp chess ccc 400
+ShowScoreboard chess
+End

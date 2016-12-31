@@ -1,0 +1,63 @@
+User registered
+User registered
+User registered
+Game registered
+Game registered
+Score added
+Score added
+Score added
+Score added
+Score added
+Score added
+Score added
+Score added
+Score added
+Score added
+Score added
+Cannot add score
+Score added
+Score added
+Score added
+Score added
+Score added
+Cannot add score
+#1 zizi 3000
+#2 zizi 3000
+#3 asya 1500
+#4 peter 1500
+#5 zizi 1500
+#6 asya 400
+#7 peter 400
+#8 zizi 400
+#9 asya 50
+#10 peter 50
+Game deleted
+Game not found
+#1 zizi 700
+#2 zizi 233
+#3 asya 150
+#4 asya 150
+#5 asya 50
+Game deleted
+Game not found
+Cannot add score
+Cannot add score
+Game registered
+Game not found
+No score
+Score added
+Cannot add score
+Game registered
+No score
+#1 zizi 3000
+Score added
+Score added
+#1 zizi 3000
+#2 zizi 3000
+Game deleted
+Game not found
+Cannot delete game
+#1 asya 50
+Game deleted
+Game not found
+Cannot delete game

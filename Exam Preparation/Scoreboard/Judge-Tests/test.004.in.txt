@@ -1,0 +1,17 @@
+RegisterUser peter ppp
+RegisterUser maria mmm
+
+RegisterGame chess ccc
+RegisterGame tetris ttt
+
+AddScore peter ppp chess ccc 15000
+AddScore peter ppp chess ccc 15000
+AddScore peter ppp chess ccc 75
+AddScore maria mmm tetris ttt 5000
+
+AddScore peter invalidUserPass chess ccc 7500
+AddScore invalidUser pass chess ccc 7500
+AddScore peter ppp chess invalidGamePass 7500
+AddScore peter ppp invalidGame ccc 7500
+
+End
