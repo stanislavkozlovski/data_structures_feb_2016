@@ -3,6 +3,19 @@ import unittest
 from timeout_decorator import timeout
 from bunny_wars import BunnyWars
 
+class DetonateBunnyTests(unittest.TestCase):
+    pass
+
+class AddRoomsTests(unittest.TestCase):
+    def setUp(self):
+        self.wars = BunnyWars()
+
+    @timeout(0.4)
+    def test_add_room_with_50000_rooms(self):
+        room_count = 50000
+        for i in range(room_count):
+            self.wars.add_room(i)
+            self.assertEqual(self.wars.room_count(), i+1)
 
 class BunnyWarsAddBunnyTests(unittest.TestCase):
     def setUp(self):
