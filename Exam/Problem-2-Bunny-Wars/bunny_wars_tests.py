@@ -4,6 +4,55 @@ from timeout_decorator import timeout
 from bunny_wars import BunnyWars
 
 
+class ListBySuffixTests(unittest.TestCase):
+    def setUp(self):
+        self.wars = BunnyWars()
+        self.suffixes = ["Scars", "Eyes", "Bleeds", "Soldier", "Whip", "SqUuEze", "Hustle"]
+
+    def test_10000_bunnies_without_given_suffix(self):
+        bunny_count = 10000
+        self.wars.add_room(0)
+        for i in range(bunny_count):
+            self.wars.add_bunny(str(i) + self.suffixes[3], random.randint(0,4), 0)
+        self._10000_bunnies_without_given_suffix()
+
+    @timeout(0.1)
+    def _10000_bunnies_without_given_suffix(self):
+        for i in range(1000):
+            result = self.wars.list_bunnies_by_suffix("DoesntExist")
+            self.assertEqual(len(result), 0)
+
+    # FAILS !!!
+    def test_10000_bunnies_with_same_suffix_in_one_room(self):
+        bunny_count = 10000
+        self.wars.add_room(0)
+        for i in range(bunny_count):
+            self.wars.add_bunny(str(i) + self.suffixes[random.randint(0, len(self.suffixes)-1)], random.randint(0, 4), 0)
+        self._10000_bunnies_with_same_suffix_in_one_room()
+
+    @timeout(0.1)
+    def _10000_bunnies_with_same_suffix_in_one_room(self):
+        for _ in range(1000):
+            len(self.wars.list_bunnies_by_suffix('p'))
+
+    # FAILS !!!
+    def test_10000_bunnies_with_shared_suffix_multiple_rooms(self):
+        room_count = 5000
+        bunny_count = 10000
+        for i in range(room_count):
+            self.wars.add_room(i)
+        for i in range(bunny_count):
+            self.wars.add_bunny(str(i) + self.suffixes[random.randint(0, len(self.suffixes) - 1)],
+                                random.randint(0, 4),
+                                random.randint(0, room_count - 1))
+        self._10000_bunnies_with_shared_suffix_multiple_rooms()
+
+    @timeout(0.3)
+    def _10000_bunnies_with_shared_suffix_multiple_rooms(self):
+        for _ in range(1000):
+            self.wars.list_bunnies_by_suffix('ars')
+
+
 class DetonateBunnyTests(unittest.TestCase):
     def setUp(self):
         self.wars = BunnyWars()
@@ -70,8 +119,6 @@ class DetonateBunnyTests(unittest.TestCase):
         self.assertEqual(self.wars.bunny_count(), bunnies_count)
 
 
-
-
 class AddRoomsTests(unittest.TestCase):
     def setUp(self):
         self.wars = BunnyWars()
@@ -82,6 +129,7 @@ class AddRoomsTests(unittest.TestCase):
         for i in range(room_count):
             self.wars.add_room(i)
             self.assertEqual(self.wars.room_count(), i+1)
+
 
 class BunnyWarsAddBunnyTests(unittest.TestCase):
     def setUp(self):
