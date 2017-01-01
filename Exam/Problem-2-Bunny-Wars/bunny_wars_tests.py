@@ -52,6 +52,24 @@ class ListBySuffixTests(unittest.TestCase):
         for _ in range(1000):
             self.wars.list_bunnies_by_suffix('ars')
 
+    # FAILS SO MUCH - 4s 46ms
+    def test_10000_bunnies_with_empty_suffix_multiple_rooms(self):
+        room_count = 5000
+        bunny_count = 10000
+        for i in range(room_count):
+            self.wars.add_room(i)
+        for i in range(bunny_count):
+            self.wars.add_bunny(str(i) + self.suffixes[random.randint(0, len(self.suffixes)-1)],
+                                random.randint(0, 4),
+                                random.randint(0, room_count - 1))
+        self._10000_bunnies_with_empty_suffix_multiple_rooms()
+
+    @timeout(0.2)
+    def _10000_bunnies_with_empty_suffix_multiple_rooms(self):
+        for _ in range(1000):
+            result_count = len(self.wars.list_bunnies_by_suffix(''))
+            self.assertEqual(result_count, 10000)
+
 
 class DetonateBunnyTests(unittest.TestCase):
     def setUp(self):
