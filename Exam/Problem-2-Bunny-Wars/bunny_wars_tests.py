@@ -35,6 +35,42 @@ class DetonateBunnyTests(unittest.TestCase):
             self.wars.detonate(str(random.randint(0, bunnies_count-1)))
         self.assertEqual(self.wars.bunny_count(), bunnies_count)
 
+    def test_detonate_with_4_out_of_5_bunnies_detonating_consecutively_in_every_room_with_10000_bunnies_in_2000_rooms_different_teams(self):
+        rooms_count = 2000
+        bunnies_count = 10000
+        for i in range(rooms_count):
+            self.wars.add_room(i)
+        for i in range(bunnies_count):
+            self.wars.add_bunny(str(i), i % 5, i // 5)
+
+    @timeout(0.1)
+    def _detonate_with_4_out_of_5_bunnies_detonating_consecutively_in_every_room_with_10000_bunnies_in_2000_rooms_different_teams(self, bunny_count):
+        for i in range(bunny_count):
+            if i % 5 != 4:
+                self.wars.detonate(str(i))
+        self.assertEqual(self.wars.bunny_count, 8000)
+
+    def test_detonate_with_10000_detonations_in_reverse_order_10000_bunnies_3334_rooms(self):
+        """
+        There should be 3 bunnies in a room, therefore there are at most 3 detonations per room,
+            which will leave all bunnies at 10HP, not dead
+        """
+        bunnies_count = 10000
+        room_count = 3334
+        for i in range(room_count):
+            self.wars.add_room(i)
+        for i in range(bunnies_count):
+            self.wars.add_bunny(str(i), i % 5, i // 3)
+        self._detonate_with_10000_detonations_in_reverse_order_10000_bunnies_3334_rooms(bunnies_count)
+
+    @timeout(0.1)
+    def _detonate_with_10000_detonations_in_reverse_order_10000_bunnies_3334_rooms(self, bunnies_count):
+        for i in reversed(range(bunnies_count)):
+            self.wars.detonate(str(i))
+        self.assertEqual(self.wars.bunny_count(), bunnies_count)
+
+
+
 
 class AddRoomsTests(unittest.TestCase):
     def setUp(self):
