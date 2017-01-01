@@ -24,6 +24,9 @@ class Bunny:
     def __lt__(self, other):
         return self.name < other.name
 
+    def __str__(self):
+        return self.name
+
 
 class Room:
     def __init__(self, id):
@@ -58,24 +61,25 @@ class Room:
         """
         score = 0
         dead_bunnies = []
-        orig_bunny_team = bunny.team
+        orig_bunny_team_id = bunny.team
         for team_id in self.bunnies.keys():
-            if team_id != orig_bunny_team:
+            # go through each bunny that's not from the original bunny's team
+            if team_id != orig_bunny_team_id:
                 for enemy_bunny in self.bunnies[team_id].values():
                     enemy_bunny.health -= 30
                     if enemy_bunny.health <= 0:
                         dead_bunnies.append(enemy_bunny)
                         score += 1
-        for dead_bunny in dead_bunnies:
+        for dead_bunny in dead_bunnies:  # delete each dead bunny
             del self.bunnies[dead_bunny.team][dead_bunny.name]
         bunny.score += score
-        return dead_bunnies
+        return dead_bunnies  # return the dead bunnies to be deleted from other collections
 
-    def add_bunny(self, bunny_name, team_id):
-        if team_id not in self.bunnies:
-            self.bunnies[team_id] = dict()
-        bunny = Bunny(name=bunny_name, teamid=team_id, room=self.id)
-        self.bunnies[team_id][bunny_name] = bunny
+    def add_bunny(self, bunny):
+        """ Adds the bunny to the room"""
+        if bunny.team not in self.bunnies:
+            self.bunnies[bunny.team] = dict()
+        self.bunnies[bunny.team][bunny.name] = bunny
         self.bunny_count += 1
         return bunny
 
@@ -99,36 +103,10 @@ class BunnyWars:
         self.bunny_names = {}
 
     def next_bunny(self, bunny_name):
-        if bunny_name not in self.bunny_names:
-            raise Exception()
-        bunny = self.bunny_names[bunny_name]
-        old_room_id = bunny.room
-        old_room = self.rooms[old_room_id]
-        next_room_index = self.rooms_by_idx.index(old_room_id) + 1
-        if next_room_index >= len(self.rooms_by_idx):
-            next_room_index = 0
-        new_room_id = self.rooms_by_idx[next_room_index]
-        bunny.room = new_room_id
-
-        new_room = self.rooms[new_room_id]
-
-        old_room.remove_bunny(bunny)
-        new_room.move_bunny_in(bunny)
+        self._move_bunny(bunny_name)
 
     def prev_bunny(self, bunny_name):
-        if bunny_name not in self.bunny_names:
-            raise Exception()
-        bunny = self.bunny_names[bunny_name]
-        old_room_id = bunny.room
-        old_room = self.rooms[old_room_id]
-        next_room_index = self.rooms_by_idx.index(old_room_id) - 1
-        if next_room_index < 0:
-            next_room_index = len(self.rooms_by_idx)-1
-        new_room_id = self.rooms_by_idx[next_room_index]
-        bunny.room = new_room_id
-        new_room = self.rooms[new_room_id]
-        old_room.remove_bunny(bunny)
-        new_room.move_bunny_in(bunny)
+        self._move_bunny(bunny_name, prev=True)
 
     def bunny_count(self):
         return len(self.bunny_names)
@@ -137,9 +115,18 @@ class BunnyWars:
         return len(self.rooms)
 
     def list_bunnies_by_team(self, team_id):
+        """
+        ListBunniesByTeam teamId - returns all bunnies from the specified team in (sorted by name in descending order).
+        """
         return reversed(self.bunnies_by_team[team_id])
 
     def list_bunnies_by_suffix(self, suffix):
+        """
+        ListBunniesBySuffix suffix -
+            returns all bunnies ending with the specified suffix (sorted by the ASCII code of the reversed name
+            in ascending order as a first criteria and by length in ascending order as a second criteria).
+            Example Tpen < apen < aapen < bapen < bpen.
+        """
         return self.bunnies_by_suffix.values(''.join(reversed(suffix)))
 
     def detonate(self, bunny_name):
@@ -147,7 +134,7 @@ class BunnyWars:
             raise Exception('Bunny does not exist!')
         bunny = self.bunny_names[bunny_name]
         room = self.rooms[bunny.room]
-        dead_bunnies = room.detonate(bunny)
+        dead_bunnies = room.detonate(bunny)  # detonate the bunny and get all the bunnies that have died
         for dead_bunny in dead_bunnies:
             self._delete_bunny(dead_bunny)
 
@@ -168,8 +155,9 @@ class BunnyWars:
             raise Exception('Invalid room/team id!')
         if bunny_name in self.bunny_names:
             raise Exception('A bunny with the given name already exists!')
+        bunny_obj = Bunny(name=bunny_name, teamid=team_id, room=room_id)
         # 1. Add to the room
-        bunny_obj = self.rooms[room_id].add_bunny(bunny_name, team_id)
+        self.rooms[room_id].add_bunny(bunny_obj)
         # 2. Add to overall bunnies
         self.bunny_names[bunny_name] = bunny_obj
         # 3. Add to suffixes
@@ -191,6 +179,27 @@ class BunnyWars:
             for bunny in bunnies_from_team.values():
                 self._delete_bunny(bunny)
 
+    def _move_bunny(self, bunny_name, prev=False):
+        if bunny_name not in self.bunny_names:
+            raise Exception()
+        bunny = self.bunny_names[bunny_name]
+        old_room_id = bunny.room
+        old_room = self.rooms[old_room_id]
+        old_room_index = self.rooms_by_idx.index(old_room_id)
+        if prev:
+            next_room_index = old_room_index - 1
+        else:
+            next_room_index = old_room_index + 1
+        if next_room_index >= len(self.rooms_by_idx) or next_room_index < 0:  # is out of bounds
+            next_room_index = 0 if prev else len(self.rooms_by_idx) - 1
+        # get the new room id and assign it to the bunny
+        new_room_id = self.rooms_by_idx[next_room_index]
+        bunny.room = new_room_id
+        new_room = self.rooms[new_room_id]
+        # remove the bunny from the old room and move it to the new one
+        old_room.remove_bunny(bunny)
+        new_room.move_bunny_in(bunny)
+
     def _delete_bunny(self, bunny: Bunny):
         # 1.Remove from overall bunnies
         del self.bunny_names[bunny.name]
@@ -199,45 +208,56 @@ class BunnyWars:
         # 3.Remove from bunnies by team
         self.bunnies_by_team[bunny.team].remove(bunny)
 
-bra_wars = BunnyWars()
-bra_wars.add_room(3)
-bra_wars.add_room(4)
-bra_wars.add_room(1)
-bra_wars.add_bunny("Alei", 2, 3)
-bra_wars.add_bunny("Drizzy", 2, 3)
-bra_wars.add_bunny("Rrizzy", 3, 4)
-bra_wars.add_bunny("REAL", 3, 3)
-bra_wars.prev_bunny("Rrizzy")
-bra_wars.next_bunny("Rrizzy")
-bra_wars.next_bunny("Rrizzy")
-bra_wars.next_bunny("Rrizzy")
-bra_wars.detonate("Alei")
-bra_wars.detonate("Alei")
-bra_wars.detonate("Alei")
-bra_wars.remove_room(3)
-bra_wars.add_room(3)
-print("Bunnies alive -> {}".format(bra_wars.bunny_count()))
-print("Detonating Alei")
-# bra_wars.detonate("Alei")
-print("Bunnies alive -> {}".format(bra_wars.bunny_count()))
 
-# alei = bra_wars.bunny_names["Alei"]
-print(bra_wars.room_count())
-# print(alei.score)
+def main_loop():
+    """ Take commands from the bunny wars commander! """
+    wars = BunnyWars()
+    while True:
+        command = input()
+        args = command.split()
+        if command.startswith('Add'):
+            # add commands
+            if len(args) > 2:  # add a bunny
+                bunny_name = args[1]
+                team_id = int(args[2])
+                room_id = int(args[3])
+                wars.add_bunny(bunny_name, team_id, room_id)
+            else:  # add a room
+                room_id = int(args[1])
+                wars.add_room(room_id)
+        elif command == 'BunnyCount':
+            print('The amount of bunnies is: {}'.format(wars.bunny_count()))
+        elif command == 'RoomCount':
+            print('The amount of rooms is: {}'.format(wars.room_count()))
+        elif command.startswith('Remove'):
+            # remove a room
+            room_id = int(args[1])
+            wars.remove_room(room_id)
+        elif command.startswith('Next'):
+            # move the bunny to the next room
+            bunny_name = args[1]
+            wars.next_bunny(bunny_name)
+        elif command.startswith('Previous'):
+            # move the bunny to the previous room
+            bunny_name = args[1]
+            wars.prev_bunny(bunny_name)
+        elif command.startswith('Detonate'):
+            # detonates a bunny
+            bunny_name = args[1]
+            wars.detonate(bunny_name)
+        elif command.startswith('ListBunniesByTeam'):
+            # lists the bunnies from the given team
+            team_id = int(args[1])
+            print('\n'.join([str(bun) for bun in wars.list_bunnies_by_team(team_id)]))
+        elif command.startswith('ListBunniesBySuffix'):
+            # lists the bunnies that end in the given suffix
+            suffix = args[1]
+            print('\n'.join([str(bun) for bun in wars.list_bunnies_by_suffix(suffix)]))
 
-# bra_wars.detonate("Alei")
-# bra_wars.detonate("Alei")
-# bra_wars.detonate("Alei")
 
-# bra_wars.add_bunny("Tpen", 2, 3)
-# bra_wars.add_bunny("apen", 2, 3)
-# bra_wars.add_bunny("aapen", 2, 3)
-# bra_wars.add_bunny("bapen", 2, 3)
-# bra_wars.add_bunny("bpen", 2, 3)
-# nubbies = bra_wars.list_bunnies_by_suffix("pen")
-# for nub in nubbies:
-#     print(nub.name)
-#
-# team_3 = bra_wars.list_bunnies_by_team(3)  # Rrizzy
-# for drizzy in team_3:
-#     print(drizzy.name)
+def main():
+    main_loop()
+
+
+if __name__ == '__main__':
+    main()
