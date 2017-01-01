@@ -4,6 +4,25 @@ from timeout_decorator import timeout
 from bunny_wars import BunnyWars
 
 
+class ListByTeamPerformance(unittest.TestCase):
+    def setUp(self):
+        self.wars = BunnyWars()
+
+    def test_10000_bunnies_one_room_same_team(self):
+        bunnies_count = 10000
+        self.wars.add_room(0)
+        for i in range(bunnies_count):
+            self.wars.add_bunny(str(i), 0, 0)
+
+        self._10000_bunnies_one_room_same_team()
+
+    @timeout(0.1)
+    def _10000_bunnies_one_room_same_team(self):
+        for i in range(10000):
+            self.wars.list_bunnies_by_team(0)
+        self.assertEqual(len(list(self.wars.list_bunnies_by_team(0))), 10000)
+
+
 class ListBySuffixTests(unittest.TestCase):
     def setUp(self):
         self.wars = BunnyWars()

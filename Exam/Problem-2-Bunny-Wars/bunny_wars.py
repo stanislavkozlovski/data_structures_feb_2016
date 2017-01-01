@@ -93,6 +93,7 @@ class Room:
         self.bunny_count += 1
         del self.bunnies[bunny.team][bunny.name]
 
+
 class BunnyWars:
     def __init__(self):
         self.rooms_by_idx = SortedSet()  # integer ID only
