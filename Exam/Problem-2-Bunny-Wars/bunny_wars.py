@@ -93,13 +93,12 @@ class Room:
         self.bunny_count += 1
         del self.bunnies[bunny.team][bunny.name]
 
-
 class BunnyWars:
     def __init__(self):
         self.rooms_by_idx = SortedSet()  # integer ID only
         self.rooms = SortedDict()  # key: id, value: room
         self.bunnies_by_team = {}  # key: team id, value: SortedSet(key=bunny.reversed_name) of Bunny objects
-        self.bunnies_by_suffix = datrie.Trie(string.ascii_letters)
+        self.bunnies_by_suffix = datrie.Trie(string.ascii_letters + ''.join(str(part) for part in range(0,10)))
         self.bunny_names = {}
 
     def next_bunny(self, bunny_name):
