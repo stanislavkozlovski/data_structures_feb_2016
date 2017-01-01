@@ -1,10 +1,64 @@
+import random
 import unittest
+from timeout_decorator import timeout
 from bunny_wars import BunnyWars
 
 
 class BunnyWarsAddBunnyTests(unittest.TestCase):
     def setUp(self):
         self.wars = BunnyWars()
+        self.name_prefixes = ["Dijkstra", "Krum", "wally", "G", "BBBBBBBbbbbbbbbra"]
+
+    @timeout(0.4)
+    def test_add_bunnies_10000_single_room_single_team(self):
+        bunny_count = 10000
+        self.wars.add_room(0)
+        for i in range(bunny_count):
+            self.wars.add_bunny(str(i), 0, 0)
+            self.assertEqual(self.wars.bunny_count(), i+1)
+
+    @timeout(0.4)
+    def test_add_10000_bunnies_with_1000_rooms(self):
+        room_count = 1000
+        for i in range(room_count):
+            self.wars.add_room(i)
+        bunny_count = 10000
+        for i in range(bunny_count):
+            self.wars.add_bunny(str(i), 0, i//10)
+            self.assertEqual(self.wars.bunny_count(), i+1)
+
+    @timeout(0.4)
+    def test_add_10000_bunnies_with_1000_rooms_5_team(self):
+        room_count = 1000
+        for i in range(room_count):
+            self.wars.add_room(i)
+        bunny_count = 10000
+        for i in range(bunny_count):
+            self.wars.add_bunny(str(i), i % 5, i // 10)
+            self.assertEqual(self.wars.bunny_count(), i + 1)
+
+    @timeout(0.4)
+    def test_add_10000_random_bunnies_single_room_single_team(self):
+        self.wars.add_room(0)
+        bunny_count = 10000
+        for i in range(bunny_count):
+            rand_index = random.randint(0, len(self.name_prefixes)-1)
+            name = self.name_prefixes[rand_index] + str(i)
+            self.wars.add_bunny(name, 0, 0)
+            self.assertEqual(self.wars.bunny_count(), i+1)
+
+    @timeout(0.4)
+    def test_add_10000_random_bunnies_1000_room_5_teams(self):
+        room_count = 1000
+        bunny_count = 10000
+        for i in range(room_count):
+            self.wars.add_room(i)
+        for i in range(bunny_count):
+            rand_index = random.randint(0, len(self.name_prefixes) - 1)
+            name = self.name_prefixes[rand_index] + str(i)
+            self.wars.add_bunny(name, random.randint(0, 4), random.randint(0, 999))
+            self.assertEqual(self.wars.bunny_count(), i + 1)
+
 
     def test_add_bunny_to_a_non_existing_room(self):
         """ Should throw an exception"""
