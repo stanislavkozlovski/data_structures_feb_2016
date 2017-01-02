@@ -200,6 +200,8 @@ class AvlTree:
 
     def range(self, start, end):
         items = []
+        if self.root is None:
+            return []
 
         def in_order_dfs(node):
             nonlocal items
