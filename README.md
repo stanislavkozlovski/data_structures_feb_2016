@@ -29,7 +29,25 @@ Linked List, how a List(Vector) works and how it differs from a traditional arra
 * Find the [longest subsequence of equal numbers](/Linear Data Structures - Lists/homework/longest_subsequence.py) in an array
 * [Remove odd occurrences](/Linear Data Structures - Lists/homework/remove_odd_occurences.py)
 * [Count of occurrences](/Linear Data Structures - Lists/homework/count_of_occurences.py)
-######
-*Implement a [ReversedList](/Linear Data Structures - Lists/homework/reversed_list_implementation.py)
-#* ###### Implement a [LinkedList](/Linear Data Structures - Lists/homework/linked_list.py)
-* ##### [*Distance in Labyrinth](/Linear Data Structures - Lists/homework/distance_in_labyrinth.py)
+* __Implement a [ReversedList]__(/Linear Data Structures - Lists/homework/reversed_list_implementation.py)
+* __Implement a [LinkedList]__(/Linear Data Structures - Lists/homework/linked_list.py)
+* __[*Distance in Labyrinth]__(/Linear Data Structures - Lists/homework/distance_in_labyrinth.py)
+
+
+3.[Linear Data Structures – Stacks and Queues](/Linear Data Structures - Stacks and Queues/)
+-----
+Analysis of both data structures, their complexities and when to use which.
+
+### Exercises
+* Implement a [circular queue](/Linear Data Structures - Stacks and Queues/exercises/)
+
+### Homework
+* [Reverse numbers with a stack](/Linear Data Structures - Stacks and Queues/homework/reverse_numbers_with_stack.py)
+* [Calculate sequence with a queue](/Linear Data Structures - Stacks and Queues/homework/calculate_sequence_with_a_queue.py)
+* __Implement an [Array-Based Stack]__(/Linear Data Structures - Stacks and Queues/homework/array_based_stack.py)
+.....[Tests](/Linear Data Structures - Stacks and Queues/homework/tests_array_based_stack.py)
+* __Implement a [Linked Stack]__(/Linear Data Structures - Stacks and Queues/homework/linked_stack.py)
+.....[Tests](/Linear Data Structures - Stacks and Queues/homework/tests_linked_stack.py)
+* __Implement a [Linked Queue]__(/Linear Data Structures - Stacks and Queues/homework/linked_queue.py)
+.....[Tests](/Linear Data Structures - Stacks and Queues/homework/tests_linked_queue.py)
+* __[*Sequence N-M]__ (/Linear Data Structures - Stacks and Queues/homework/sequence_n_m.py)
