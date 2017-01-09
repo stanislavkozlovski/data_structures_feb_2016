@@ -31,7 +31,7 @@ Linked List, how a List(Vector) works and how it differs from a traditional arra
 * [Count of occurrences](/Linear Data Structures - Lists/homework/count_of_occurences.py)
 * __Implement a__ [__ReversedList__](/Linear Data Structures - Lists/homework/reversed_list_implementation.py)
 * __Implement a__ [__LinkedList__](/Linear Data Structures - Lists/homework/linked_list.py)
-* [#__*Distance in Labyrinth__](/Linear Data Structures - Lists/homework/distance_in_labyrinth.py)
+* [__*Distance in Labyrinth__](/Linear Data Structures - Lists/homework/distance_in_labyrinth.py)
 
 
 3.[Linear Data Structures – Stacks and Queues](/Linear Data Structures - Stacks and Queues/)
@@ -47,7 +47,7 @@ Analysis of both data structures, their complexities and when to use which.
 * __Implement an__ [__Array-Based Stack__](/Linear Data Structures - Stacks and Queues/homework/array_based_stack.py)
 
     [Array-Based Stack Tests](/Linear Data Structures - Stacks and Queues/homework/tests_array_based_stack.py)
-* __Implement a__ [__Linked Stack__](/Linear Data Structures - Stacks and Queues/homework/linked_stack.py
+* __Implement a__ [__Linked Stack__](/Linear Data Structures - Stacks and Queues/homework/linked_stack.py)
 
     [Linked Stack Tests](/Linear Data Structures - Stacks and Queues/homework/tests_linked_stack.py)
 * __Implement a__ [__Linked Queue__](/Linear Data Structures - Stacks and Queues/homework/linked_queue.py)
