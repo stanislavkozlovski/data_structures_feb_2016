@@ -21,7 +21,7 @@ Overview of the course, introduction to the Big-O notation and why algorithm spe
 Linked List, how a List(Vector) works and how it differs from a traditional array.
 
 ### Exercises
-* Implement a [double-linked list](/Linear Data Structures - Lists/exercises/)
+* Implement a [Double-Linked List](/Linear Data Structures - Lists/exercises/)
 
 ### Homework
 * [Get the sum and average of a list of integers](/Linear Data Structures - Lists/homework/sum_and_average.py)
@@ -29,9 +29,9 @@ Linked List, how a List(Vector) works and how it differs from a traditional arra
 * Find the [longest subsequence of equal numbers](/Linear Data Structures - Lists/homework/longest_subsequence.py) in an array
 * [Remove odd occurrences](/Linear Data Structures - Lists/homework/remove_odd_occurences.py)
 * [Count of occurrences](/Linear Data Structures - Lists/homework/count_of_occurences.py)
-* __Implement a [ReversedList]__(/Linear Data Structures - Lists/homework/reversed_list_implementation.py)
-* __Implement a [LinkedList]__(/Linear Data Structures - Lists/homework/linked_list.py)
-* __[*Distance in Labyrinth]__(/Linear Data Structures - Lists/homework/distance_in_labyrinth.py)
+* __Implement a__ [__ReversedList__](/Linear Data Structures - Lists/homework/reversed_list_implementation.py)
+* __Implement a__ [__LinkedList__](/Linear Data Structures - Lists/homework/linked_list.py)
+* [#__*Distance in Labyrinth__](/Linear Data Structures - Lists/homework/distance_in_labyrinth.py)
 
 
 3.[Linear Data Structures – Stacks and Queues](/Linear Data Structures - Stacks and Queues/)
@@ -39,18 +39,18 @@ Linked List, how a List(Vector) works and how it differs from a traditional arra
 Analysis of both data structures, their complexities and when to use which.
 
 ### Exercises
-* Implement a [circular queue](/Linear Data Structures - Stacks and Queues/exercises/)
+* Implement a [Circular Queue](/Linear Data Structures - Stacks and Queues/exercise/)
 
 ### Homework
 * [Reverse numbers with a stack](/Linear Data Structures - Stacks and Queues/homework/reverse_numbers_with_stack.py)
 * [Calculate sequence with a queue](/Linear Data Structures - Stacks and Queues/homework/calculate_sequence_with_a_queue.py)
-* __Implement an [Array-Based Stack]__(/Linear Data Structures - Stacks and Queues/homework/array_based_stack.py)
+* __Implement an__ [__Array-Based Stack__](/Linear Data Structures - Stacks and Queues/homework/array_based_stack.py)
 
-	.....[Tests](/Linear Data Structures - Stacks and Queues/homework/tests_array_based_stack.py)
-* __Implement a [Linked Stack]__(/Linear Data Structures - Stacks and Queues/homework/linked_stack.py)
+    [Array-Based Stack Tests](/Linear Data Structures - Stacks and Queues/homework/tests_array_based_stack.py)
+* __Implement a__ [__Linked Stack__](/Linear Data Structures - Stacks and Queues/homework/linked_stack.py
 
-	.....[Tests](/Linear Data Structures - Stacks and Queues/homework/tests_linked_stack.py)
-* __Implement a [Linked Queue]__(/Linear Data Structures - Stacks and Queues/homework/linked_queue.py)
+    [Linked Stack Tests](/Linear Data Structures - Stacks and Queues/homework/tests_linked_stack.py)
+* __Implement a__ [__Linked Queue__](/Linear Data Structures - Stacks and Queues/homework/linked_queue.py)
 
-	.....[Tests](/Linear Data Structures - Stacks and Queues/homework/tests_linked_queue.py)
+    [Linked Queue Tests](/Linear Data Structures - Stacks and Queues/homework/tests_linked_queue.py)
 * [__*Sequence N-M__] (/Linear Data Structures - Stacks and Queues/homework/sequence_n_m.py)
