@@ -29,6 +29,7 @@ Linked List, how a List(Vector) works and how it differs from a traditional arra
 * Find the [longest subsequence of equal numbers](/Linear Data Structures - Lists/homework/longest_subsequence.py) in an array
 * [Remove odd occurrences](/Linear Data Structures - Lists/homework/remove_odd_occurences.py)
 * [Count of occurrences](/Linear Data Structures - Lists/homework/count_of_occurences.py)
-* ###### Implement a [ReversedList](/Linear Data Structures - Lists/homework/reversed_list_implementation.py)
-* ###### Implement a [LinkedList](/Linear Data Structures - Lists/homework/linked_list.py)
+######
+*Implement a [ReversedList](/Linear Data Structures - Lists/homework/reversed_list_implementation.py)
+#* ###### Implement a [LinkedList](/Linear Data Structures - Lists/homework/linked_list.py)
 * ##### [*Distance in Labyrinth](/Linear Data Structures - Lists/homework/distance_in_labyrinth.py)
