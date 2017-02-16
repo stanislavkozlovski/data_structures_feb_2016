@@ -54,3 +54,23 @@ Analysis of both data structures, their complexities and when to use which.
 
     [Linked Queue Tests](/Linear Data Structures - Stacks and Queues/homework/tests_linked_queue.py)
 * [__*Sequence N-M__] (/Linear Data Structures - Stacks and Queues/homework/sequence_n_m.py)
+
+
+4.[Trees and Tree-Like Structures](/Trees and Tree-Like Structures/)
+--------------------------------------------------------------------
+Introduction to Trees, Binary Trees, Balanced Binary Trees(AVL, AA, B, RB) and Graphs
+
+### Exercises
+* Implement a [tree](/Trees and Tree-Like Structures/exercises/tree_implementation.py). [tests](/Trees and Tree-Like Structures/exercises/tests_tree.py)
+* Implement a [binary tree](/Trees and Tree-Like Structures/exercises/binary_tree_implementation). [tests](/Trees and Tree-Like Structures/exercises/tests_binary_tree.py)
+
+### Homework
+* [Play with Trees](/Trees and Tree-Like Structures/homework/play_with_trees.py), a program which can find
+    * The root node
+    *   All leaf nodes (in increasing order)
+    *   All middle nodes (in increasing order)
+    *   The longest path in the tree (the leftmost if several paths have the same longest length)
+    *   All paths in the tree with given sum P of their nodes (from the leftmost to the rightmost)
+    *   All subtrees with given sum S of their nodes (from the leftmost to the rightmost)
+* [Traverse Directory](/Trees and Tree-Like Structures/homework/traverse_and_save_directory_contents.py) - Build a tree from directories and calculate the sum of file sizes.
+* [__***Calculate Arithmetic Expression__](/Trees and Tree-Like Structures/homework/calculate_arithmetic_expression.py) - calculate arithmetic expressions using the Shunting Yard Algorithm
