@@ -80,7 +80,7 @@ Introduction to Trees, Binary Trees, Balanced Binary Trees(AVL, AA, B, RB) and G
 In-depth analysis of DFS and BFS
 
 ### Exercises
-* [Find Connected Components](/Tree Traversal Algorithms - BFS and DFS/exercises/traverse_graph_find_connected_components.py) [tests](/Tree Traversal Algorithms - BFS and DFS/exercises/test_traverse_graph.py)
+* [Find Connected Components](/Tree Traversal Algorithms - BFS and DFS/exercises/traverse_graph_find_connected_components.py) [tests](/Tree Traversal Algorithms - BFS and DFS/exercises/tests_traverse_graph.py)
 * [Find Nearest Exit From Labyrinth](/Tree Traversal Algorithms - BFS and DFS/exercises/nearest_exit_labyrinth.py) [tests](/Tree Traversal Algorithms - BFS and DFS/exercises/tests_exit_labyrinth.py)
 
 ### Homework
@@ -89,3 +89,16 @@ In-depth analysis of DFS and BFS
 * [Ride The Horse](/Tree Traversal Algorithms - BFS and DFS/homework/ride_the_horse.py) - Traverse matrix in a way a horse chesspiece would
 * [Longest Path In Tree](/Tree Traversal Algorithms - BFS and DFS/homework/longest_path_in_tree.py) - Find the longest path in a tree from leaf to leaf by the sum of the nodes.
 * [__*Sorting__](/Tree Traversal Algorithms - BFS and DFS/homework/sorting.py) - Each step, take K elements in the array and reverse them. Find the minimum number of such steps to completely sort the array.
+
+6.[Dictionaries and Hash Tables](/Dictionaries and Hash Tables/)
+----------------------------------------------------------------
+Dictionary implementations, how hash-tables work (collision strategies) and set implementations.
+
+### Exercises
+* [Implement a Hash Table with Chaining](/Dictionaries and Hash Tables/exercises/chaining_hash_table.py) [tests](/Dictionaries and Hash Tables/test_chaining_hash_table.py)
+
+### Homework (Use the Hash Table you created from the exercises)
+* [Count Character Occurrences In Text](/Dictionaries and Hash Tables/homework/count_symbols.py)
+* [Phonebook](/Dictionaries and Hash Tables/homework/phonebook.py)
+* Implement an [Ordered Set](/Dictionaries and Hash Tables/homework/ordered_set.py) [tests](/Dictionaries and Hash Tables/homework/test_ordered_set.py)
+* [**Balanced Ordered Set](/Dictionaries and Hash Tables/homework/balanced_ordered_set/ordered_set.py) [tests](/Dictionaries and Hash Tables/homework/balanced_ordered_set/ordered_set_tests.py)
