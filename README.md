@@ -74,3 +74,18 @@ Introduction to Trees, Binary Trees, Balanced Binary Trees(AVL, AA, B, RB) and G
     *   All subtrees with given sum S of their nodes (from the leftmost to the rightmost)
 * [Traverse Directory](/Trees and Tree-Like Structures/homework/traverse_and_save_directory_contents.py) - Build a tree from directories and calculate the sum of file sizes.
 * [__***Calculate Arithmetic Expression__](/Trees and Tree-Like Structures/homework/calculate_arithmetic_expression.py) - calculate arithmetic expressions using the Shunting Yard Algorithm
+
+5.[Trees Traversal Algorithms](/Tree Traversal Algorithms - BFS and DFS/)
+-------------------------------------------------------------------------
+In-depth analysis of DFS and BFS
+
+### Exercises
+* [Find Connected Components](/Tree Traversal Algorithms - BFS and DFS/exercises/traverse_graph_find_connected_components.py) [tests](/Tree Traversal Algorithms - BFS and DFS/exercises/test_traverse_graph.py)
+* [Find Nearest Exit From Labyrinth](/Tree Traversal Algorithms - BFS and DFS/exercises/nearest_exit_labyrinth.py) [tests](/Tree Traversal Algorithms - BFS and DFS/exercises/tests_exit_labyrinth.py)
+
+### Homework
+* [Find the Root](/Tree Traversal Algorithms - BFS and DFS/homework/find_the_root.py) - Figure out if the given graph is a tree and find it's root
+* [Round Dance](/Tree Traversal Algorithms - BFS and DFS/homework/round_dance.py) - Find the longest 'round dance'
+* [Ride The Horse](/Tree Traversal Algorithms - BFS and DFS/homework/ride_the_horse.py) - Traverse matrix in a way a horse chesspiece would
+* [Longest Path In Tree](/Tree Traversal Algorithms - BFS and DFS/homework/longest_path_in_tree.py) - Find the longest path in a tree from leaf to leaf by the sum of the nodes.
+* [__*Sorting__](/Tree Traversal Algorithms - BFS and DFS/homework/sorting.py) - Each step, take K elements in the array and reverse them. Find the minimum number of such steps to completely sort the array.
