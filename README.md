@@ -62,7 +62,7 @@ Introduction to Trees, Binary Trees, Balanced Binary Trees(AVL, AA, B, RB) and G
 
 ### Exercises
 * Implement a [tree](/Trees and Tree-Like Structures/exercises/tree_implementation.py). [tests](/Trees and Tree-Like Structures/exercises/tests_tree.py)
-* Implement a [binary tree](/Trees and Tree-Like Structures/exercises/binary_tree_implementation). [tests](/Trees and Tree-Like Structures/exercises/tests_binary_tree.py)
+* Implement a [binary tree](/Trees and Tree-Like Structures/exercises/binary_tree_implementation.py). [tests](/Trees and Tree-Like Structures/exercises/tests_binary_tree.py)
 
 ### Homework
 * [Play with Trees](/Trees and Tree-Like Structures/homework/play_with_trees.py), a program which can find
