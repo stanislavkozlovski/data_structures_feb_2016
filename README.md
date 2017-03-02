@@ -113,4 +113,5 @@ Ordered dictionaries, multi-dictionaries, ordered multi-dictionaries, sets, orde
 ### Homework
 * [Products in price range](/Collection Data Structures and Libraries/homework/products_in_price_range.py)
 * [String Editor](/Collection Data Structures and Libraries/homework/string_editor.py)
+* [__**Trie Data Struccture__](/Collection Data Structures and Libraries/homework/trie.py)
 * [__****Rope Data Structure__](/Collection Data Structures and Libraries/rope.py)
