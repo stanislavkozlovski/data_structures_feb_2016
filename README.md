@@ -95,10 +95,22 @@ In-depth analysis of DFS and BFS
 Dictionary implementations, how hash-tables work (collision strategies) and set implementations.
 
 ### Exercises
-* [Implement a Hash Table with Chaining](/Dictionaries and Hash Tables/exercises/chaining_hash_table.py) [tests](/Dictionaries and Hash Tables/test_chaining_hash_table.py)
+* [Implement a Hash Table with Chaining](/Dictionaries and Hash Tables/exercises/chaining_hash_table.py) [tests](/Dictionaries and Hash Tables/exercises/test_chaining_hash_table.py)
 
 ### Homework (Use the Hash Table you created from the exercises)
 * [Count Character Occurrences In Text](/Dictionaries and Hash Tables/homework/count_symbols.py)
 * [Phonebook](/Dictionaries and Hash Tables/homework/phonebook.py)
 * Implement an [Ordered Set](/Dictionaries and Hash Tables/homework/ordered_set.py) [tests](/Dictionaries and Hash Tables/homework/test_ordered_set.py)
 * [**Balanced Ordered Set](/Dictionaries and Hash Tables/homework/balanced_ordered_set/ordered_set.py) [tests](/Dictionaries and Hash Tables/homework/balanced_ordered_set/ordered_set_tests.py)
+
+7.[Collection Data Structures and Libraries](/Collection Data Structures and Libraries/)
+----------------------------------------------------------------
+Ordered dictionaries, multi-dictionaries, ordered multi-dictionaries, sets, ordered sets, bags, ordered bags, rope.
+### Exercises
+* [Simple String Editor Program](/Collection Data Structures and Libraries/exercises/efficient_string_editor.py/)
+* [Events in given range](/Collection Data Structures and Libraries/exercises/events_in_given_range.py)
+
+### Homework
+* [Products in price range](/Collection Data Structures and Libraries/homework/products_in_price_range.py)
+* [String Editor](/Collection Data Structures and Libraries/homework/string_editor.py)
+* [__****Rope Data Structure__](/Collection Data Structures and Libraries/rope.py)
