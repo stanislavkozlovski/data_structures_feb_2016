@@ -1,0 +1,6 @@
+[package]
+name = "red_black_tree"
+version = "0.1.0"
+authors = ["Enether <familyguyuser192@windowslive.com>"]
+
+[dependencies]
