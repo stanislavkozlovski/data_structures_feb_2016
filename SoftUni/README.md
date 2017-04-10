@@ -9,6 +9,7 @@ _Problems with an asterisk (*) are considered hard and optional._
 * <a href="/SoftUni/Dictionaries and Hash Tables/homework/red_black_tree/rb_tree.py">__****Red-Black Tree__</a> <a href="/SoftUni/Dictionaries and Hash Tables/homework/red_black_tree/rb_tree_tests.py">RB Tests</a>
 * <a href="/SoftUni/Dictionaries and Hash Tables/homework/balanced_ordered_set/ordered_set.py">**Balanced Ordered Set</a> <a href="/SoftUni/Dictionaries and Hash Tables/homework/balanced_ordered_set/ordered_set_tests.py">tests</a>
 * <a href="/SoftUni/Trees and Tree-Like Structures/homework/calculate_arithmetic_expression.py">__***Calculate Arithmetic Expression__</a> - calculate arithmetic expressions using the Shunting Yard Algorithm
+* KD-Tree - <a href="/SoftUni/Advanced Tree Structures - II/homework/mass_effect_galaxy_map_k_d_tree.py"> __*Mass Effect Galaxy Map__ </a>
 # Lessons
 
 
@@ -122,3 +123,23 @@ Ordered dictionaries, multi-dictionaries, ordered multi-dictionaries, sets, orde
 * <a href="/SoftUni/Collection Data Structures and Libraries/homework/string_editor.py">String Editor</a>
 * <a href="/SoftUni/Collection Data Structures and Libraries/homework/trie.py">__**Trie Data Struccture__</a>
 * <a href="/SoftUni/Collection Data Structures and Libraries/rope.py">__****Rope Data Structure__</a>
+
+8.<a href="/SoftUni/Advanced Tree Structures">Advanced Tree Structures/</a>
+----------------------------------------------------------------
+Learned about AA, AVL and Red-Black trees. Ropes.
+
+### Exercises
+* <a href="/SoftUni/Advanced Tree Structures/binary_heap.py">Implement a Binary Heap </a> <a href="/SoftUni/Advanced Tree Structures/binary_heap_tests.py">Tests</a>
+* <a href="/SoftUni/Advanced Tree Structures/avl_tree.py">Implement an AVL Tree </a> <a href="/SoftUni/Advanced Tree Structures/avl_tree_tests.py">Tests</a>
+
+9.<a href="/SoftUni/Advanced Tree Structures - II">Advanced Tree Structures/</a>
+----------------------------------------------------------------
+Learned about B-Trees, Heaps, Tries, Suffix Trees and Space-Partitioning Trees (Quad Tree, K-d Tree, etc.)
+ 
+### Exercises
+* Implement a <a href="/SoftUni/Advanced Tree Structures - II/exercises/quad_tree.py">Quad Tree</a> <a href="/SoftUni/Advanced Tree Structures - II/exercises/quad_tree_tests.py"></a>
+
+
+### Homework
+* <a href="/SoftUni/Advanced Tree Structures - II/homework/sweep_and_prune.py">Sweep and Prune algorithm</a>
+* KD-Tree - <a href="/SoftUni/Advanced Tree Structures - II/homework/mass_effect_galaxy_map_k_d_tree.py"> __*Mass Effect Galaxy Map__ </a>
