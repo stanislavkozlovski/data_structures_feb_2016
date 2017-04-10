@@ -1,7 +1,14 @@
 # data_structures_feb_2016
 Exercises and Homework for SoftUni's Data Structures February 2016 course, in Python.
 
-_Problems with an asterisk (*) are considered hard and optional.
+_Problems with an asterisk (*) are considered hard and optional._
+
+# Notable code
+* <a href="/SoftUni/Collection Data Structures and Libraries/homework/trie.py">__**Trie Data Struccture__</a>
+* <a href="/SoftUni/Collection Data Structures and Libraries/rope.py">__****Rope Data Structure__</a>
+* <a href="/SoftUni/Dictionaries and Hash Tables/homework/red_black_tree/rb_tree.py">__****Red-Black Tree__</a> <a href="/SoftUni/Dictionaries and Hash Tables/homework/red_black_tree/rb_tree_tests.py">RB Tests</a>
+* <a href="/SoftUni/Dictionaries and Hash Tables/homework/balanced_ordered_set/ordered_set.py">**Balanced Ordered Set</a> <a href="/SoftUni/Dictionaries and Hash Tables/homework/balanced_ordered_set/ordered_set_tests.py">tests</a>
+* <a href="/SoftUni/Trees and Tree-Like Structures/homework/calculate_arithmetic_expression.py">__***Calculate Arithmetic Expression__</a> - calculate arithmetic expressions using the Shunting Yard Algorithm
 # Lessons
 
 
