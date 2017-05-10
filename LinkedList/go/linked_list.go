@@ -52,6 +52,19 @@ func (ll *LinkedList) RemoveFirst() (val int, err error) {
 	return
 }
 
+/*
+	Converts the LinkedList to a Slice
+ */
+func (ll *LinkedList) ToSlice() []int {
+	sliceList := make([]int, 0)
+
+	for currNode := ll.root; currNode != nil; currNode = currNode.next {
+		sliceList = append(sliceList, currNode.value)
+	}
+
+	return sliceList
+}
+
 func (ll* LinkedList) PeekLast() (val int, err error) {
 	if ll.length == 0 {
 		return 0, errors.New("There is nothing to peek!")

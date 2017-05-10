@@ -3,6 +3,7 @@ package linked_list
 import (
 	"testing"
 	"fmt"
+	"reflect"
 )
 
 func TestLengthIncreasesOnAdd(t *testing.T) {
@@ -152,6 +153,40 @@ func TestPeekFirstNoElementsReturnsErr(t *testing.T) {
 	_, err := linkedList.PeekFirst()
 	if err == nil {
 		fmt.Println("Should not be able to peek anything on an empty list")
+		t.Fail()
+	}
+}
+
+func TestToSlice(t *testing.T) {
+	var linkedList LinkedList
+	expectedSlice := []int{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}
+	for _, i := range expectedSlice {
+		linkedList.Add(i)
+	}
+	receivedSlice := linkedList.ToSlice()
+	if !reflect.DeepEqual(expectedSlice, receivedSlice) {
+		fmt.Printf("%v is not equal to the expected slice %v\n", receivedSlice, expectedSlice)
+		t.Fail()
+	}
+}
+
+func TestToSliceEmptyList(t *testing.T) {
+	var linkedList LinkedList
+	expectedSlice := []int{}
+	receivedSlice := linkedList.ToSlice()
+	if !reflect.DeepEqual(expectedSlice, receivedSlice) {
+		fmt.Printf("%v is not equal to the expected slice %v\n", receivedSlice, expectedSlice)
+		t.Fail()
+	}
+}
+
+func TestToSliceOneElementList(t *testing.T) {
+	var linkedList LinkedList
+	linkedList.Add(1)
+	expectedSlice := []int{1}
+	receivedSlice := linkedList.ToSlice()
+	if !reflect.DeepEqual(expectedSlice, receivedSlice) {
+		fmt.Printf("%v is not equal to the expected slice %v\n", receivedSlice, expectedSlice)
 		t.Fail()
 	}
 }
