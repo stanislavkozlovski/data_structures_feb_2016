@@ -114,6 +114,10 @@ func (tree *AATree) split(grandParent, parent, leaf *aaNode) {
 			GGParent.right = parent
 		}
 	}
+	if grandParent == tree.root {
+		// we now have a new root
+		tree.root = parent
+	}
 	parent.parent = GGParent  // R parent is now some upwards node
 	grandParent.parent = parent  // R parent is now P
 

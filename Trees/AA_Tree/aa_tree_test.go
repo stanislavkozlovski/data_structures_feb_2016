@@ -57,6 +57,51 @@ func TestSplitVanilla(t *testing.T) {
 	assert.Equal(t, testParent.level, 0)
 }
 
+func TestSplitDeepTree(t *testing.T) {
+	/*
+	255 (A)(10)                                              256 (B) (11)
+	  \                                                     /    \
+	  256 (B)(10)                                        255(A) 257(C) (10)
+	    \                                                        \
+	    257 (C)(10)                                             300 (D)
+	      \                                                    /   \
+	      300 (D)(9)                                         209  302
+	    /   \                                                      \
+(5)  209(F) 302 (E)(8)                                            304
+	         \
+	        304 (G)(7)
+	 */
+	A := aaNode {value: 255}
+	B := aaNode {value: 256, parent: &A}
+	C := aaNode {value: 257, parent: &B}
+	D := aaNode {value: 300, parent: &C}
+	E := aaNode {value: 302, parent: &D}
+	F := aaNode {value: 209, parent: &D}
+	G := aaNode {value: 304, parent: &E}
+	A.right = &B
+	B.right = &C
+	C.right = &D
+	D.right = &E
+	D.left = &F
+	E.right = &G
+	tree := AATree{root:&A}
+
+	tree.split(&A, &B, &C)
+
+	assert.Nil(t, B.parent)
+	assert.Equal(t, tree.root.value, B.value, "Root is not B	") // new root
+	assert.Equal(t, B.left.value, A.value)
+	assert.Equal(t, A.parent.value, B.value)
+	assert.Nil(t, A.right)
+	assert.Equal(t, B.right.value, 257)
+	assert.Equal(t, C.parent.value, 256)
+	assert.Equal(t, C.right.value, 300)
+	assert.Equal(t, D.parent.value, 257)
+	assert.Equal(t, D.left.value, 209)
+	assert.Equal(t, D.right.value, 302)
+	// no need to check further
+}
+
 /*
 Returns a boolean indicating if the given aaNode is the right grandchild
 1								5					10
