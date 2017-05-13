@@ -1,6 +1,8 @@
 package AA_Tree
 
-import "log"
+import (
+	"log"
+)
 
 type aaNode struct {
 	parent *aaNode
@@ -64,7 +66,20 @@ func (tree *AATree) add(value int, node *aaNode) {
 				value: value,
 				level: 1,
 			}
+
 			node.left = &newNode
+			if node.level <= newNode.level {
+				// skew
+				tree.skew(node, &newNode)
+				// check for split, our parent (node) would now be the middle element
+				if node.right != nil {
+					grandParent := node.parent
+					if grandParent != nil && node.right.isRightGrandChild(grandParent) && grandParent.level <= node.right.level {
+						// need to split
+						tree.split(grandParent, node, node.right)
+					}
+				}
+			}
 		} else {
 			tree.add(value, node.left)
 		}
@@ -87,6 +102,7 @@ func (tree *AATree) add(value int, node *aaNode) {
 			grandParent := newNode.getGrandparent()
 			if grandParent != nil && newNode.isRightGrandChild(grandParent) && grandParent.level <= newNode.level {
 				// need to split
+				tree.split(grandParent, node, &newNode)
 			}
 		} else {
 			tree.add(value, node.right)
@@ -128,4 +144,30 @@ func (tree *AATree) split(grandParent, parent, leaf *aaNode) {
 
 	parent.left = grandParent
 	parent.level++
+}
+
+/*
+Performs a skew operation, given the two needed nodes
+	12(A) 1                11(B)1
+	/          ===>          \
+  11(B) 1                   12(A)1
+ */
+func (tree *AATree) skew(parent, leaf *aaNode) {
+	grandParent := parent.parent
+	if grandParent != nil {
+		if grandParent.value < parent.value {
+			// new GP right
+			grandParent.right = leaf
+		} else {
+			// new GP left
+			grandParent.left = leaf
+		}
+	} else {
+		// new root
+		tree.root = leaf
+	}
+	leaf.parent = grandParent
+	leaf.right = parent
+	parent.left = nil
+	parent.parent = leaf
 }
