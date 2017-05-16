@@ -108,6 +108,26 @@ func (tree *AATree) add(value int, node *aaNode) {
 			tree.add(value, node.right)
 		}
 	}
+
+	// check for skew
+	if node.left != nil && node.left.level >= node.level {
+		// skew
+		tree.skew(node, node.left)
+		// check for split, our parent (node) would now be the middle element
+		if node.right != nil {
+			grandParent := node.parent
+			if grandParent != nil && node.right.isRightGrandChild(grandParent) && grandParent.level <= node.right.level {
+				// need to split
+				tree.split(grandParent, node, node.right)
+			}
+		}
+	}
+	// check for split
+	grandParent := node.getGrandparent()
+	if grandParent != nil && node.isRightGrandChild(grandParent) && grandParent.level <= node.level {
+		// need to split
+		tree.split(grandParent, node.parent, node)
+	}
 }
 
 /*
@@ -166,8 +186,14 @@ func (tree *AATree) skew(parent, leaf *aaNode) {
 		// new root
 		tree.root = leaf
 	}
+
+	// figure out where the LEAF
 	leaf.parent = grandParent
+	oldRight := leaf.right
 	leaf.right = parent
-	parent.left = nil
+	parent.left = oldRight
+	if oldRight != nil {
+		oldRight.parent = parent
+	}
 	parent.parent = leaf
 }

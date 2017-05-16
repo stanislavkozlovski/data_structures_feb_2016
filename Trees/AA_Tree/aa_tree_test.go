@@ -3,6 +3,7 @@ package AA_Tree
 import (
 	"testing"
     "github.com/stretchr/testify/assert"
+	"fmt"
 )
 
 
@@ -13,6 +14,7 @@ import (
 func TestFunctionalTestTree(t *testing.T) {
 	// add items to the tree consecutively and test it
 	// the given names, e.g A, B are put for easier orientation and reference
+	fmt.Println("")  // so that I don't have to always remove the "fmt" import
 	tree := AATree{}
 	tree.Add(100)
 	/*
@@ -66,7 +68,7 @@ func TestFunctionalTestTree(t *testing.T) {
 	assert.Equal(t, D.value, 102)
 	assert.Equal(t, D.parent.value, 101)
 	/*
-	Add 103 for a skew
+	Add 103 for a split
 	    100(A)2                           100(A)2
 		/    \                           /      \
 	99(C)1   101(B)1                   99(C)1  102(D)2
@@ -84,6 +86,209 @@ func TestFunctionalTestTree(t *testing.T) {
 	assert.Equal(t, B.parent.value, 102)
 	assert.Equal(t, A.right.value, 102)
 	assert.Equal(t, D.parent.value, 100)
+
+	/*
+	Add 104
+		   100(A)2
+		  /      \
+		99(C)1  102(D)2
+				/    \
+			101(B)1  103(E)1
+			           \
+			          104(F)1
+	 */
+	tree.Add(104)
+	F := E.right
+	assert.Equal(t, F.value, 104)
+	assert.Equal(t, F.parent.value, 103)
+	assert.Equal(t, E.level, 1)
+	assert.Nil(t, E.left)
+
+	/*
+	Add 105 for a split                               This should cause another split
+		   100(A)2								100(A)2										         ---102(D)3---
+		  /      \						        /     \												/            \
+		99(C)1  102(D)2				==>		99(C)1	  102(D)2				==>				     100(A)2	     104(F)2
+				/    \								/       \									/	\			 /    \
+			101(B)1  103(E)1        		     101(B)1   104(F)2							99(C)1  101(B)1	 103(E)1  105(H)1
+			           \									/   \
+			          104(F)1							103(E)1  105(H)1
+			             \
+			             105(H)1
+	 */
+	tree.Add(105)
+	H := F.right
+	assert.Equal(t, H.value, 105)
+	assert.Equal(t, H.parent.value, 104)
+	assert.Equal(t, tree.root.value, 102)
+	assert.Equal(t, tree.root.level, 3)
+	assert.Nil(t, tree.root.parent)
+
+	assert.Equal(t, A.parent.value, 102)
+	assert.Equal(t, A.right.value, 101)
+	assert.Equal(t, A.left.value, 99)
+	assert.Equal(t, A.level, 2)
+
+	assert.Equal(t, B.parent.value, 100)
+	assert.Equal(t, C.parent.value, 100)
+
+	assert.Nil(t, E.left)
+	assert.Nil(t, E.right)
+	assert.Equal(t, F.level, 2)
+	assert.Equal(t, F.left.value, 103)
+	assert.Equal(t, F.right.value, 105)
+
+	/*
+	Add 130
+		 ---102(D)3---
+		/            \
+     100(A)2	     104(F)2
+	/	\			 /    \
+99(C)1  101(B)1	 103(E)1  105(H)1
+                             \
+                             130(I)1
+	 */
+	tree.Add(130)
+	I := H.right
+	assert.Equal(t, I.value, 130)
+	assert.Equal(t, I.parent.value, 105)
+	assert.Equal(t, H.level, 1)
+
+	/*
+	Add 129 for a skew
+		 ---102(D)3---                             	         ---102(D)3---
+		/            \                             	        /              \
+     100(A)2	     104(F)2                            100(A)2	         104(F)2
+	/	\			 /    \                          	/	\			  /    \
+99(C)1  101(B)1	 103(E)1  105(H)1    ==>           99(C)1  101(B)1	 103(E)1  105(H)1
+                             \                                                  \
+                             130(I)1                                            129(J)1
+                             /                                                     \
+                           129(J)1                                                 130(I)1
+
+                           Which causes a split
+
+               ---102(D)3---
+  	        /              \
+       100(A)2	         104(F)2
+    	/	\			  /    \
+  99(C)1  101(B)1	 103(E)1  129(J)2
+                              /     \
+                          105(H)1   130(I)1
+	 */
+	tree.Add(129)
+
+	J := F.right
+	assert.Equal(t, J.value, 129)
+	assert.Equal(t, J.level, 2)
+	assert.Equal(t, J.left.value, 105)
+	assert.Equal(t, J.right.value, 130)
+	assert.Equal(t, H.parent.value, 129)
+	assert.Equal(t, I.parent.value, 129)
+
+	assert.Nil(t, I.left)
+	assert.Nil(t, I.right)
+	assert.Nil(t, H.left)
+	assert.Nil(t, H.right)
+
+	/*
+	Add 108
+
+		____102(D)3______
+	   /                 \
+   100(A)2              104(F)2
+   /    \               /     \
+99(C)1  101(B)1     103(E)1   129(J)2
+                              /      \
+                           105(H)1   130(I)1
+                              \
+                              108(K)1
+	 */
+	tree.Add(108)
+	K := H.right
+	assert.Equal(t, K.value, 108)
+	assert.Equal(t, K.level, 1)
+	assert.Equal(t, K.parent.value, 105)
+	assert.Equal(t, H.level, 1)
+
+	/*
+	Add 109, now it gets scary
+
+			________102(D)3______________
+		  /                             \
+	   100(A)2                         104(F)2
+	  /      \                       /        \
+   99(C)1   101(B)1 	         103(E)1      129(J)2
+                                             /       \
+                                         105(H)1      130(I)1
+                                             \
+                                            108(K)1
+                                               \
+                                               109(L)1
+
+	This triggers a split in between H, K and L
+			________102(D)3______________
+		  /                             \
+	   100(A)2                         104(F)2
+	  /      \                       /        \
+   99(C)1   101(B)1 	         103(E)1      129(J)2
+                                             /       \
+                                         108(K)2      130(I)1
+                                         /    \
+                                    105(H)1  109(L)1
+    This triggers a skew in between K and J, since they're the same level
+
+    	    ________102(D)3______________
+		  /                             \
+	   100(A)2                         104(F)2
+	  /      \                       /        \
+   99(C)1   101(B)1 	         103(E)1      108(K)2
+                                             /       \
+                                         105(H)1     129(J)2
+                                                     /      \
+                                                 109(L)1     130(I)1
+    This should cause a split in between J, K and F
+      	    ________102(D)3______
+		  /                      \
+	   100(A)2                  __108(K)3__
+	  /      \                /            \
+ 99(C)1   101(B)1 	      104(F)2         129(J)2
+                         /   \              /    \
+                   103(E)1  105(H)1      109(L)1  130(I)1
+	 */
+	// test the whole left subtree
+	tree.Add(109)
+	L := J.left
+
+	assert.Equal(t, tree.root.right.value, 108)
+	assert.Equal(t, K.parent.value, 102)
+	assert.Equal(t, K.level, 3)
+	assert.Equal(t, K.left.value, 104)
+	assert.Equal(t, K.right.value, 129)
+
+	// test F subtree
+	assert.Equal(t, F.parent.value, 108)
+	assert.Equal(t, F.left.value, 103)
+	assert.Equal(t, F.right.value, 105)
+	assert.Equal(t, E.parent.value, 104)
+	assert.Equal(t, H.parent.value, 104)
+	assert.Nil(t, H.left)
+	assert.Nil(t, H.right)
+	assert.Nil(t, E.left)
+	assert.Nil(t, E.right)
+
+	// test J subtree
+	assert.Equal(t, J.parent.value, 108)
+	assert.Equal(t, J.level, 2)
+	assert.Equal(t, J.left.value, 109)  // TODO: FAILS
+	assert.Equal(t, J.right.value, 130)
+	assert.Equal(t, I.parent.value, 129)
+	assert.Equal(t, L.parent.value, 129)
+
+	assert.Nil(t, L.left)
+	assert.Nil(t, L.right)
+	assert.Nil(t, I.left)
+	assert.Nil(t, I.right)
 }
 
 
@@ -246,6 +451,39 @@ func TestSkewDeepTree(t *testing.T) {
 	assert.Equal(t, G.right.value, 10)
 	assert.Equal(t, G.parent.value, 11)
 	assert.Equal(t, E.left.value, 9)
+}
+
+
+/*
+			129(J)2                                  108(K)2
+         /       \                                 /       \
+     108(K)2      130(I)1  ==>                  105(H)1     129(J)2
+     /    \                                                  /   \
+105(H)1  109(L)1                                        109(L)  130(I)1
+Assert that the L node was preserved
+ */
+func TestSkewPreserveRightChild(t *testing.T) {
+	J := aaNode{value: 129, level:2}
+	K := aaNode{value: 108, level:2, parent:&J}
+	I := aaNode{value: 130, level:1, parent:&J}
+	J.left = &K
+	J.right= &I
+	H := aaNode{value: 105, level:1, parent: &K}
+	L := aaNode{value: 109, level:1, parent:&K}
+	K.left = &H
+	K.right = &L
+	tree := AATree{root:&J}
+
+	tree.skew(&J, &K)
+
+	assert.Equal(t, tree.root.value, 108)
+	assert.Equal(t, K.left.value, 105)
+	assert.Equal(t, K.right.value, 129)
+	assert.Equal(t, J.parent.value, 108)
+
+	assert.Equal(t, J.left.value, 109) // important
+	assert.Equal(t, J.right.value, 130)
+
 }
 
 /*
