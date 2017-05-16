@@ -17,6 +17,9 @@ func TestFunctionalTestTree(t *testing.T) {
 	fmt.Println("")  // so that I don't have to always remove the "fmt" import
 	tree := AATree{}
 	tree.Add(100)
+	assert.Equal(t, tree.count, 1)
+
+
 	/*
 			100(A) 1
 	 */
@@ -27,6 +30,7 @@ func TestFunctionalTestTree(t *testing.T) {
 	assert.Nil(t, tree.root.left)
 
 	tree.Add(101)
+	assert.Equal(t, tree.count, 2)
 	/*
 	         100(A) 1
 	            \
@@ -46,6 +50,8 @@ func TestFunctionalTestTree(t *testing.T) {
 		                              101(B)1
 	 */
 	tree.Add(99)
+	assert.Equal(t, tree.count, 3)
+
 	C := tree.root.left
 	assert.Equal(t, C.value, 99)
 	assert.Equal(t, C.level, 1)
@@ -64,6 +70,8 @@ func TestFunctionalTestTree(t *testing.T) {
 		       102(D)1
     */
 	tree.Add(102)
+	assert.Equal(t, tree.count, 4)
+
 	D := B.right
 	assert.Equal(t, D.value, 102)
 	assert.Equal(t, D.parent.value, 101)
@@ -78,6 +86,8 @@ func TestFunctionalTestTree(t *testing.T) {
 		       103(E)1
 	 */
 	tree.Add(103)
+	assert.Equal(t, tree.count, 5)
+
 	E := D.right
 	assert.Equal(t, E.value, 103)
 	assert.Equal(t, D.level, 2)
@@ -98,6 +108,8 @@ func TestFunctionalTestTree(t *testing.T) {
 			          104(F)1
 	 */
 	tree.Add(104)
+	assert.Equal(t, tree.count, 6)
+
 	F := E.right
 	assert.Equal(t, F.value, 104)
 	assert.Equal(t, F.parent.value, 103)
@@ -117,6 +129,8 @@ func TestFunctionalTestTree(t *testing.T) {
 			             105(H)1
 	 */
 	tree.Add(105)
+	assert.Equal(t, tree.count, 7)
+
 	H := F.right
 	assert.Equal(t, H.value, 105)
 	assert.Equal(t, H.parent.value, 104)
@@ -149,6 +163,8 @@ func TestFunctionalTestTree(t *testing.T) {
                              130(I)1
 	 */
 	tree.Add(130)
+	assert.Equal(t, tree.count, 8)
+
 	I := H.right
 	assert.Equal(t, I.value, 130)
 	assert.Equal(t, I.parent.value, 105)
@@ -177,6 +193,7 @@ func TestFunctionalTestTree(t *testing.T) {
                           105(H)1   130(I)1
 	 */
 	tree.Add(129)
+	assert.Equal(t, tree.count, 9)
 
 	J := F.right
 	assert.Equal(t, J.value, 129)
@@ -205,6 +222,8 @@ func TestFunctionalTestTree(t *testing.T) {
                               108(K)1
 	 */
 	tree.Add(108)
+	assert.Equal(t, tree.count, 10)
+
 	K := H.right
 	assert.Equal(t, K.value, 108)
 	assert.Equal(t, K.level, 1)
@@ -258,6 +277,7 @@ func TestFunctionalTestTree(t *testing.T) {
 	 */
 	// test the whole left subtree
 	tree.Add(109)
+	assert.Equal(t, tree.count, 11)
 	L := J.left
 
 	assert.Equal(t, tree.root.right.value, 108)

@@ -1,8 +1,5 @@
 package AA_Tree
 
-import (
-	"log"
-)
 
 type aaNode struct {
 	parent *aaNode
@@ -38,6 +35,8 @@ Returns a boolean indicating if the given aaNode is the right grandchild
 func (node *aaNode) isRightGrandChild(grandParent *aaNode) bool {
 	return grandParent.right != nil && grandParent.right.right != nil && grandParent.right.right == node
 }
+
+/* Adds a value into the tree */
 func (tree *AATree) Add(value int) {
 	if tree.root == nil {
 		// No root, create new one
@@ -52,8 +51,13 @@ func (tree *AATree) Add(value int) {
 	} else {
 		tree.add(value, tree.root)
 	}
+
+	tree.count++
 }
 
+/* The internal add function, which traverses the trees nodes until it lands at the correct node,
+left/right of which the new node should be inserted.
+ Backtracing from the recursion, we check if we should perform a split or skew operation*/
 func (tree *AATree) add(value int, node *aaNode) {
 	if value < node.value {
 		// go left
@@ -66,24 +70,14 @@ func (tree *AATree) add(value int, node *aaNode) {
 				value: value,
 				level: 1,
 			}
-
 			node.left = &newNode
-			if node.level <= newNode.level {
-				// skew
-				tree.skew(node, &newNode)
-				// check for split, our parent (node) would now be the middle element
-				if node.right != nil {
-					grandParent := node.parent
-					if grandParent != nil && node.right.isRightGrandChild(grandParent) && grandParent.level <= node.right.level {
-						// need to split
-						tree.split(grandParent, node, node.right)
-					}
-				}
-			}
+
+			// We've added a left node, check for a need to skew
+			tree.checkSkew(&newNode)
 		} else {
 			tree.add(value, node.left)
 		}
-	} else {
+	} else if value > node.value {
 		// go right
 		if node.right == nil {
 			// new right aaNode
@@ -95,39 +89,19 @@ func (tree *AATree) add(value int, node *aaNode) {
 				level: 1,
 			}
 			node.right = &newNode
-			if newNode.parent.level < newNode.level {
-				log.Fatal("New Right Node's parent cannot have a lesser level than him!")
-			}
 
-			grandParent := newNode.getGrandparent()
-			if grandParent != nil && newNode.isRightGrandChild(grandParent) && grandParent.level <= newNode.level {
-				// need to split
-				tree.split(grandParent, node, &newNode)
-			}
+			// We've added a right node, check for a need to split
+			tree.checkSplit(&newNode)
 		} else {
 			tree.add(value, node.right)
 		}
+	} else {
+		panic("Equal elements are unsupported!")
 	}
 
-	// check for skew
-	if node.left != nil && node.left.level >= node.level {
-		// skew
-		tree.skew(node, node.left)
-		// check for split, our parent (node) would now be the middle element
-		if node.right != nil {
-			grandParent := node.parent
-			if grandParent != nil && node.right.isRightGrandChild(grandParent) && grandParent.level <= node.right.level {
-				// need to split
-				tree.split(grandParent, node, node.right)
-			}
-		}
-	}
-	// check for split
-	grandParent := node.getGrandparent()
-	if grandParent != nil && node.isRightGrandChild(grandParent) && grandParent.level <= node.level {
-		// need to split
-		tree.split(grandParent, node.parent, node)
-	}
+	// Backtracking through the path, check for skews and splits
+	tree.checkSkew(node)
+	tree.checkSplit(node)
 }
 
 /*
@@ -141,7 +115,7 @@ Performs a split operation, given the three needed nodes
      i.e if 12 had a left child 11.5, 11.5 should become the right child of the new 11
  */
 func (tree *AATree) split(grandParent, parent, leaf *aaNode) {
-	// fix grandgrandparent link
+	// fixes grandgrandparent's link
 	GGParent := grandParent.parent
 	if GGParent != nil {
 		if GGParent.left == grandParent {
@@ -164,6 +138,15 @@ func (tree *AATree) split(grandParent, parent, leaf *aaNode) {
 
 	parent.left = grandParent
 	parent.level++
+}
+
+/* Given a node, check if a Split operation should be performed, by checking the node's grandparent level
+	The node we're given would be the downmost one in the split operation */
+func (tree *AATree) checkSplit(node *aaNode) {
+	grandParent := node.getGrandparent()
+	if grandParent != nil && node.isRightGrandChild(grandParent) && grandParent.level <= node.level {
+		tree.split(grandParent, node.parent, node)
+	}
 }
 
 /*
@@ -196,4 +179,22 @@ func (tree *AATree) skew(parent, leaf *aaNode) {
 		oldRight.parent = parent
 	}
 	parent.parent = leaf
+}
+
+/* Given a node, check is a Skew operation should be performed by checking if its a left child
+		and if its level is bigger or equal to his parent's*/
+func (tree *AATree) checkSkew(node *aaNode) {
+	parent := node.parent
+	if parent != nil && parent.left == node && parent.level <= node.level {
+		tree.skew(parent, node)
+		// check for split, our parent would now be the middle element
+		if parent.right != nil {
+			grandParent := node
+			if grandParent != nil && parent.right.isRightGrandChild(grandParent) && grandParent.level <= parent.right.level {
+				// TODO: We never get in here, not sure if it works
+				// I'm not even sure it's possible to get here
+				tree.split(grandParent, parent, parent.right)
+			}
+		}
+	}
 }
