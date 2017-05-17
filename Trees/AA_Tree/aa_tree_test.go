@@ -10,9 +10,8 @@ import (
 
 
 
-
+/* // add items to the tree consecutively and test it */
 func TestFunctionalTestTree(t *testing.T) {
-	// add items to the tree consecutively and test it
 	// the given names, e.g A, B are put for easier orientation and reference
 	fmt.Println("")  // so that I don't have to always remove the "fmt" import
 	tree := AATree{}
@@ -312,7 +311,80 @@ func TestFunctionalTestTree(t *testing.T) {
 }
 
 
+/* Remove items from the tree consecutively and test it */
+func TestFunctionalTestTreeRemoval(t *testing.T) {
+	// Given this tree
+	/*
+	     ___3(A)3___
+        /           \
+     1(B)2         5(C)2
+    /   \           /   \
+0(D)1  2(E)1     4(F)1 6(G)1
+	 */
+	// Construct the tree
+	A := aaNode{value: 3, level: 3}
+	B := aaNode{value: 1, level: 2, parent: &A}
+	C := aaNode{value: 5, level: 2, parent: &A}
+	A.left = &B
+	A.right = &C
+	D := aaNode{value: 0, level: 1, parent: &B}
+	E := aaNode{value: 2, level: 1, parent: &B}
+	B.left = &D
+	B.right = &E
+	F := aaNode{value: 4, level: 1, parent: &C}
+	G := aaNode{value: 6, level: 1, parent: &C}
+	C.left = &F
+	C.right = &G
+	tree := AATree{root: &A}
 
+	// Remove 0(D)1 from the tree
+	/*
+	Removing O(D)1 will cause a level discrepancy between B and B's left child,
+	lowering B's level to 1. That in turn will cause a level discrepancy between A and B,
+	lowering A's level to 2
+	     ___3(A)2___
+        /           \
+     1(B)1         5(C)2
+       \           /   \
+      2(E)1     4(F)1 6(G)1
+	 */
+	// TODO: Test same with G level being 2, requiring a split in A, C, G
+	tree.Remove(0)
+	assert.Equal(t, A.level, 2)
+	assert.Equal(t, B.level, 1)
+	assert.Nil(t, B.left)
+
+	// Remove 3(A)2 *the root* from the tree
+	/*
+	This will exchange 3(A)2 with 2(E)1 and remove the leaf
+	2E takes the level of the removed node
+	    ___2E(2)___
+        /           \
+     1(B)1         5(C)2
+                   /   \
+                4F(1)  6(G)1
+      No rebalancing is required
+	*/
+	// Rename the nodes, since internally the A node is still alive, simply had its value switched
+	tree.Remove(3)
+	E = *tree.root
+	B = *E.left
+	C = *E.right
+	F = *C.left
+	G = *C.right
+
+	assert.Equal(t, tree.root.value, 2)
+	assert.Nil(t, tree.root.parent)
+	assert.Equal(t, E.level, 2)
+	assert.Equal(t, B.value, 1)
+	assert.Equal(t, B.level, 1)
+	assert.Equal(t, B.parent.value, 2)
+	assert.Nil(t, B.right)
+	assert.Equal(t, C.value, 5)
+	assert.Equal(t, C.level, 2)
+	assert.Equal(t, C.parent.value, 2)
+
+}
 
 /*
 Performs a split operation, given the three needed nodes
@@ -411,6 +483,39 @@ func TestSplitDeepTree(t *testing.T) {
 }
 
 /*
+				Split on R, P, G
+				the node A should be preserved
+         11(R)                        15(P)
+        /  \                         /     \
+    10(K)   15(P)   ===“          11(R)    17(G)
+          /   \                  /   \
+       12(A) 17(G)            10(K)  12(A)
+ */
+func TestSplitPreservesLeftChild(t *testing.T) {
+	R := aaNode{value: 11}
+	K := aaNode{value: 10, parent: &R}
+	P := aaNode{value: 15, parent: &R}
+	A := aaNode{value: 12, parent: &P}
+	G := aaNode{value: 17, parent: &P}
+	R.left = &K
+	R.right = &P
+	P.left = &A
+	P.right = &G
+	tree := AATree{root: &R}
+	tree.split(&R, &P, &G)
+
+	assert.Equal(t, tree.root.value, 15)
+	assert.Nil(t, tree.root.parent)
+	assert.Equal(t, P.left.value, 11)
+	assert.Equal(t, P.right.value, 17)
+	assert.Equal(t, G.parent.value, 15)
+	assert.Equal(t, R.parent.value, 15)
+	assert.Equal(t, R.left.value, 10)
+	assert.Equal(t, R.right.value, 12)  // important
+	assert.Equal(t, A.parent.value, 11)
+}
+
+/*
 Performs a skew operation, given the two needed nodes
 	12(A) 1                11(B)1
 	 / \                     \
@@ -505,6 +610,33 @@ func TestSkewPreserveRightChild(t *testing.T) {
 	assert.Equal(t, J.right.value, 130)
 
 }
+
+
+
+/*
+			129(J)2         			129(J)2
+         /       \                   /       \
+     108(K)2      130(I)1        108(K)2      130(I)1
+     /    \                      /
+105(H)1  109(L)1            105(H)1
+ */
+//func TestTreeRemoveLeaf(t *testing.T) {
+//	J := aaNode{value: 129, level:2}
+//	K := aaNode{value: 108, level:2, parent:&J}
+//	I := aaNode{value: 130, level:1, parent:&J}
+//	J.left = &K
+//	J.right= &I
+//	H := aaNode{value: 105, level:1, parent: &K}
+//	L := aaNode{value: 109, level:1, parent:&K}
+//	K.left = &H
+//	K.right = &L
+//	tree := AATree{root:&J}
+//	tree.count = 5
+//	tree.Remove(109)
+//
+//	assert.Equal(t, tree.count, 4)
+//	assert.Nil(t, K.right)
+//}
 
 /*
 Returns a boolean indicating if the given aaNode is the right grandchild

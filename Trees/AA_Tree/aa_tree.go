@@ -1,5 +1,6 @@
 package AA_Tree
 
+import "fmt"
 
 type aaNode struct {
 	parent *aaNode
@@ -102,6 +103,146 @@ func (tree *AATree) add(value int, node *aaNode) {
 	// Backtracking through the path, check for skews and splits
 	tree.checkSkew(node)
 	tree.checkSplit(node)
+}
+//
+func (tree *AATree) Remove(value int) {
+	if tree.root == nil {
+		panic("There is nothing to remove!")
+	}
+
+	tree.remove(value, tree.root)
+	tree.count--
+}
+
+ //TODO: Implement level decrementation
+func (tree *AATree) remove(value int, node *aaNode) {
+	if node == nil {
+		// Maybe pass silently
+		tree.count++
+		panic("There is no such element in the tree!")
+	}
+
+	if node.value != value {
+		// recurse downwards until we find the right node
+		if node.value > value {
+			// go left
+			tree.remove(value, node.left)
+		} else {
+			// go right
+			tree.remove(value, node.right)
+		}
+	} else {
+		// were at the value we want
+		// TODO: Remove
+		if node.left == nil && node.right == nil {
+			// we're at a leaf, simply remove
+			parent := node.parent
+			if parent.left == node {
+				parent.left = nil
+			} else {
+				parent.right = nil
+			}
+		} else if node.left == nil {
+			// there is a right node, get the predecessor
+			predecessor := node.right
+			for predecessor.left != nil {
+				predecessor = predecessor.left
+			}
+			// swap both nodes
+			// TODO: Right child of predecessor might get lost?
+			node.value = predecessor.value
+			//node.level = predecessor.level
+			predParent := predecessor.parent
+			// Remove the predecessor from the tree
+			if predParent.right == predecessor {
+				predParent.right = nil
+			} else {
+				predParent.left = nil
+			}
+		} else  {
+			// there is a left node
+			// TODO: This is predecessor
+			fmt.Println("BAGDAD")
+			sucessor := node.left
+			for sucessor.right != nil {
+				sucessor = sucessor.right
+			}
+
+			// swap both nodes
+			// TODO: Left child of successor might get lost?
+			node.value = sucessor.value
+			//node.level = sucessor.level
+			sucParent := sucessor.parent
+			// Remove the successor from the tree
+			if sucParent.right == sucessor {
+				sucParent.right = nil
+			} else {
+				sucParent.left = nil
+			}
+		}
+	}
+
+	//  The node is removed, fix levels
+	/*
+		if (root->link[0]->level < root->level - 1 || root->link[1]->level < root->level - 1)
+		{
+			if (root->link[1]->level > --root->level)
+			{
+				root->link[1]->level = root->level;
+			}
+
+			root = skew(root);
+			root->link[1] = skew(root->link[1]);
+			root->link[1]->link[1] = skew(root->link[1]->link[1]);
+			root = split(root);
+			root->link[1] = split(root->link[1]);
+		}
+	*/
+
+	// left node should be exactly one level less
+	leftLevelIsWrong := (node.left != nil && node.left.level < node.level - 1) ||
+			(node.left == nil && node.level > 1)  // if we dont have a left node, our level should be 1
+
+	 // right level should be exactly one less or equal
+	rightLevelIsWrong := (node.right != nil && node.right.level < node.level - 1) ||
+			(node.right == nil && node.level > 1)  // if we dont have a right node, our level should be 1
+
+	// If there is no break in the levels there is no need  to do rebalance operations
+	if leftLevelIsWrong || rightLevelIsWrong {
+		node.level--  // decrease level
+		if node.right != nil && node.right.level > node.level {
+			// right node had the equal level and is now bigger after our decrease, so we reset its level
+			node.right.level = node.level
+		}
+
+		tree.checkSkew(node)
+		//if node.left != nil {
+		//	 tree.checkSkew(node.left)
+		//}
+		if node.right != nil {
+			tree.checkSkew(node.right)
+		}
+		//if node.right != nil && node.right.left != nil {
+		//	tree.checkSkew(node.right.left)
+		//}
+		if node.right != nil && node.right.right != nil {
+			tree.checkSkew(node.right.right)
+		}
+		//if node.right != nil && node.right.right != nil && node.right.right.left != nil {
+		//	tree.checkSkew(node.right.right.left)
+		//}
+		tree.checkSplit(node)
+		//if node.right != nil && node.right.right != nil {
+		//	tree.checkSplit(node.right.right)
+		//}
+		if node.right != nil {
+			tree.checkSplit(node.right)
+		}
+		//if node.right != nil && node.right.right != nil && node.right.right.right != nil {
+		//	tree.checkSplit(node.right.right.right)
+		//}
+	}
+
 }
 
 /*
