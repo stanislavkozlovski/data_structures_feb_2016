@@ -384,6 +384,48 @@ func TestFunctionalTestTreeRemoval(t *testing.T) {
 	assert.Equal(t, C.level, 2)
 	assert.Equal(t, C.parent.value, 2)
 
+	// Remove 1(B)1
+	/*
+	This will reduce E's level to 1 and
+	2E takes the level of the removed node
+	    ___2(E)1___                                            __2(E)1__
+                   \                                                    \
+                   5(C)1  This now causes a                           4(F)1
+                   /   \   skew from C and F                              \
+                4F(1)  6(G)1                                             5(C)1
+                														   \
+                														  6(G)1
+	Which then causes a split in E, F and C
+
+	   		__4(F)2__
+	   	   /         \
+	   	2(E)1       5(C)1
+	   	   	           \
+	   	   	          6(G)1
+	*/
+	tree.Remove(1)
+	F = *tree.root
+	E = *F.left
+	C = *F.right
+	G = *C.right
+
+	// Assert that we assigned the right values to the variables
+	// this is getting annoying but gotta do what you gotta do
+	assert.Equal(t, F.value, 4)
+	assert.Equal(t, E.value, 2)
+	assert.Equal(t, C.value, 5)
+	assert.Equal(t, G.value, 6)
+
+	assert.Equal(t, tree.root.value, 4)
+	assert.Equal(t, tree.root.level, 2)
+	assert.Equal(t, C.value, 5)
+	assert.Equal(t, C.level, 1)
+	assert.Equal(t, C.parent.value, 4)
+	assert.Nil(t, C.left)
+	assert.Equal(t, E.level, 1)
+	assert.Equal(t, E.parent.value, 4)
+	assert.Nil(t, E.right)
+	assert.Nil(t, E.left)
 }
 
 /*

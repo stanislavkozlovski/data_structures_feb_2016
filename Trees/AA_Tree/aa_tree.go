@@ -74,7 +74,7 @@ func (tree *AATree) add(value int, node *aaNode) {
 			node.left = &newNode
 
 			// We've added a left node, check for a need to skew
-			tree.checkSkew(&newNode)
+			tree.checkSkew(&newNode, true)
 		} else {
 			tree.add(value, node.left)
 		}
@@ -101,7 +101,7 @@ func (tree *AATree) add(value int, node *aaNode) {
 	}
 
 	// Backtracking through the path, check for skews and splits
-	tree.checkSkew(node)
+	tree.checkSkew(node, true)
 	tree.checkSplit(node)
 }
 //
@@ -162,7 +162,6 @@ func (tree *AATree) remove(value int, node *aaNode) {
 		} else  {
 			// there is a left node
 			// TODO: This is predecessor
-			fmt.Println("BAGDAD")
 			sucessor := node.left
 			for sucessor.right != nil {
 				sucessor = sucessor.right
@@ -214,27 +213,36 @@ func (tree *AATree) remove(value int, node *aaNode) {
 			// right node had the equal level and is now bigger after our decrease, so we reset its level
 			node.right.level = node.level
 		}
-
-		tree.checkSkew(node)
-		//if node.left != nil {
-		//	 tree.checkSkew(node.left)
+		//if (node.value == 2) {
+		//	fmt.Println("WERE AT THE ROOT")
 		//}
-		if node.right != nil {
-			tree.checkSkew(node.right)
+		tree.checkSkew(node, false)
+		if node.left != nil {
+			 tree.checkSkew(node.left, false)
 		}
-		//if node.right != nil && node.right.left != nil {
-		//	tree.checkSkew(node.right.left)
+		if node.right != nil {
+			tree.checkSkew(node.right, false)
+		}
+		//if node.value == 2 {
+		//fmt.Println("Root right is", node.right.value, "with level", node.right.level)
+		//
 		//}
+		if node.right != nil && node.right.left != nil {
+			//fmt.Println("checking skew", node.right.left.value, "with level", node.right.left.level)
+			tree.checkSkew(node.right.left, false)
+			//fmt.Println(node.right.value)
+		}
 		if node.right != nil && node.right.right != nil {
-			tree.checkSkew(node.right.right)
+			tree.checkSkew(node.right.right, false)
 		}
 		//if node.right != nil && node.right.right != nil && node.right.right.left != nil {
 		//	tree.checkSkew(node.right.right.left)
 		//}
 		tree.checkSplit(node)
-		//if node.right != nil && node.right.right != nil {
-		//	tree.checkSplit(node.right.right)
-		//}
+
+		if node.right != nil && node.right.right != nil {
+			tree.checkSplit(node.right.right)
+		}
 		if node.right != nil {
 			tree.checkSplit(node.right)
 		}
@@ -265,13 +273,13 @@ func (tree *AATree) split(grandParent, parent, leaf *aaNode) {
 			GGParent.right = parent
 		}
 	}
+
 	if grandParent == tree.root {
 		// we now have a new root
 		tree.root = parent
 	}
 	parent.parent = GGParent  // R parent is now some upwards node
 	grandParent.parent = parent  // R parent is now P
-
 	grandParent.right = parent.left
 	if parent.left != nil {
 		parent.left.parent = grandParent
@@ -298,10 +306,15 @@ Performs a skew operation, given the two needed nodes
  */
 func (tree *AATree) skew(parent, leaf *aaNode) {
 	grandParent := parent.parent
+	//if leaf.value == 4 {	fmt.Println("grandparent is", grandParent.value)
+//}
 	if grandParent != nil {
 		if grandParent.value < parent.value {
 			// new GP right
+			//if leaf.value == 4 {	fmt.Println("grandparent is", grandParent.value) }
 			grandParent.right = leaf
+			//fmt.Println(leaf.value)
+			//fmt.Println(grandParent.right.value)
 		} else {
 			// new GP left
 			grandParent.left = leaf
@@ -323,17 +336,19 @@ func (tree *AATree) skew(parent, leaf *aaNode) {
 }
 
 /* Given a node, check is a Skew operation should be performed by checking if its a left child
-		and if its level is bigger or equal to his parent's*/
-func (tree *AATree) checkSkew(node *aaNode) {
+		and if its level is bigger or equal to his parent's
+	param: checkForSplit - a boolean indicating if we want to split if it's ok to split after the skew
+			We generally don't want to do that in deletions, as in the example on the TestFunctionalTestTreeRemoval function
+			where we remove 1 from the tree
+	*/
+func (tree *AATree) checkSkew(node *aaNode, checkForSplit bool) {
 	parent := node.parent
 	if parent != nil && parent.left == node && parent.level <= node.level {
 		tree.skew(parent, node)
 		// check for split, our parent would now be the middle element
-		if parent.right != nil {
+		if parent.right != nil && checkForSplit {
 			grandParent := node
 			if grandParent != nil && parent.right.isRightGrandChild(grandParent) && grandParent.level <= parent.right.level {
-				// TODO: We never get in here, not sure if it works
-				// I'm not even sure it's possible to get here
 				tree.split(grandParent, parent, parent.right)
 			}
 		}
