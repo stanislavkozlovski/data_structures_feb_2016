@@ -428,6 +428,103 @@ func TestFunctionalTestTreeRemoval(t *testing.T) {
 	assert.Nil(t, E.left)
 }
 
+
+func TestRemovalWorstCase(t *testing.T) {
+	/*
+	The worst case when removing a node from the tree requires at most
+	3 skews and 2 splits down the tree
+	This showcases the worst possible imbalance in an AA tree
+                	__2(A)2__
+                   /        \
+                1(Z)1      5(B)2
+                         /      \
+                      3(E)1     6(C)1
+                         \          \
+                          4(F)1     7(D)1
+    					                      */
+	// build the tree
+	A := aaNode{value: 2, level: 2}
+	Z := aaNode{value: 1, level: 1, parent: &A}
+	B := aaNode{value: 5, level: 2, parent: &A}
+	A.left = &Z
+	A.right = &B
+	E := aaNode{value: 3, level: 1, parent: &B}
+	C := aaNode{value: 6, level: 1, parent: &B}
+	B.left = &E
+	B.right = &C
+
+	F := aaNode{value: 4, level: 1, parent: &E}
+	E.right = &F
+
+	D := aaNode{value: 7, level: 1, parent: &C}
+	C.right = &D
+
+	tree := AATree{root: &A}
+	/*
+       Removing Z should cause the following:
+       A be level 2 and not have 2 children, so its level will be reduced to 1, B will be a bigger level so
+       its level would also be reduced to 1
+     __2(A)1__         This causes a skew at 5B and 3E   __2(A)1__
+*******      \                                                   \
+*1(Z)1*     5(B)1                                               3(E)1
+*******   /      \                                                  \
+       3(E)1     6(C)1                                              5(B)1
+          \          \                                             /   \
+           4(F)1     7(D)1                                     4(F)1   6(C)1
+                                                                         \
+                                                                        7(D)1
+                      This causes a skew at 5B and 4F now
+   __2(A)1__       Followed by a split in A, E, F
+        \                                                    3(E)2
+       3(E)1                                               /      \
+          \                                             2(A)1    4(F)1
+          4(F)1                                                    \
+            \                                                     5(B)1
+           5(B)1                                                     \
+              \                                                      6(C)1
+              6(C)1                                                    \
+                \                                                     7(D)1
+               7(D)1
+                  Followed by a split in F, B, C
+                            3(E)2
+                           /      \
+                        2(A)1    5(B)2
+                                 /   \
+                            4(F)1    6(C)1
+                                       \
+                                      7(D)1
+
+	 */
+	tree.Remove(1)
+
+	assert.Equal(t, tree.root.value, 3)
+	assert.Equal(t, E.level, 2)
+	assert.Nil(t, E.parent)
+	assert.Equal(t, A.parent.value, 3)
+	assert.Equal(t, A.level, 1)
+	assert.Nil(t, A.left)
+	assert.Nil(t, A.right)
+	assert.Equal(t, B.level, 2)
+	assert.Equal(t, B.parent.value, 3)
+	assert.Equal(t, B.left.value, 4)
+	assert.Equal(t, B.right.value, 6)
+	assert.Equal(t, F.parent.value, 5)
+	assert.Equal(t, F.level, 1)
+	assert.Nil(t, F.left)
+	assert.Nil(t, F.right)
+	assert.Equal(t, C.parent.value, 5)
+	assert.Equal(t, C.level, 1)
+	assert.Equal(t, C.right.value, 7)
+	assert.Nil(t, C.left)
+	assert.Equal(t, D.parent.value, 6)
+	assert.Equal(t, D.level, 1)
+	assert.Nil(t, D.left)
+	assert.Nil(t, D.right)
+}
+
+
+
+
 /*
 Performs a split operation, given the three needed nodes
 11(R)                	12

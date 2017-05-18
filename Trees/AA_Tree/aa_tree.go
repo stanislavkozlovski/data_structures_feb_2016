@@ -1,6 +1,5 @@
 package AA_Tree
 
-import "fmt"
 
 type aaNode struct {
 	parent *aaNode
@@ -228,20 +227,27 @@ func (tree *AATree) remove(value int, node *aaNode) {
 		//
 		//}
 		if node.right != nil && node.right.left != nil {
-			//fmt.Println("checking skew", node.right.left.value, "with level", node.right.left.level)
 			tree.checkSkew(node.right.left, false)
 			//fmt.Println(node.right.value)
 		}
-		if node.right != nil && node.right.right != nil {
-			tree.checkSkew(node.right.right, false)
+		if node.right != nil && node.right.right != nil && node.right.right.left != nil{
+			//tree.checkSkew(node.right.right, false)
+			tree.checkSkew(node.right.right.left, false)
 		}
 		//if node.right != nil && node.right.right != nil && node.right.right.left != nil {
 		//	tree.checkSkew(node.right.right.left)
 		//}
 		tree.checkSplit(node)
-
+		// if we do a split, we need to keep track of the right-right leaf so that we can check it for a split as well
+		// example: the TestRemovalWorstCase() test function
+		var rightRightLeaf *aaNode
 		if node.right != nil && node.right.right != nil {
+			rightRightLeaf = node.right.right
 			tree.checkSplit(node.right.right)
+		}
+
+		if rightRightLeaf != nil && rightRightLeaf.right != nil && rightRightLeaf.right.right != nil{
+			tree.checkSplit(rightRightLeaf.right.right)
 		}
 		if node.right != nil {
 			tree.checkSplit(node.right)
