@@ -66,8 +66,7 @@ class BNode:
             self.values = [median_value]
             self.children = [left_node, right_node]
             # Merge nodes
-            raise NotImplementedError("NO MERGE YET")
-            pass
+            self.parent.merge_with_child(self)
 
     def merge_with_child(self, other: 'BNode'):
         # add the values

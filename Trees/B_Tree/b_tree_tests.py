@@ -143,4 +143,36 @@ class BNodeTests(TestCase):
         self.assertElementsInExpectedOrder([405], G.values)
         self.assertEqual(G.parent, A)
 
-    
+    def test_addition_splits_into_parent(self):
+        root = BNode(order=6)
+        root.add(50); root.add(10); root.add(3); root.add(15); root.add(27); root.add(60); root.add(70)
+        """
+               15 (A)
+             /    \
+     (B)  3|10    27|50|60|70| (C)
+        """
+        # assert we have what we expect
+        A = root
+        B = root.children[0]
+        C = root.children[1]
+        self.assertElementsInExpectedOrder([27, 50, 60, 70], C.values)
+        """
+        Add 80, our C node gets full, as such splits and goes to the top
+               15 (A)
+             /    \
+     (B)  3|10    27|50|60|70|80| (C)
+        This is what should happen
+            15 | 60 (A)
+          /    |        \
+     (B)3|10 (C)27|50   (D)70|80
+        """
+        A.add(80)
+        C = A.children[1]
+        D = A.children[2]
+
+        self.assertElementsInExpectedOrder([27, 50], C.values)
+        self.assertEqual(A, C.parent)
+        self.assertFalse(C._BNode__has_children())
+        self.assertElementsInExpectedOrder([70, 80], D.values)
+        self.assertEqual(A, D.parent)
+        self.assertFalse(D._BNode__has_children())
