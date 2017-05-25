@@ -33,7 +33,10 @@ class BNode:
                         break
 
     def split(self):
-        median = len(self.values) // 2
+        if len(self.values) % 2 == 0:
+            median = (len(self.values) // 2) - 1
+        else:
+            median = (len(self.values) // 2)
         median_value = self.values[median]
         left_arr = self.values[:median]
         right_arr = self.values[median+1:]
