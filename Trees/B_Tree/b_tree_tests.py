@@ -188,3 +188,191 @@ class BNodeTests(TestCase):
         """
         A = root
         self.assertElementsInExpectedOrder([100, 200, 300, 400, 500], A.values)
+        """
+        Add 303, Should split
+
+            300  (A)
+           /    \
+   (B)100|200   303|400|500 (C)
+        """
+        A.add(303)
+        B = A.children[0]
+        C = A.children[1]
+
+        self.assertElementsInExpectedOrder([300], A.values)
+        self.assertElementsInExpectedOrder([100, 200], B.values)
+        self.assertElementsInExpectedOrder([303, 400, 500], C.values)
+        self.assertEqual(C.parent, A)
+        self.assertEqual(B.parent, A)
+
+        """
+        Add 325, 350, 125, 150, 175
+                               300  (A)
+                                /    \
+           (B)100|125|150|175|200   303|325|350|400|500 (C)
+        """
+        A.add(175); A.add(125); A.add(150)
+        A.add(325); A.add(350)
+        self.assertElementsInExpectedOrder([303, 325, 350, 400, 500], C.values)
+        self.assertElementsInExpectedOrder([100, 125, 150, 175, 200], B.values)
+
+        """
+        Add 279
+        B will fill up, split by 150 and add 150 to A
+                        150  |  300 (A)___
+                      /      |            \
+            (B)100|125  (C)175|200|279   303|325|350|400|500 (D)
+        """
+        A.add(279)
+        self.assertElementsInExpectedOrder([150, 300], A.values)
+        self.assertEqual(len(A.children), 3)
+        B = A.children[0]
+        C = A.children[1]
+        D = A.children[2]
+        self.assertElementsInExpectedOrder([100, 125], B.values)
+        self.assertElementsInExpectedOrder([175, 200, 279], C.values)
+        self.assertElementsInExpectedOrder([303, 325, 350, 400, 500], D.values)
+        """
+        Add 235, 266
+                        150  |  300 (A)___
+                      /      |            \
+            (B)100|125  (C)175|200|235|266|279   303|325|350|400|500 (D)
+        """
+        A.add(235); A.add(266)
+        self.assertElementsInExpectedOrder([175, 200, 235, 266, 279], C.values)
+        """
+        Add 272,
+        C will fill up, split by 235
+                  150    |     235      |   300 (A)
+               /         |              |           \
+        (B)100|125   (C)175|200    (D)266|272|279    303|325|350|400|500 (E)
+        """
+        A.add(272)
+        self.assertElementsInExpectedOrder([150, 235, 300], A.values)
+        self.assertEqual(len(A.children), 4)
+        B = A.children[0]
+        C = A.children[1]
+        D = A.children[2]
+        E = A.children[3]
+        self.assertEqual(A, B.parent)
+        self.assertEqual(A, C.parent)
+        self.assertEqual(A, D.parent)
+        self.assertEqual(A, E.parent)
+
+        self.assertElementsInExpectedOrder([100, 125], B.values)
+        self.assertElementsInExpectedOrder([175, 200], C.values)
+        self.assertElementsInExpectedOrder([266, 272, 279], D.values)
+        self.assertElementsInExpectedOrder([303, 325, 350, 400, 500], E.values)
+        """
+        Add 699,
+        E will fill up, split by 350
+                  150    |     235      |   300       |   350  (A)
+               /         |              |             |               \
+        (B)100|125   (C)175|200    (D)266|272|279  303|325 (E)     400|500|699 (F)
+        """
+        A.add(699)
+        self.assertElementsInExpectedOrder([150, 235, 300, 350], A.values)
+        self.assertEqual(len(A.children), 5)
+        B = A.children[0]
+        C = A.children[1]
+        D = A.children[2]
+        E = A.children[3]
+        F = A.children[4]
+        self.assertElementsInExpectedOrder([400, 500, 699], F.values)
+        self.assertEqual(F.parent, A)
+        self.assertElementsInExpectedOrder([303, 325], E.values)
+        self.assertEqual(E.parent, A)
+        """
+        Add 268, 275
+                      150       |        235         |            300       |   350  (A)
+               /                |                    |                      |            \
+        (B)100|125        (C)175|200       (D)266|268|272|275|279        303|325 (E)   400|500|699 (F)
+        """
+        A.add(268); A.add(275)
+        self.assertElementsInExpectedOrder([266, 268, 272, 275, 279], D.values)
+        """
+        Add 244
+        D will fill up, split by 268
+
+                    150         |          235        |           268            |          300          |      350   (A)
+               /                |                     |                          |                       |                 \
+        (B) 100|125       (C)175|200          (D) 244|266                 (E) 272|275|279              303|325 (F)        400|500|699 (G)
+        """
+        A.add(244)
+        self.assertElementsInExpectedOrder([150, 235, 268, 300, 350], A.values)
+        self.assertEqual(len(A.children), 6)
+
+        B = A.children[0]
+        C = A.children[1]
+        D = A.children[2]
+        E = A.children[3]
+        F = A.children[4]
+        G = A.children[5]
+
+        self.assertElementsInExpectedOrder([100, 125], B.values)
+        self.assertElementsInExpectedOrder([175, 200], C.values)
+        self.assertElementsInExpectedOrder([244, 266], D.values)
+        self.assertEqual(D.parent, A)
+        self.assertElementsInExpectedOrder([272, 275, 279], E.values)
+        self.assertEqual(E.parent, A)
+        self.assertElementsInExpectedOrder([303, 325], F.values)
+        self.assertElementsInExpectedOrder([400, 500, 699], G.values)
+        # 50, 20, 30
+        """
+        Add 50, 20, 30
+                    150         |          235        |           268            |          300          |      350   (A)
+               /                |                     |                          |                       |                 \
+ (B) 20|30|50|100|125       (C)175|200          (D) 244|266                 (E) 272|275|279              303|325 (F)        400|500|699 (G)
+        """
+        A.add(50); A.add(20); A.add(30)
+        self.assertElementsInExpectedOrder([20, 30, 50, 100, 125], B.values)
+        """
+        At this point, our root A is at its max. A new addition will have it be split and create a new root for us
+        So let's do just that!
+        Add 1, it will overflow B, which will split into [1, 20] and [50, 100, 125]
+        30 will go to A, which will then split into
+        [30, 150] and [268, 300, 350]
+
+
+                    _______________________________________235 (A)_______________________________________
+                  /                                                                                       \
+              30  |  150(B)                                                             268     |        300         |   350 (C)
+           /      |        \                                                       /            |                    |            \
+    1|20(D) 50|100|125 (E)  175|200 (F)                                       244|266 (G)    272|275|279 (H)       303|325 (I)    400|500|699 (J)
+        """
+        A.add(1)
+        self.assertElementsInExpectedOrder([235], A.values)
+        self.assertEqual(len(A.children), 2)
+        B = A.children[0]
+        # check B subtree
+        self.assertElementsInExpectedOrder([30, 150], B.values)
+        self.assertEqual(len(B.children), 3)
+        self.assertEqual(B.parent, A)
+        D = B.children[0]
+        E = B.children[1]
+        F = B.children[2]
+        self.assertElementsInExpectedOrder([1, 20], D.values)
+        self.assertEqual(D.parent, B)
+        self.assertElementsInExpectedOrder([50, 100, 125], E.values)
+        self.assertEqual(E.parent, B)
+        self.assertElementsInExpectedOrder([175, 200], F.values)
+        self.assertEqual(F.parent, B)
+
+        # check C subtree
+        C = A.children[1]
+        self.assertElementsInExpectedOrder([268, 300, 350], C.values)
+        self.assertEqual(len(C.children), 4)
+        self.assertEqual(C.parent, A)
+
+        G = C.children[0]
+        H = C.children[1]
+        I = C.children[2]
+        J = C.children[3]
+        self.assertElementsInExpectedOrder([244, 266], G.values)
+        self.assertEqual(G.parent, C)
+        self.assertElementsInExpectedOrder([272, 275, 279], H.values)
+        self.assertEqual(H.parent, C)
+        self.assertElementsInExpectedOrder([303, 325], I.values)
+        self.assertEqual(I.parent, C)
+        self.assertElementsInExpectedOrder([400, 500, 699], J.values)
+        self.assertEqual(J.parent, C)

@@ -44,6 +44,7 @@ class BNode:
         if self.parent is None:
             # easy shit, create two children
             left_node = BNode(order=self.order, parent=self)
+            # set parents
             left_node.values = left_arr
 
             right_node = BNode(order=self.order, parent=self)
@@ -52,6 +53,13 @@ class BNode:
             # copy children
             left_node.children = self.children[:median+1]
             right_node.children = self.children[median+1:]
+            # assign parents to  children
+            for i in left_node.children:
+                if i is not None:
+                    i.parent = left_node
+            for i in right_node.children:
+                if i is not None:
+                    i.parent = right_node
 
             self.values = [median_value]
             self.children = [left_node, right_node]
@@ -73,8 +81,10 @@ class BNode:
 
     def merge_with_child(self, other: 'BNode'):
         # add the values
+        to_split = False
         if len(other.values) + len(self.values) >= self.order:
-            raise NotImplementedError("can't handle case when it overfills recursively")
+            to_split = True  # we will go past the capacity for this node and will need to split it
+
         if other not in self.children:
             raise Exception('A BNode can only merge with its children!')
         other_idx = self.children.index(other)
@@ -95,6 +105,9 @@ class BNode:
             self.children.insert(insert_idx, child)
             child.parent = self
             insert_idx += 1
+
+        if to_split:
+            self.split()
 
     def __has_children(self):
         return any(self.children)
