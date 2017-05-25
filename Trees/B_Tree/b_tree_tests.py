@@ -28,7 +28,7 @@ class BNodeTests(TestCase):
         Given a BTree of order 6, with the following elements
         10, 3, 15, 27
         """
-        root = BNode(order=6)
+        root = BNode(order=5)
         root.add(50); root.add(10); root.add(3); root.add(15)
         """
         Add 27 to it
@@ -144,7 +144,7 @@ class BNodeTests(TestCase):
         self.assertEqual(G.parent, A)
 
     def test_addition_splits_into_parent(self):
-        root = BNode(order=6)
+        root = BNode(order=5)
         root.add(50); root.add(10); root.add(3); root.add(15); root.add(27); root.add(60); root.add(70)
         """
                15 (A)
@@ -176,3 +176,15 @@ class BNodeTests(TestCase):
         self.assertElementsInExpectedOrder([70, 80], D.values)
         self.assertEqual(A, D.parent)
         self.assertFalse(D._BNode__has_children())
+
+    def functional_test_add_nodes(self):
+        # Following https://www.cs.usfca.edu/~galles/visualization/BTree.html
+        """
+        """
+        root = BNode(order=6)
+        root.add(100); root.add(200); root.add(300); root.add(400); root.add(500);
+        """
+        100 | 200 | 300 | 400 | 500 (A)
+        """
+        A = root
+        self.assertElementsInExpectedOrder([100, 200, 300, 400, 500], A.values)

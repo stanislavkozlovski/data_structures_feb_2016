@@ -11,7 +11,7 @@ class BNode:
             # Leaf: Add here
             self.values.append(value)
             self.values = sorted(self.values)
-            if len(self.values) == self.max_values_count:
+            if len(self.values) == self.max_values_count+1:
                 self.split()
         else:
             # Find downwards node :)
