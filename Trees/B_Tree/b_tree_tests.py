@@ -51,3 +51,96 @@ class BNodeTests(TestCase):
         self.assertElementsInExpectedOrder(right_node.values, [27, 50])
         self.assertEqual(right_node.parent, root)
 
+    def test_addition_in_middle(self):
+        """
+               20|30
+             /   |   \
+          1     25    45
+             Add 27
+
+               20|30
+             /   |   \
+            1  25|27  45
+        """
+        root = BNode()
+        root.values = [20, 30]
+        left = BNode()
+        left.values = [1]
+        mid = BNode()
+        mid.values = [25]
+        right = BNode()
+        right.values = [45]
+        root.children = [left, mid, right]
+
+        root.add(27)
+
+        self.assertElementsInExpectedOrder([25, 27], mid.values)
+
+    def test_merge_node(self):
+        """
+        Given two nodes
+
+        100   |   200  | 300   (A)
+       /      |        |      \
+    15|20   102  (B)250|270    405
+                  /    |    \
+               202    260   290|299
+        Merge A and B
+        """
+        A = BNode(order=7)
+        B = BNode(order=7, parent=A)
+        b_left = BNode(order=7, parent=B); b_left.values = [202]
+        b_mid = BNode(order=7, parent=B); b_mid.values = [260]
+        b_right = BNode(order=7, parent=B); b_right.values = [290, 299]
+        B.values=[250, 270]
+        B.children = [b_left, b_mid, b_right]
+        a_rightest = BNode(order=7, parent=A); a_rightest.values = [405]
+        a_leftest = BNode(order=7, parent=A); a_leftest.values = [15, 20]
+        a_midleft = BNode(order=7, parent=A); a_midleft.values = [102]
+        A.children = [a_leftest, a_midleft, B, a_rightest]
+        A.values = [100, 200, 300]
+        # Assert we've built it ok
+        self.assertElementsInExpectedOrder(A.children[0].values, [15, 20])
+        self.assertElementsInExpectedOrder(A.children[1].values, [102])
+        self.assertElementsInExpectedOrder(A.children[2].values, [250, 270])
+        self.assertElementsInExpectedOrder(A.children[3].values, [405])
+
+        """
+        Merging A and B should produce the following
+
+        100    |    200    |    250    |    270    |    300   (A)
+      /        |           |           |           |       \
+    15|20     102         202         260       290|300    405
+    (B)       (C)         (D)         (E)         (F)       (G)
+
+
+        """
+        A.merge_with_child(B)
+        self.assertElementsInExpectedOrder([100, 200, 250, 270, 300], A.values)
+        self.assertIsNone(A.parent)
+
+        B = A.children[0]
+        self.assertElementsInExpectedOrder([15, 20], B.values)
+        self.assertEqual(B.parent, A)
+
+        C = A.children[1]
+        self.assertElementsInExpectedOrder([102], C.values)
+        self.assertEqual(C.parent, A)
+
+        D = A.children[2]
+        self.assertElementsInExpectedOrder([202], D.values)
+        self.assertEqual(D.parent, A)
+
+        E = A.children[3]
+        self.assertElementsInExpectedOrder([260], E.values)
+        self.assertEqual(E.parent, A)
+
+        F = A.children[4]
+        self.assertElementsInExpectedOrder([290, 299], F.values)
+        self.assertEqual(F.parent, A)
+
+        G = A.children[5]
+        self.assertElementsInExpectedOrder([405], G.values)
+        self.assertEqual(G.parent, A)
+
+    

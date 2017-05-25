@@ -53,7 +53,46 @@ class BNode:
             self.values = [median_value]
             self.children = [left_node, right_node]
         else:
+            left_node = BNode(order=self.order, parent=self)
+            left_node.values = left_arr
+
+            right_node = BNode(order=self.order, parent=self)
+            right_node.values = right_arr
+
+            # copy children
+            left_node.children = self.children[:median + 1]
+            right_node.children = self.children[median + 1:]
+
+            self.values = [median_value]
+            self.children = [left_node, right_node]
+            # Merge nodes
+            raise NotImplementedError("NO MERGE YET")
             pass
+
+    def merge_with_child(self, other: 'BNode'):
+        # add the values
+        if len(other.values) + len(self.values) >= self.order:
+            raise NotImplementedError("can't handle case when it overfills recursively")
+        if other not in self.children:
+            raise Exception('A BNode can only merge with its children!')
+        other_idx = self.children.index(other)
+        # from other_idx-1 onwards, insert all the values
+        insert_idx = other_idx
+        for other_val in other.values:
+            self.values.insert(insert_idx, other_val)
+            insert_idx += 1
+        if self.values != sorted(self.values):
+            raise Exception('Sort err while adding values with merge!')
+
+        # copy children
+        # copy first child
+        self.children[other_idx] = other.children[0]
+        self.children[other_idx].parent = self
+        insert_idx = other_idx + 1
+        for child in other.children[1:]:
+            self.children.insert(insert_idx, child)
+            child.parent = self
+            insert_idx += 1
 
     def __has_children(self):
         return any(self.children)
