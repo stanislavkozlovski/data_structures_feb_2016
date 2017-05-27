@@ -376,3 +376,28 @@ class BNodeTests(TestCase):
         self.assertEqual(I.parent, C)
         self.assertElementsInExpectedOrder([400, 500, 699], J.values)
         self.assertEqual(J.parent, C)
+
+    def test_remove_leaf(self):
+        """
+            10|20|30 (A)
+            /   |   \
+      (B)1|2|3 15|16(C)  45|55 (D)
+        """
+        root = BNode(order=4)
+        root.values = [10,20,30]
+        B = BNode(order=4, parent=root)
+        B.values = [1,2,3]
+        C = BNode(order=4, parent=root)
+        C.values = [15, 16]
+        D = BNode(order=4, parent=root)
+        D.values = [45, 55]
+        root.children = [B, C, D]
+
+        root.remove(2)
+        root.remove(3)
+        root.remove(15)
+        root.remove(55)
+
+        self.assertElementsInExpectedOrder([1], B.values)
+        self.assertElementsInExpectedOrder([16], C.values)
+        self.assertElementsInExpectedOrder([45], D.values)

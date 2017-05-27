@@ -32,6 +32,31 @@ class BNode:
                         wanted_child.add(value)
                         break
 
+    def remove(self, value):
+        if value not in self.values:
+            if not self.__has_children():
+                raise Exception('Value not in tree!')
+            recursed = False
+            if value < self.values[0]:
+                # before first
+                self.children[0].remove(value)
+            elif value > self.values[-1]:
+                # after last
+                self.children[-1].remove(value)
+            else:
+                for i in range(len(self.values)-1):
+                    if self.values[i] < value < self.values[i+1]:
+                        self.children[i+1].remove(value)
+                        break
+            return
+
+        if not self.__has_children():
+            # easy, simple remove
+            self.values.remove(value)
+            return
+
+
+
     def split(self):
         if len(self.values) % 2 == 0:
             median = (len(self.values) // 2) - 1
