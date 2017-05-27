@@ -1,3 +1,14 @@
+"""
+This is a B-Tree that supports addition and deletion from the tree
+
+Mostly inefficient, this is a proof-of-concept and learning material, rather than something you'd use in production.
+The tests are heavily commented and illustrated and are a good source of edge cases,
+    so if you're working on building your own B-Tree, you'll do yourself a favor in copying some tests
+
+TODO: Heavy refactor, a lot of code is repeated and some is not clear enough
+"""
+
+
 class BNode:
     def __init__(self, parent=None, order=6):
         self.parent = parent
@@ -196,27 +207,39 @@ class BNode:
         else:
             for i in range(0, len(self.values)-1):
                 if self.values[i] < value < self.values[i+1]:
-                    raise Exception('Not sure what to do here and what the value is')
-                    # move_value = start_val
-                    # mv_val_idx = Big scales
+                    # raise Exception('Not sure what to do here and what the value is')
+                    # Move value here depends on the transfer we're gonna do
+                    # if left - i
+                    # if right - i+1
+                    move_value = self.values[i]
+                    mv_val_idx = i
+                    # element is at I-1, left is at i-1, righ at i+1
                     left_idx = i
                     right_idx = i+2
+                    if right_idx is not None and len(self.children[right_idx].values) > 1:
+                        move_value = self.values[i+1]
+                        mv_val_idx = i+1
+                    elif left_idx is not None and len(self.children[left_idx].values) > 1:
+                        move_value = self.values[i]
+                        mv_val_idx = i
                     break
 
-        if left_idx is None and right_idx is not None and len(self.children[right_idx].values) > 1:
+        if right_idx is not None and len(self.children[right_idx].values) > 1:
             # take from successor
             successor = self.children[right_idx]
             self.values[mv_val_idx], successor.values[0] = successor.values[0], self.values[mv_val_idx]
             child_node.add(move_value)
             # child_node.values[vl_idx] = mv_val_idx
             successor.remove(move_value)
-        elif right_idx is None and len(self.children[left_idx].values) > 1:
-            pass
+        elif left_idx is not None and len(self.children[left_idx].values) > 1:
+            predecessor = self.children[left_idx]
+            self.values[mv_val_idx], predecessor.values[-1] = predecessor.values[-1], self.values[mv_val_idx]
+            child_node.add(move_value)
+            predecessor.remove(move_value)
         else:
             # merge
-            # child_node.values.remove(value)
-            self.merge_recursively()
-            pass
+                self.merge_recursively()
+
 
     def merge_recursively(self, excluding=None):
         """

@@ -598,3 +598,35 @@ class BNodeTests(TestCase):
         self.assertEqual(B.parent, A)
         self.assertEqual(C.parent, A)
         self.assertEqual(D.parent, A)
+
+        """
+        Remove 30
+        That will create a transfer with the right sibling (D),
+        A will be 35|60 and D will be 65
+
+                  ______25|60______ (A)
+                 /        |         \
+                1|20(B)   35(C)     65(D)
+        """
+        A.remove(30)
+
+        self.assertElementsInExpectedOrder([25, 60], A.values)
+        self.assertElementsInExpectedOrder([1, 20], B.values)
+        self.assertElementsInExpectedOrder([35], C.values)
+        self.assertElementsInExpectedOrder([65], D.values)
+
+        """
+        Remove 35
+        That will create a transfer with the left sibling (B)
+        A will be 20|60, C will be 25
+
+                ______20|60______ (A)
+               /        |         \
+              1(B)    25(C)     65(D)
+        """
+        A.remove(35)
+
+        self.assertElementsInExpectedOrder([20, 60], A.values)
+        self.assertElementsInExpectedOrder([1], B.values)
+        self.assertElementsInExpectedOrder([25], C.values)
+        self.assertElementsInExpectedOrder([65], D.values)
