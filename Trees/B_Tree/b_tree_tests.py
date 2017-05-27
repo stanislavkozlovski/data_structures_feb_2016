@@ -570,3 +570,31 @@ class BNodeTests(TestCase):
         self.assertElementsInExpectedOrder([50], F.values)
         self.assertElementsInExpectedOrder([65], G.values)
 
+        """
+        Remove 50
+        We would try to transfer from its right sibling (G) but that would exhaust its values
+        meaning it's time for a merge, so we'll merge C and G, resulting in 60,65.
+        ______35______ (A)
+        /              \
+     25(B)             60|65(C)
+     /   \
+(D)1|20  30(E)
+        That will decrease the overall tree depth by one, so we need to recursively continue to merge from the top.
+        We will merge A with B (25, 35) and we'll be done
+                      ______25|35______ (A)
+                      /       |          \
+                   1|20(B)   30(C)     60|65(D)
+        """
+
+        A.remove(50)
+        self.assertEqual(len(A.children), 3)
+        self.assertElementsInExpectedOrder([25, 35], A.values)
+        B = A.children[0]
+        C = A.children[1]
+        D = A.children[2]
+        self.assertElementsInExpectedOrder([1, 20], B.values)
+        self.assertElementsInExpectedOrder([30], C.values)
+        self.assertElementsInExpectedOrder([60, 65], D.values)
+        self.assertEqual(B.parent, A)
+        self.assertEqual(C.parent, A)
+        self.assertEqual(D.parent, A)

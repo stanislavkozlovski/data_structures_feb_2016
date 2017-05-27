@@ -55,8 +55,7 @@ class BNode:
             # TODO: Take top node and merge with right/left
             self.values.remove(value)
             if len(self.values) < 1:
-                # time to steal some stuff
-                # try to steal from siblings
+                # try to do a transfer
                 self.parent.remove_merge(value, self)
                 pass
             return
@@ -170,6 +169,7 @@ class BNode:
 
     def remove_merge(self, value, child_node: 'BNode'):
         """
+        Transfer
         This is called whenever we remove a children node and it has less than T keys
         i.e removing 40 from here, we'll call remove_merge on C.
         C.remove_merge(40)
@@ -203,17 +203,46 @@ class BNode:
                     right_idx = i+2
                     break
 
-        if left_idx is None:
+        if left_idx is None and right_idx is not None and len(self.children[right_idx].values) > 1:
             # take from successor
             successor = self.children[right_idx]
             self.values[mv_val_idx], successor.values[0] = successor.values[0], self.values[mv_val_idx]
             child_node.add(move_value)
             # child_node.values[vl_idx] = mv_val_idx
             successor.remove(move_value)
-        elif right_idx is None:
+        elif right_idx is None and len(self.children[left_idx].values) > 1:
             pass
         else:
+            # merge
+            # child_node.values.remove(value)
+            self.merge_recursively()
             pass
+
+    def merge_recursively(self, excluding=None):
+        """
+        Merge this current root with all its children
+        """
+        from copy import deepcopy
+        old_childre = list(self.children)
+        for other_idx, ch in enumerate(old_childre):
+            if ch is not None:
+                if ch == excluding:
+                    continue
+                self.values += ch.values
+                self.values = sorted(self.values)
+                # copy children
+                # copy first child
+                if ch.__has_children():
+                    self.children[other_idx] = ch.children[0]
+                    self.children[other_idx].parent = self
+                    insert_idx = other_idx + 1
+                    for child in ch.children[1:]:
+                        self.children.insert(insert_idx, child)
+                        child.parent = self
+                        insert_idx += 1
+                # self.merge_with_child(ch)
+        if self.parent is not None:
+            self.parent.merge_recursively(excluding=self)
 
     def __get_left_sibling(self):
         """
