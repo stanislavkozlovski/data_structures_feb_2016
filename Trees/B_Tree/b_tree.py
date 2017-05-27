@@ -52,7 +52,13 @@ class BNode:
 
         if not self.__has_children():
             # easy, simple remove
+            # TODO: Take top node and merge with right/left
             self.values.remove(value)
+            if len(self.values) < 1:
+                # time to steal some stuff
+                # try to steal from siblings
+                self.parent.remove_merge(value, self)
+                pass
             return
 
         # try to find predecessor
@@ -77,7 +83,7 @@ class BNode:
         # TODO: Children lost
         self.values.remove(value)
         # re-order children
-        for i in range(value_idx + 1, len(self.children)):
+        for i in range(value_idx + 1, len(self.children)-1):
             self.children[i] = self.children[i+1]
         # recursively remove
         predecessor.remove(value)
@@ -162,3 +168,56 @@ class BNode:
     def __has_children(self):
         return any(self.children)
 
+    def remove_merge(self, value, child_node: 'BNode'):
+        """
+        This is called whenever we remove a children node and it has less than T keys
+        i.e removing 40 from here, we'll call remove_merge on C.
+        C.remove_merge(40)
+        we want to find a proper sibling to replace self (C) with
+                   50(C)
+                  /     \
+             (F)40     60|65  (G)
+        """
+        # vl_idx = child_node.values.index(value)
+
+        # try to find left sibling
+        start_val = self.values[0]
+        end_val = self.values[-1]
+        # find left and right idx
+        move_value = None
+        if value < start_val:
+            move_value = start_val
+            mv_val_idx = 0
+            left_idx, right_idx = None, 1
+        elif value > end_val:
+            move_value = end_val
+            mv_val_idx = len(self.values)-1
+            left_idx = len(self.children)-2, None
+        else:
+            for i in range(0, len(self.values)-1):
+                if self.values[i] < value < self.values[i+1]:
+                    raise Exception('Not sure what to do here and what the value is')
+                    # move_value = start_val
+                    # mv_val_idx = Big scales
+                    left_idx = i
+                    right_idx = i+2
+                    break
+
+        if left_idx is None:
+            # take from successor
+            successor = self.children[right_idx]
+            self.values[mv_val_idx], successor.values[0] = successor.values[0], self.values[mv_val_idx]
+            child_node.add(move_value)
+            # child_node.values[vl_idx] = mv_val_idx
+            successor.remove(move_value)
+        elif right_idx is None:
+            pass
+        else:
+            pass
+
+    def __get_left_sibling(self):
+        """
+        Given a value from a child, try to find and return its left sibling
+        :return:
+        """
+        pass

@@ -6,7 +6,7 @@ from b_tree import BNode
 class BNodeTests(TestCase):
 
     def assertElementsInExpectedOrder(self, expected_elements, received_elements):
-        self.assertEqual(len(expected_elements), len(received_elements))
+        self.assertEqual(len(expected_elements), len(received_elements), f"{expected_elements} != {received_elements}")
         for i in range(len(expected_elements)):
             self.assertEqual(expected_elements[i], received_elements[i])
 
@@ -231,7 +231,101 @@ class BNodeTests(TestCase):
         self.assertEqual(F.parent, C)
         self.assertEqual(G.parent, C)
 
-    def functional_test_add_nodes(self):
+    def test_remove_leaf(self):
+        """
+            10|20|30 (A)
+            /   |   \
+      (B)1|2|3 15|16(C)  45|55 (D)
+        """
+        root = BNode(order=4)
+        root.values = [10,20,30]
+        B = BNode(order=4, parent=root)
+        B.values = [1,2,3]
+        C = BNode(order=4, parent=root)
+        C.values = [15, 16]
+        D = BNode(order=4, parent=root)
+        D.values = [45, 55]
+        root.children = [B, C, D]
+
+        root.remove(2)
+        root.remove(3)
+        root.remove(15)
+        root.remove(55)
+
+        self.assertElementsInExpectedOrder([1], B.values)
+        self.assertElementsInExpectedOrder([16], C.values)
+        self.assertElementsInExpectedOrder([45], D.values)
+
+    def test_remove_internal_node_removes_from_predecessor(self):
+        """
+        Remove 200
+                100|200|300                100|190|300
+                   |            ===>          |
+                180|190                      180
+
+        """
+        root = BNode(order=4)
+        root.values = [100, 200, 300]
+        leaf = BNode(order=4, parent=root)
+        leaf.values = [180, 190]
+        root.children = [None, leaf, None, None]
+
+        root.remove(200)
+
+        self.assertElementsInExpectedOrder([100, 190, 300], root.values)
+        self.assertElementsInExpectedOrder([180], leaf.values)
+
+    def test_remove_internal_node_removes_from_successor_when_predecessor_has_1_node(self):
+        """
+        Remove 200
+                100|200|300                100|250|300
+                   |   |           ===>       |   |
+                  180 250|260                180  260
+        """
+        root = BNode(order=4)
+        root.values = [100, 200, 300]
+        predecessor = BNode(order=4, parent=root)
+        predecessor.values = [180]
+        sucessor = BNode(order=4, parent=root)
+        sucessor.values = [250, 260]
+        root.children = [None, predecessor, sucessor, None]
+
+        root.remove(200)
+
+        self.assertElementsInExpectedOrder([100, 250, 300], root.values)
+        self.assertElementsInExpectedOrder([180], predecessor.values)
+        self.assertElementsInExpectedOrder([260], sucessor.values)
+
+    def test_remove_internal_node_merges_successor_with_predecessor(self):
+        """
+        Remove 200
+
+                100  |  200  |  300
+                     |       |
+                   150      250
+        Both predecessor and successor have one value (key) and we can't remove either of them, since
+        that would break the invariant of having all leafs on the same level, so we merge 200 and successor into predecessor
+
+            100  | 300
+                 |
+               150|250
+        """
+        root = BNode(order=4)
+        root.values = [100, 200, 300]
+        predecessor = BNode(order=4, parent=root)
+        predecessor.values = [150]
+        successor = BNode(order=4, parent=root)
+        successor.values = [250]
+        root.children = [None, predecessor, successor, None]
+
+        root.remove(200)
+
+        self.assertElementsInExpectedOrder([100, 300], root.values)
+        new_node = root.children[1]
+        self.assertElementsInExpectedOrder([150, 250], new_node.values)
+        self.assertEqual(new_node.parent, root)
+
+    def test_functional_test_add_nodes(self):
         # Following https://www.cs.usfca.edu/~galles/visualization/BTree.html
         """
         """
@@ -431,67 +525,48 @@ class BNodeTests(TestCase):
         self.assertElementsInExpectedOrder([400, 500, 699], J.values)
         self.assertEqual(J.parent, C)
 
-    def test_remove_leaf(self):
+    def test_functional_test_remove_nodes(self):
+        # following our trusty https://www.cs.usfca.edu/~galles/visualization/BTree.html
+        # thank god this exists
         """
-            10|20|30 (A)
-            /   |   \
-      (B)1|2|3 15|16(C)  45|55 (D)
+        Our tree:
+                ______35______ (A)
+               /              \
+            25(B)             50(C)
+            /   \            /     \
+       (D)1|20  30(E)   (F)40     60|65  (G)
         """
-        root = BNode(order=4)
-        root.values = [10,20,30]
-        B = BNode(order=4, parent=root)
-        B.values = [1,2,3]
-        C = BNode(order=4, parent=root)
-        C.values = [15, 16]
-        D = BNode(order=4, parent=root)
-        D.values = [45, 55]
-        root.children = [B, C, D]
+        A = BNode(order=3)
+        A.values = [35]
+        B = BNode(order=3, parent=A)
+        B.values = [25]
+        D = BNode(order=3, parent=B)
+        D.values = [1, 20]
+        E = BNode(order=3, parent=B)
+        E.values = [30]
+        B.children = [D, E]
+        C = BNode(order=3, parent=A)
+        C.values = [50]
+        F = BNode(order=3, parent=C)
+        F.values = [40]
+        G = BNode(order=3, parent=C)
+        G.values = [60, 65]
+        C.children = [F, G]
 
-        root.remove(2)
-        root.remove(3)
-        root.remove(15)
-        root.remove(55)
-
-        self.assertElementsInExpectedOrder([1], B.values)
-        self.assertElementsInExpectedOrder([16], C.values)
-        self.assertElementsInExpectedOrder([45], D.values)
-
-    def test_remove_internal_node_removes_from_predecessor(self):
-        """
-        Remove 200
-                100|200|300                100|190|300
-                   |            ===>          |
-                180|190                      180
+        A.children = [B, C]
 
         """
-        root = BNode(order=4)
-        root.values = [100, 200, 300]
-        leaf = BNode(order=4, parent=root)
-        leaf.values = [180, 190]
-        root.children = [None, leaf, None, None]
-
-        root.remove(200)
-
-        self.assertElementsInExpectedOrder([100, 190, 300], root.values)
-        self.assertElementsInExpectedOrder([180], leaf.values)
-
-    def test_remove_internal_node_removes_from_successor_when_predecessor_has_1_node(self):
+        Remove 40
+        That would try to steal from its right sibling,
+        moving 60  to C and the 50 from C to F
+                ______35______ (A)
+               /              \
+            25(B)             60(C)
+            /   \            /     \
+       (D)1|20  30(E)   (F)50      65  (G)
         """
-        Remove 200
-                100|200|300                100|250|300
-                   |   |           ===>       |   |
-                  180 250|260                180  260
-        """
-        root = BNode(order=4)
-        root.values = [100, 200, 300]
-        predecessor = BNode(order=4, parent=root)
-        predecessor.values = [180]
-        sucessor = BNode(order=4, parent=root)
-        sucessor.values = [250, 260]
-        root.children = [None, predecessor, sucessor, None]
+        A.remove(40)
 
-        root.remove(200)
+        self.assertElementsInExpectedOrder([50], F.values)
+        self.assertElementsInExpectedOrder([65], G.values)
 
-        self.assertElementsInExpectedOrder([100, 250, 300], root.values)
-        self.assertElementsInExpectedOrder([180], predecessor.values)
-        self.assertElementsInExpectedOrder([260], sucessor.values)
