@@ -55,7 +55,32 @@ class BNode:
             self.values.remove(value)
             return
 
+        # try to find predecessor
+        value_idx = self.values.index(value)
+        predecessor: BNode = self.children[value_idx]
+        if len(predecessor.values) > 1:
+            pass
+            # switch with predecessor value
+            self.values[value_idx], predecessor.values[-1] = predecessor.values[-1], self.values[value_idx]
+            # recursively delete downwards
+            return predecessor.remove(value)
+        successor: BNode = self.children[value_idx+1]
+        if len(successor.values) > 1:
+            # switch with successor value
+            self.values[value_idx], successor.values[0] = successor.values[0], self.values[value_idx]
+            return successor.remove(value)
 
+        # both have 1 child, so, merge VALUE and SUCCESSOR into PREDECESSOR
+        for l in successor.values:
+            predecessor.add(l)
+        predecessor.add(value)
+        # TODO: Children lost
+        self.values.remove(value)
+        # re-order children
+        for i in range(value_idx + 1, len(self.children)):
+            self.children[i] = self.children[i+1]
+        # recursively remove
+        predecessor.remove(value)
 
     def split(self):
         if len(self.values) % 2 == 0:
@@ -136,3 +161,4 @@ class BNode:
 
     def __has_children(self):
         return any(self.children)
+

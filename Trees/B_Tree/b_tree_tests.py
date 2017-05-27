@@ -177,6 +177,60 @@ class BNodeTests(TestCase):
         self.assertEqual(A, D.parent)
         self.assertFalse(D._BNode__has_children())
 
+    def test_addition_splits_into_new_root_correctly(self):
+        """
+        Given this tree of order 3
+
+                __25 | 50__ (A)
+               /     |     \
+        (B)10|20   30|40(C) 60|65 (D)
+        Adding 35 will cause C to fill up and split by 35, adding 35 to A
+        This, in turn will cause A to fill up and split by 35, making 35 the new root.
+        That should split A into 25 and 50, with the respective children.
+        We're interested that the children are preserved:
+
+                    ____35____  (A)
+                   /          \
+               25(B)          50(C)
+             /     \        /        \
+     (D) 10|20    30(E)   40(F)      60|65 (G)
+        """
+        A = BNode(order=3)
+        A.values = [25, 50]
+        B = BNode(order=3, parent=A)
+        B.values = [10, 20]
+        C = BNode(order=3, parent=A)
+        C.values = [30, 40]
+        D = BNode(order=3, parent=A)
+        D.values = [60, 65]
+        A.children = [B, C, D]
+
+        A.add(35)
+
+        B = A.children[0]
+        C = A.children[1]
+        D = B.children[0]
+        E = B.children[1]
+        F = C.children[0]
+        G = C.children[1]
+
+        # assert elements
+        self.assertElementsInExpectedOrder([35], A.values)
+        self.assertElementsInExpectedOrder([25], B.values)
+        self.assertElementsInExpectedOrder([50], C.values)
+        self.assertElementsInExpectedOrder([10, 20], D.values)
+        self.assertElementsInExpectedOrder([30], E.values)
+        self.assertElementsInExpectedOrder([40], F.values)
+        self.assertElementsInExpectedOrder([60, 65], G.values)
+        # assert parents
+        self.assertIsNone(A.parent)
+        self.assertEqual(B.parent, A)
+        self.assertEqual(C.parent, A)
+        self.assertEqual(D.parent, B)
+        self.assertEqual(E.parent, B)
+        self.assertEqual(F.parent, C)
+        self.assertEqual(G.parent, C)
+
     def functional_test_add_nodes(self):
         # Following https://www.cs.usfca.edu/~galles/visualization/BTree.html
         """
@@ -401,3 +455,43 @@ class BNodeTests(TestCase):
         self.assertElementsInExpectedOrder([1], B.values)
         self.assertElementsInExpectedOrder([16], C.values)
         self.assertElementsInExpectedOrder([45], D.values)
+
+    def test_remove_internal_node_removes_from_predecessor(self):
+        """
+        Remove 200
+                100|200|300                100|190|300
+                   |            ===>          |
+                180|190                      180
+
+        """
+        root = BNode(order=4)
+        root.values = [100, 200, 300]
+        leaf = BNode(order=4, parent=root)
+        leaf.values = [180, 190]
+        root.children = [None, leaf, None, None]
+
+        root.remove(200)
+
+        self.assertElementsInExpectedOrder([100, 190, 300], root.values)
+        self.assertElementsInExpectedOrder([180], leaf.values)
+
+    def test_remove_internal_node_removes_from_successor_when_predecessor_has_1_node(self):
+        """
+        Remove 200
+                100|200|300                100|250|300
+                   |   |           ===>       |   |
+                  180 250|260                180  260
+        """
+        root = BNode(order=4)
+        root.values = [100, 200, 300]
+        predecessor = BNode(order=4, parent=root)
+        predecessor.values = [180]
+        sucessor = BNode(order=4, parent=root)
+        sucessor.values = [250, 260]
+        root.children = [None, predecessor, sucessor, None]
+
+        root.remove(200)
+
+        self.assertElementsInExpectedOrder([100, 250, 300], root.values)
+        self.assertElementsInExpectedOrder([180], predecessor.values)
+        self.assertElementsInExpectedOrder([260], sucessor.values)
