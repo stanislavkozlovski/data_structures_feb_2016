@@ -203,7 +203,7 @@ class BNode:
         elif value > end_val:
             move_value = end_val
             mv_val_idx = len(self.values)-1
-            left_idx = len(self.children)-2, None
+            left_idx, right_idx = len(self.children)-2, None
         else:
             for i in range(0, len(self.values)-1):
                 if self.values[i] < value < self.values[i+1]:
@@ -223,22 +223,64 @@ class BNode:
                         move_value = self.values[i]
                         mv_val_idx = i
                     break
+        can_take_right = right_idx is not None and len(self.children[right_idx].values) > 1
+        can_take_left = left_idx is not None and len(self.children[left_idx].values) > 1
+        if can_take_right and can_take_left and len(self.children) > 2:
+            # take one with more values
+            if len(self.children[left_idx].values) > len(self.children[right_idx].values):
+                predecessor = self.children[left_idx]
 
-        if right_idx is not None and len(self.children[right_idx].values) > 1:
-            # take from successor
+                if len(self.children[left_idx].values) == 1:
+                    # TODO: Merge
+                    predecessor.add(move_value)
+                    self.children.remove(child_node)
+                    return
+                    pass
+                self.values[mv_val_idx], predecessor.values[-1] = predecessor.values[-1], self.values[mv_val_idx]
+                child_node.add(move_value)
+                predecessor.remove(move_value)
+            else:
+                # take right
+                successor = self.children[right_idx]
+                if len(self.children[right_idx].values) == 1:
+                    # TODO: Merge
+                    successor.add(move_value)
+                    self.children.remove(child_node)
+                    return
+                self.values[mv_val_idx], successor.values[0] = successor.values[0], self.values[mv_val_idx]
+                child_node.add(move_value)
+                # child_node.values[vl_idx] = mv_val_idx
+                successor.remove(move_value)
+        elif can_take_right  or (left_idx is None and right_idx is not None and self.children[right_idx] is not None and  len(self.children[right_idx].values) >= 1 and len(self.children) > 2):
             successor = self.children[right_idx]
+
+            if len(self.children[right_idx].values) == 1:
+                # TODO: Merge
+                self.values.remove(move_value)
+                successor.add(move_value)
+                self.children.remove(child_node)
+                return
+            # take from successor
             self.values[mv_val_idx], successor.values[0] = successor.values[0], self.values[mv_val_idx]
             child_node.add(move_value)
             # child_node.values[vl_idx] = mv_val_idx
             successor.remove(move_value)
-        elif left_idx is not None and len(self.children[left_idx].values) > 1:
+        elif can_take_left  or (right_idx is None and left_idx is not None and self.children[left_idx] is not None and (len(self.children[left_idx].values) >= 1 and len(self.children) > 2)):
             predecessor = self.children[left_idx]
+
+            if len(self.children[left_idx].values) == 1:
+                # TODO: Merge
+                self.values.remove(move_value)
+                predecessor.add(move_value)
+                self.children.remove(child_node)
+                return
             self.values[mv_val_idx], predecessor.values[-1] = predecessor.values[-1], self.values[mv_val_idx]
             child_node.add(move_value)
             predecessor.remove(move_value)
         else:
             # merge
-                self.merge_recursively()
+            self.merge_recursively()
+            self.children = [None for _ in self.children]
 
 
     def merge_recursively(self, excluding=None):
@@ -266,10 +308,3 @@ class BNode:
                 # self.merge_with_child(ch)
         if self.parent is not None:
             self.parent.merge_recursively(excluding=self)
-
-    def __get_left_sibling(self):
-        """
-        Given a value from a child, try to find and return its left sibling
-        :return:
-        """
-        pass

@@ -630,3 +630,47 @@ class BNodeTests(TestCase):
         self.assertElementsInExpectedOrder([1], B.values)
         self.assertElementsInExpectedOrder([25], C.values)
         self.assertElementsInExpectedOrder([65], D.values)
+        """
+        Remove 1
+        Should create a transfer with right sibling D,
+        moving 20 downwards, merging it with 25
+
+        _______60______ (A)
+        /              \
+       20|25 (B)      65(D)
+        """
+        A.remove(1)
+
+        self.assertElementsInExpectedOrder([60], A.values)
+        self.assertEqual(len(A.children), 2)
+        B = A.children[0]
+        D = A.children[1]
+
+        self.assertElementsInExpectedOrder([20, 25], B.values)
+        self.assertElementsInExpectedOrder([65], D.values)
+
+        """
+        Remove 65
+        Transfer with 25
+
+                ___25__(A)
+                /      \
+             20 (B)    60(D)
+        """
+        A.remove(65)
+
+        self.assertElementsInExpectedOrder([25], A.values)
+        self.assertElementsInExpectedOrder([20], B.values)
+        self.assertElementsInExpectedOrder([60], D.values)
+
+        """
+        Removing 60 should just merge 20 and 25 into one node
+        """
+        A.remove(60)
+
+        self.assertElementsInExpectedOrder([20, 25], A.values)
+        self.assertTrue(all(x is None for x in A.children))
+
+        A.remove(25)
+        self.assertElementsInExpectedOrder([20], A.values)
+
