@@ -325,6 +325,57 @@ class BNodeTests(TestCase):
         self.assertElementsInExpectedOrder([150, 250], new_node.values)
         self.assertEqual(new_node.parent, root)
 
+    def test_remove_root_node(self):
+        """
+        Given the tree
+
+                __________30__________ (A)
+               /                      \
+             20(B)                    50(C)
+            /    \                   /     \
+         10(D)   25(E)             35(F)   100(G)
+        """
+        A = BNode(order=3)
+        A.values = [30]
+        B = BNode(order=3, parent=A)
+        B.values = [20]
+        C = BNode(order=3, parent=A)
+        C.values = [50]
+        A.children = [B, C]
+
+        D = BNode(order=3, parent=B)
+        D.values = [10]
+        E = BNode(order=3, parent=B)
+        E.values = [25]
+        B.children = [D, E]
+
+        F = BNode(order=3, parent=C)
+        F.values = [35]
+        G = BNode(order=3, parent=C)
+        G.values = [100]
+        C.children = [F, G]
+        """
+        Remove 30, should replace with predecessor 25, B is left with 1 child,
+        merges 10|20 into B, C is merged with 35, 100. C Overflows and puts 50 on A
+
+            We should be left with
+
+                    ______25|50______ (A)
+                  /         |         \
+               10|20 (B)   35(C)     100(D)
+        """
+        A.remove(30)
+        self.assertElementsInExpectedOrder([25, 50], A.values)
+        self.assertEqual(len(A.children), 3)
+
+        B = A.children[0]
+        C = A.children[1]
+        D = A.children[2]
+
+        self.assertElementsInExpectedOrder([10, 20], B.values)
+        self.assertElementsInExpectedOrder([35], C.values)
+        self.assertElementsInExpectedOrder([100], D.values)
+
     def test_functional_test_add_nodes(self):
         # Following https://www.cs.usfca.edu/~galles/visualization/BTree.html
         """
