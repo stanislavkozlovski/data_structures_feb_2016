@@ -725,3 +725,195 @@ class BNodeTests(TestCase):
         A.remove(25)
         self.assertElementsInExpectedOrder([20], A.values)
 
+    def test_fully_functional_test_add_remove(self):
+        """
+        Lets work with a B-Tree of order 4 and add/remove all we want
+        Add 50, 100, 150
+        50|100|150 (A)
+        """
+        A = BNode(order=4)
+        A.add(50)
+        A.add(100)
+        A.add(150)
+        """
+        Add 200, should split it
+
+            100(A)
+           /      \
+         50(B)   150, 200(C)
+
+        """
+        A.add(200)
+        self.assertElementsInExpectedOrder([100], A.values)
+        B = A.children[0]
+        C = A.children[1]
+        self.assertElementsInExpectedOrder([50], B.values)
+        self.assertElementsInExpectedOrder([150, 200], C.values)
+        """
+        Now remove 100
+        Should take 150 as the new root
+                150(A)
+               /      \
+             50(B)   200(C)
+        """
+        A.remove(100)
+        self.assertElementsInExpectedOrder([150], A.values)
+        self.assertElementsInExpectedOrder([50], B.values)
+        self.assertElementsInExpectedOrder([200], C.values)
+        """
+        Add 300, 400, they go to C
+        Add 25, 75, they go to B
+                150(A)
+               /      \
+         25|50|75(B)   200|300|400(C)
+        """
+        A.add(300)
+        A.add(400)
+        A.add(25)
+        A.add(75)
+        self.assertElementsInExpectedOrder([200, 300, 400], C.values)
+        self.assertElementsInExpectedOrder([25, 50, 75], B.values)
+        """
+        Add 151, should go to C which will now overflow, splitting it by 200
+
+                        150|200 (A)
+                      /    |        \
+             (B)25|50|75  151(C)   300|400 (D)
+        """
+        A.add(151)
+        self.assertElementsInExpectedOrder([150, 200], A.values)
+        self.assertEqual(len(A.children), 3)
+        B = A.children[0]
+        C = A.children[1]
+        D = A.children[2]
+        self.assertElementsInExpectedOrder([25, 50, 75], B.values)
+        self.assertElementsInExpectedOrder([151], C.values)
+        self.assertElementsInExpectedOrder([300, 400], D.values)
+        """
+        Add 255, goes to D
+                150|200 (A)
+            /    |        \
+   (B)25|50|75  151(C)   255|300|400 (D)
+        """
+        A.add(255)
+        self.assertElementsInExpectedOrder([255, 300, 400], D.values)
+        """
+        Remove 150,
+        should replace it with its predecessor - 75 :)
+            75|200 (A)
+         /    |        \
+(B)25|50  151(C)   255|300|400 (D)
+        """
+        A.remove(150)
+        self.assertElementsInExpectedOrder([75, 200], A.values)
+        self.assertElementsInExpectedOrder([25, 50], B.values)
+        """
+        Add 500, goes to D which overrflows and splits by 300, adding it to A
+            75|200|300 (A)
+         /    |   |     \
+(B)25|50  151(C) 255(D) 400|500 (E)
+        """
+        A.add(500)
+        self.assertElementsInExpectedOrder([75, 200, 300], A.values)
+        self.assertEqual(len(A.children), 4)
+
+        B = A.children[0]
+        C = A.children[1]
+        D = A.children[2]
+        E = A.children[3]
+        self.assertElementsInExpectedOrder([25, 50], B.values)
+        self.assertElementsInExpectedOrder([151], C.values)
+        self.assertElementsInExpectedOrder([255], D.values)
+        self.assertElementsInExpectedOrder([400, 500], E.values)
+        """
+        Remove 151, C will be empty and will take 75 from A which will be replaced by 50
+           50|200|300 (A)
+         /    |   |     \
+     (B)25  75(C) 255(D) 400|500 (E)
+        """
+        A.remove(151)
+        self.assertElementsInExpectedOrder([50, 200, 300], A.values)
+        self.assertElementsInExpectedOrder([25], B.values)
+        self.assertElementsInExpectedOrder([75], C.values)
+        """
+        Add 565, goes to E
+        """
+        A.add(565)
+        """
+        Add 600, goes to E but E overflows, pushing 500 up to A
+        but A overflows as well, pushing 200 on the top as the root
+
+            ______200______(A)
+           /                 \
+        50(B)               300|500 (C)
+       /    \              /   |    \
+     25(D)  75(E)      255(F) 400(G) 565|600 (H)
+        """
+        A.add(600)
+        B = A.children[0]
+        C = A.children[1]
+        self.assertEqual(B.parent, A)
+        self.assertEqual(C.parent, A)
+        self.assertElementsInExpectedOrder([200], A.values)
+        self.assertEqual(len(A.children), 2)
+        self.assertElementsInExpectedOrder([50], B.values)
+        self.assertElementsInExpectedOrder([300, 500], C.values)
+        self.assertEqual(len(B.children), 2)
+        D = B.children[0]
+        E = B.children[1]
+        self.assertElementsInExpectedOrder([25], D.values)
+        self.assertElementsInExpectedOrder([75], E.values)
+        self.assertEqual(len(C.children), 3)
+        F = C.children[0]
+        G = C.children[1]
+        H = C.children[2]
+        self.assertElementsInExpectedOrder([255], F.values)
+        self.assertElementsInExpectedOrder([400], G.values)
+        self.assertElementsInExpectedOrder([565, 600], H.values)
+        """
+        Remove 50
+        FUCK THIS IS MESSY
+        Merges 25 and 75 into one, then B takes A's 200 while A takes C's 300.
+        In the end, 255 goes as a right child to our new B (200)
+        This made me write quite messy code and I'm certain its not correct
+        End result should be
+
+                __________300__________(A)
+               /                       \
+            200(B)                    500(C)
+           /      \                  /      \
+       25|75 (D)  255(E)         400(F)   565|600(G)
+        """
+        A.remove(50)
+        self.assertElementsInExpectedOrder([300], A.values)
+        self.assertEqual(len(A.children), 2)
+        B = A.children[0]
+        C = A.children[1]
+        self.assertElementsInExpectedOrder([200], B.values)
+        self.assertElementsInExpectedOrder([500], C.values)
+        self.assertEqual(len(B.children), 2)
+        self.assertEqual(len(C.children), 2)
+        D = B.children[0]
+        E = B.children[1]
+        F = C.children[0]
+        G = C.children[1]
+        self.assertElementsInExpectedOrder([25, 75], D.values)
+        self.assertElementsInExpectedOrder([255], E.values)
+        self.assertElementsInExpectedOrder([400], F.values)
+        self.assertElementsInExpectedOrder([565, 600], G.values)
+
+
+    def test_remove_edge_case(self):
+        """
+                _______200_______(A)
+               /                   \
+           50|100                 300
+          /  |   \               /   \
+       25|40   75   150        250   350
+
+        Remove 300,
+        200 should go to 300's place and 100 should come on top
+        150 should go left to the new 200
+        """
+        self.fail("Not implemented!")
+

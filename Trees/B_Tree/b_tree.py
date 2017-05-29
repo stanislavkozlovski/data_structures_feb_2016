@@ -87,10 +87,40 @@ class BNode:
             # TODO: Children lost
             self.values.remove(value)
             # re-order children
+            if len(self.children) == 2:
+                self.children = [self.children[0]]
             for i in range(value_idx + 1, len(self.children) - 1):
                 self.children[i] = self.children[i + 1]
             # recursively remove
             predecessor.remove(value)
+            if len(self.values) == 0:
+                for ch in self.children:
+                    if ch is not None:
+                        self.merge_with_child(ch)
+                # self.children = []
+                new_parent = BNode(order=self.order, parent=self.parent)
+                new_parent.children = []
+                # swap parent with right sibling
+                rght_sibling = self.parent.children[self.parent.children.index(self)+1]
+                self.parent.children[self.parent.children.index(self)] = new_parent
+                if len(rght_sibling.values) == 1:
+                    raise Exception("TANK")
+                if len(self.parent.values) != 1:
+                    raise Exception("TANK")
+                # self.values.append(self.parent.values[0])
+                new_parent.values.append(self.parent.values[0])
+                # get first rght sibling child and add it here (old parent successor)
+                new_parent.children.append(self)
+                new_parent.children.append(rght_sibling.children[0])
+                self.parent.values[0] = rght_sibling.values[0]
+                rght_sibling.values.pop(0)
+                rght_sibling.children.pop(0)
+                self.parent = new_parent
+
+                # TODO:
+            # if len(self.values) == 0:
+            #     self.merge_recursively(excluding=self)
+                # self.parent.remove_merge(value, self)
         elif successor is None or len(predecessor.values) >= len(successor.values):
             pass
             # switch with predecessor value
@@ -169,13 +199,14 @@ class BNode:
 
         # copy children
         # copy first child
-        self.children[other_idx] = other.children[0]
-        self.children[other_idx].parent = self
-        insert_idx = other_idx + 1
-        for child in other.children[1:]:
-            self.children.insert(insert_idx, child)
-            child.parent = self
-            insert_idx += 1
+        if other.__has_children():
+            self.children[other_idx] = other.children[0]
+            self.children[other_idx].parent = self
+            insert_idx = other_idx + 1
+            for child in other.children[1:]:
+                self.children.insert(insert_idx, child)
+                child.parent = self
+                insert_idx += 1
 
         if to_split:
             self.split()
