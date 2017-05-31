@@ -901,19 +901,71 @@ class BNodeTests(TestCase):
         self.assertElementsInExpectedOrder([255], E.values)
         self.assertElementsInExpectedOrder([400], F.values)
         self.assertElementsInExpectedOrder([565, 600], G.values)
-
+        self.assertEqual(E.parent, B)
 
     def test_remove_edge_case(self):
         """
                 _______200_______(A)
                /                   \
-           50|100                 300
+           50|100(B)              300(C)
           /  |   \               /   \
-       25|40   75   150        250   350
+ (D)   25|40(E)75   150(F)  (G)250   350(H)
 
         Remove 300,
         200 should go to 300's place and 100 should come on top
         150 should go left to the new 200
         """
-        self.fail("Not implemented!")
+        A = BNode(order=3)
+        A.values = [200]
+        B = BNode(order=3, parent=A)
+        B.values = [50, 100]
+        C = BNode(order=3, parent=A)
+        C.values = [300]
+        A.children = [B, C]
+        D = BNode(order=3, parent=B)
+        D.values = [25, 40]
+        E = BNode(order=3, parent=B)
+        E.values = [75]
+        F = BNode(order=3, parent=B)
+        F.values = [150]
+        B.children = [D, E, F]
+        G = BNode(order=3, parent=C)
+        G.values = [250]
+        H = BNode(order=3, parent=C)
+        H.values = [350]
+        C.children = [G, H]
+
+        """
+        Removing 300, will transfer with B, putting 100 at A and 200 at C
+        150 will become a left child of the new 200 and 250 and 350 will merge
+
+                ________100________(A)
+               /                   \
+             50(B)                200(C)
+            /    \               /    \
+    (D)  25|40   75(F)    (G) 150    250|350(H)
+        """
+        A.remove(300)
+
+        self.assertElementsInExpectedOrder([100], A.values)
+        self.assertEqual(len(A.children), 2)
+
+        B = A.children[0]
+        C = A.children[1]
+        self.assertElementsInExpectedOrder([50], B.values)
+        self.assertEqual(B.parent, A)
+        self.assertElementsInExpectedOrder([200], C.values)
+        self.assertEqual(C.parent, A)
+
+        D = B.children[0]
+        F = B.children[1]
+        self.assertElementsInExpectedOrder([25, 40], D.values)
+        self.assertElementsInExpectedOrder([75], F.values)
+
+        G = C.children[0]
+        H = C.children[1]
+        self.assertElementsInExpectedOrder([150], G.values)
+        self.assertElementsInExpectedOrder([250, 350], H.values)
+        self.assertEqual(G.parent, C)
+        self.assertEqual(H.parent, C)
 

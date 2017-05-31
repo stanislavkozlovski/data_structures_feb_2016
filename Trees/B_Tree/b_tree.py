@@ -83,7 +83,8 @@ class BNode:
             # both have 1 child, so, merge VALUE and SUCCESSOR into PREDECESSOR
             for l in successor.values:
                 predecessor.add(l)
-            predecessor.add(value)
+            # TODO: It splits itself with predecessor.add an predecessor.remove
+            # predecessor.add(value)
             # TODO: Children lost
             self.values.remove(value)
             # re-order children
@@ -92,7 +93,7 @@ class BNode:
             for i in range(value_idx + 1, len(self.children) - 1):
                 self.children[i] = self.children[i + 1]
             # recursively remove
-            predecessor.remove(value)
+            # predecessor.remove(value)
             if len(self.values) == 0:
                 for ch in self.children:
                     if ch is not None:
@@ -100,22 +101,77 @@ class BNode:
                 # self.children = []
                 new_parent = BNode(order=self.order, parent=self.parent)
                 new_parent.children = []
-                # swap parent with right sibling
-                rght_sibling = self.parent.children[self.parent.children.index(self)+1]
-                self.parent.children[self.parent.children.index(self)] = new_parent
-                if len(rght_sibling.values) == 1:
-                    raise Exception("TANK")
-                if len(self.parent.values) != 1:
-                    raise Exception("TANK")
-                # self.values.append(self.parent.values[0])
-                new_parent.values.append(self.parent.values[0])
-                # get first rght sibling child and add it here (old parent successor)
-                new_parent.children.append(self)
-                new_parent.children.append(rght_sibling.children[0])
-                self.parent.values[0] = rght_sibling.values[0]
-                rght_sibling.values.pop(0)
-                rght_sibling.children.pop(0)
-                self.parent = new_parent
+                # swap parent with right or left sibling
+                right_sbl_idx = self.parent.children.index(self)+1
+                left_sbl_idx = self.parent.children.index(self)-1
+                # decide on a sibling
+                rght_sibling = None
+                left_sibling = None
+                if right_sbl_idx < len(self.parent.children):
+                    rght_sibling = self.parent.children[right_sbl_idx]
+                if left_sbl_idx >= 0:
+                    left_sibling = self.parent.children[left_sbl_idx]
+                if rght_sibling is not None and left_sibling is not None:
+                    # decide from both, taking one with more vlaues
+                    if len(rght_sibling.values) > len(left_sibling.values):
+                        # take right
+                        self.parent.children[self.parent.children.index(self)] = new_parent
+                        if len(rght_sibling.values) == 1:
+                            raise Exception("TANK")
+                        if len(self.parent.values) != 1:
+                            raise Exception("TANK")
+                        # self.values.append(self.parent.values[0])
+                        new_parent.values.append(self.parent.values[0])
+                        # get first rght sibling child and add it here (old parent successor)
+                        new_parent.children.append(self)
+                        new_parent.children.append(rght_sibling.children[0])
+                        self.parent.values[0] = rght_sibling.values[0]
+                        rght_sibling.values.pop(0)
+                        rght_sibling.children.pop(0)
+                        self.parent = new_parent
+                        pass
+                    else:
+                        # take left
+                        pass
+                    pass
+                elif rght_sibling is not None:
+                    # take right
+                    self.parent.children[self.parent.children.index(self)] = new_parent
+                    if len(rght_sibling.values) == 1:
+                        raise Exception("TANK")
+                    if len(self.parent.values) != 1:
+                        raise Exception("TANK")
+                    # self.values.append(self.parent.values[0])
+                    new_parent.values.append(self.parent.values[0])
+                    # get first rght sibling child and add it here (old parent successor)
+                    new_parent.children.append(self)
+                    new_parent.children.append(rght_sibling.children[0])
+                    rght_sibling.children[0].parent = new_parent
+                    self.parent.values[0] = rght_sibling.values[0]
+                    rght_sibling.values.pop(0)
+                    rght_sibling.children.pop(0)
+                    self.parent = new_parent
+                    pass
+                elif left_sibling is not None:
+                    # take left
+                    self.parent.children[self.parent.children.index(self)] = new_parent
+                    if len(left_sibling.values) == 1:
+                        raise Exception("TANK")
+                    if len(self.parent.values) != 1:
+                        raise Exception("TANK")
+                    # self.values.append(self.parent.values[0])
+                    new_parent.values.append(self.parent.values[-1])
+                    # get last left sibling child and add it here (old parent successor)
+                    new_parent.children.append(left_sibling.children[-1])
+                    left_sibling.children[-1].parent = new_parent
+                    new_parent.children.append(self)
+                    self.parent.values[-1] = left_sibling.values[-1]
+                    left_sibling.values.pop(-1)
+                    left_sibling.children.pop(-1)
+                    self.parent = new_parent
+                    pass
+
+
 
                 # TODO:
             # if len(self.values) == 0:
