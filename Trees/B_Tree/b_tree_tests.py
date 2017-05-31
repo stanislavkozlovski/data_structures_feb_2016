@@ -902,6 +902,355 @@ class BNodeTests(TestCase):
         self.assertElementsInExpectedOrder([400], F.values)
         self.assertElementsInExpectedOrder([565, 600], G.values)
         self.assertEqual(E.parent, B)
+        """
+        Add 350, goes to F
+        Add 375, goes to F
+        Add 700, goes to G
+        Add 275, 290, goes to E
+
+                         __________300__________(A)
+                        /                       \
+                   __200(B)__                  __500(C)__
+                  /          \                /          \
+             25|75 (D)  255|275|290(E)   350|375|400(F)   565|600|700(G)
+        """
+        A.add(350)
+        A.add(375)
+        A.add(275)
+        A.add(290)
+        A.add(700)
+        self.assertElementsInExpectedOrder([350, 375, 400], F.values)
+        self.assertElementsInExpectedOrder([565, 600, 700], G.values)
+        self.assertElementsInExpectedOrder([255, 275, 290], E.values)
+        """
+        Add 320, F overfills and splits by 350, which goes to C
+             __________300__________(A)
+            /                       \
+       __200(B)__                  __350|500(C)__
+      /          \                /     |        \
+ 25|75 (D)  255|275|290(E)    320(F)  375|400(G)   565|600|700(H)
+        """
+        A.add(320)
+        self.assertElementsInExpectedOrder([350, 500], C.values)
+        self.assertEqual(len(C.children), 3)
+        F = C.children[0]
+        G = C.children[1]
+        H = C.children[2]
+        self.assertElementsInExpectedOrder([320], F.values)
+        self.assertElementsInExpectedOrder([375, 400], G.values)
+        self.assertElementsInExpectedOrder([565, 600, 700], H.values)
+        self.assertEqual(F.parent, C)
+        self.assertEqual(G.parent, C)
+        self.assertEqual(H.parent, C)
+        """
+        Add 750, goes to H which overfills and splits by 600
+
+                        __________300__________(A)
+                       /                       \
+                  __200(B)__                  __350  |  500   |  600(C)__
+                 /          \                /       |        |          \
+            25|75 (D)  255|275|290(E)    320(F)   375|400(G)  565(H)  700|750(I)
+        """
+        A.add(750)
+        self.assertElementsInExpectedOrder([350, 500, 600], C.values)
+        self.assertEqual(len(C.children), 4)
+        F = C.children[0]
+        G = C.children[1]
+        H = C.children[2]
+        I = C.children[3]
+        self.assertElementsInExpectedOrder([320], F.values)
+        self.assertEqual(F.parent, C)
+        self.assertElementsInExpectedOrder([375, 400], G.values)
+        self.assertElementsInExpectedOrder([565], H.values)
+        self.assertElementsInExpectedOrder([700, 750], I.values)
+        """
+        Add 800, goes to I
+        """
+        A.add(800)
+        self.assertElementsInExpectedOrder([700, 750, 800], I.values)
+        """
+        Add 900, goes to I, which overflows and splits by 750
+        750 goes to C, which overflows and splits by 500, going to A
+
+
+                    _______________300    |   500_______________ (A)
+                  /                       |                     \
+              200(B)                    350(C)                 600|750 (D)
+            /      \                  /       \               /   |      \
+        25|75(E) 255|275|290(F)    320(G)    375|400(H)   565(I) 700(J)  800|900 (K)
+
+        """
+        A.add(900)
+        self.assertElementsInExpectedOrder([300, 500], A.values)
+        self.assertEqual(len(A.children), 3)
+        B = A.children[0]
+        C = A.children[1]
+        D = A.children[2]
+        self.assertElementsInExpectedOrder([200], B.values)
+        self.assertElementsInExpectedOrder([350], C.values)
+        self.assertElementsInExpectedOrder([600, 750], D.values)
+        self.assertEqual(B.parent, A)
+        self.assertEqual(C.parent, A)
+        self.assertEqual(D.parent, A)
+        self.assertEqual(len(B.children), 2)
+        self.assertEqual(len(C.children), 2)
+        self.assertEqual(len(D.children), 3)
+        E = B.children[0]
+        F = B.children[1]
+        self.assertElementsInExpectedOrder([25, 75], E.values)
+        self.assertElementsInExpectedOrder([255, 275, 290], F.values)
+        self.assertEqual(E.parent, B)
+        self.assertEqual(F.parent, B)
+        G = C.children[0]
+        H = C.children[1]
+        self.assertElementsInExpectedOrder([320], G.values)
+        self.assertElementsInExpectedOrder([375, 400], H.values)
+        self.assertEqual(G.parent, C)
+        self.assertEqual(H.parent, C)
+        I = D.children[0]
+        J = D.children[1]
+        K = D.children[2]
+        self.assertElementsInExpectedOrder([565], I.values)
+        self.assertElementsInExpectedOrder([700], J.values)
+        self.assertElementsInExpectedOrder([800, 900], K.values)
+        self.assertEqual(I.parent, D)
+        self.assertEqual(J.parent, D)
+        self.assertEqual(K.parent, D)
+        """
+        Add 330, 340
+        Goes to  G
+        """
+        A.add(330)
+        A.add(340)
+        self.assertElementsInExpectedOrder([320, 330, 340], G.values)
+        """
+        Add 335, G overfills and splits by 330 which goes to C
+
+
+           ______________________________300    |   500______________________________ (A)
+          /                                     |                                     \
+      200(B)                           ______330|350(C)_____                            600|750 (D)
+    /      \                         /          |           \                           /   |      \
+25|75(E) 255|275|290(F)          320(G)      335|340(L)  375|400(H)                 565(I) 700(J)  800|900 (K)
+        """
+        A.add(335)
+        self.assertElementsInExpectedOrder([330, 350], C.values)
+        self.assertEqual(len(C.children), 3)
+        G = C.children[0]
+        L = C.children[1]
+        H = C.children[2]
+        self.assertElementsInExpectedOrder([320], G.values)
+        self.assertElementsInExpectedOrder([335, 340], L.values)
+        self.assertElementsInExpectedOrder([375, 400], H.values)
+        """
+        Add 725, 740
+        Goes to J
+        """
+        A.add(725)
+        A.add(740)
+        self.assertElementsInExpectedOrder([700, 725, 740], J.values)
+        """
+        Add 735, goes to J which overflows and splits by 725, which goes to D
+                    ______________________________300    |   500______________________________ (A)
+                   /                                     |                                     \
+               200(B)                           ______330|350(C)_____                    ____600 |   725  |  750____ (D)
+             /      \                         /          |           \                  /        |        |            \
+         25|75(E) 255|275|290(F)          320(G)      335|340(L)  375|400(H)        565(I)      700(J)   735|740(K)      800|900 (M)
+        """
+        A.add(735)
+        self.assertElementsInExpectedOrder([600, 725, 750], D.values)
+        self.assertEqual(len(D.children), 4)
+        I = D.children[0]
+        J = D.children[1]
+        K = D.children[2]
+        M = D.children[3]
+        self.assertElementsInExpectedOrder([565], I.values)
+        self.assertElementsInExpectedOrder([700], J.values)
+        self.assertElementsInExpectedOrder([735, 740], K.values)
+        self.assertElementsInExpectedOrder([800, 900], M.values)
+        self.assertEqual(I.parent, D)
+        self.assertEqual(J.parent, D)
+        self.assertEqual(K.parent, D)
+        self.assertEqual(M.parent, D)
+        """
+        Add 950, goes to M
+        """
+        A.add(950)
+        self.assertElementsInExpectedOrder([800, 900, 950], M.values)
+        """
+        Add 1000, goes to M, which overflows and splits by 900.
+        900 goes to D, which overflows and splits by 725 which goes to A
+
+            ______________________________300    |                 500             |         725______________________________ (A)
+           /                                     |                                 |                                             \
+       200(B)                           ______330|350(C)_____                    600(O)                                         750|900____ (D)
+     /      \                         /          |           \                  /    \                                        /    |            \
+ 25|75(E) 255|275|290(F)          320(G)      335|340(L)  375|400(H)      565(I)      700(J)                        735|740(K)    800(M)       950|1000(N)
+
+        """
+        A.add(1000)
+        self.assertElementsInExpectedOrder([300, 500, 725], A.values)
+        self.assertEqual(len(A.children), 4)
+        B, C, O, D = A.children
+        self.assertElementsInExpectedOrder([600], O.values)
+        self.assertElementsInExpectedOrder([750, 900], D.values)
+        self.assertEqual(len(O.children), 2)
+        self.assertEqual(len(D.children), 3)
+        I, J = O.children
+        self.assertElementsInExpectedOrder([565], I.values)
+        self.assertElementsInExpectedOrder([700], J.values)
+        self.assertEqual(I.parent, O)
+        self.assertEqual(J.parent, O)
+        K, M, N = D.children
+        self.assertElementsInExpectedOrder([735, 740], K.values)
+        self.assertElementsInExpectedOrder([800], M.values)
+        self.assertElementsInExpectedOrder([950, 1000], N.values)
+        self.assertEqual(K.parent, D)
+        self.assertEqual(M.parent, D)
+        self.assertEqual(N.parent, D)
+        """
+        Add 710, 715
+        Goes to J
+        """
+        A.add(710)
+        A.add(715)
+        self.assertElementsInExpectedOrder([700, 710, 715], J.values)
+        """
+        Add 720, J overflows and splits by 710 which goes to O
+
+           ______________________________300    |                 500             |         725______________________________ (A)
+          /                                     |                                 |                                             \
+      200(B)                           ______330|350(C)_____                 600  |   710(O)                                  750    |     900____ (D)
+    /      \                         /          |           \              /      |          \                               /       |            \
+25|75(E) 255|275|290(F)          320(G)      335|340(L)  375|400(H)  565(I)      700(J)   715|720(P)                     735|740(K)  800(M)       950|1000(N)
+        """
+        A.add(720)
+        self.assertElementsInExpectedOrder([600, 710], O.values)
+        self.assertEqual(len(O.children), 3)
+        I, J, P = O.children
+        self.assertElementsInExpectedOrder([565], I.values)
+        self.assertElementsInExpectedOrder([700], J.values)
+        self.assertElementsInExpectedOrder([715, 720], P.values)
+        """
+        Add 717, goes to P
+        """
+        A.add(717)
+        self.assertElementsInExpectedOrder([715, 717, 720], P.values)
+        """
+        Add 716, P fills up and splits by 716 which goes to O
+           ______________________________300    |                 500             |         725______________________________ (A)
+          /                                     |                                 |                                             \
+      200(B)                           ______330|350(C)_____                 600  |   710  |    716(O)                        750    |     900____ (D)
+    /      \                         /          |           \              /      |        |        \                        /       |            \
+25|75(E) 255|275|290(F)          320(G)      335|340(L)  375|400(H)  565(I)      700(J)   715(P)  717|720(Q)                     735|740(K)  800(M)       950|1000(N)
+        """
+        A.add(716)
+        self.assertElementsInExpectedOrder([600, 710, 716], O.values)
+        self.assertEqual(len(O.children), 4)
+        I, J, P, Q = O.children
+        self.assertElementsInExpectedOrder([565], I.values)
+        self.assertElementsInExpectedOrder([700], J.values)
+        self.assertElementsInExpectedOrder([715], P.values)
+        self.assertElementsInExpectedOrder([717, 720], Q.values)
+        """
+        Add 713, 714, goes to P
+        """
+        A.add(713)
+        A.add(714)
+        self.assertElementsInExpectedOrder([713, 714, 715], P.values)
+        """
+        Get ready for a show
+        Add 712 to P, P overflows and is split by 713 which goes to O which overflows and splits by 710 which goes to A which overflows and splits by 500
+         500 is our new root
+
+            Intermediate step:
+            710 is on our root and it has now overfilled
+                        ________300           |            500             |            710             |      725________
+                      /                       |                            |                            |                  \
+                   200                   330  |    350                   600                        713 | 716                 750 | 900
+                /     \               /       |       \                /     \                   /      |     \              /    |     \
+            25|75  255|275|290      320     335|340   375|400       565      700              712     714|715  717|720   735|740  800    950|1000
+
+
+
+                                                              ___________________________________________500___________________________________________(A)
+                                                            /                                                                                           \
+                                    ____________________300(B)                                                                    ______________710     |   725 (C)_______________________________________
+                                   /                            \                                                                 /                      |                                                \
+                                200(D)                      330 |     350 (E)                                                 600(F)                 713 | 716 (G)                                 750   |    900 (H)
+                              /       \                   /     |            \                                              /      \               /     |       \                               /       |         \
+                         25|75(I)   255|275|290(J)  320(K)   335|340(L)    375|400(M)                                 565(N)    700(O)         712(P)  714|715(Q)  717|720(R)              735|740(S) 800(T)     950|100(U)
+        """
+        A.add(712)
+        self.assertElementsInExpectedOrder([500], A.values)
+        self.assertEqual(len(A.children), 2)
+        B, C = A.children
+        self.assertElementsInExpectedOrder([300], B.values)
+        self.assertElementsInExpectedOrder([710, 725], C.values)
+        self.assertEqual(B.parent, A)
+        self.assertEqual(C.parent, A)
+        self.assertEqual(len(B.children), 2)
+        self.assertEqual(len(C.children), 3)
+        # C Subtree
+        F, G, H = C.children
+        self.assertElementsInExpectedOrder([600], F.values)
+        self.assertElementsInExpectedOrder([713, 716], G.values)
+        self.assertElementsInExpectedOrder([750, 900], H.values)
+        self.assertEqual(F.parent, C)
+        self.assertEqual(G.parent, C)
+        self.assertEqual(H.parent, C)
+        self.assertEqual(len(F.children), 2)
+        self.assertEqual(len(G.children), 3)
+        self.assertEqual(len(H.children), 3)
+
+        N, O = F.children
+        self.assertElementsInExpectedOrder([565], N.values)
+        self.assertElementsInExpectedOrder([700], O.values)
+        self.assertEqual(N.parent, F)
+        self.assertEqual(O.parent, F)
+        P, Q, R = G.children
+        self.assertElementsInExpectedOrder([712], P.values)
+        self.assertElementsInExpectedOrder([714, 715], Q.values)
+        self.assertElementsInExpectedOrder([717, 720], R.values)
+        self.assertEqual(P.parent, G)
+        self.assertEqual(Q.parent, G)
+        self.assertEqual(R.parent, G)
+        S, T, U = H.children
+        self.assertElementsInExpectedOrder([735, 740], S.values)
+        self.assertElementsInExpectedOrder([800], T.values)
+        self.assertElementsInExpectedOrder([950, 1000], U.values)
+        self.assertEqual(S.parent, H)
+        self.assertEqual(T.parent, H)
+        self.assertEqual(U.parent, H)
+        # B Subtree
+        D, E = B.children
+        self.assertElementsInExpectedOrder([200], D.values)
+        self.assertElementsInExpectedOrder([330, 350], E.values)
+        self.assertEqual(D.parent, B)
+        self.assertEqual(E.parent, B)
+        self.assertEqual(len(D.children), 2)
+        self.assertEqual(len(E.children), 3)
+        I, J = D.children
+        self.assertElementsInExpectedOrder([25, 75], I.values)
+        self.assertElementsInExpectedOrder([255, 275, 290], J.values)
+        self.assertEqual(I.parent, D)
+        self.assertEqual(J.parent, D)
+        K, L, M = E.children
+        self.assertElementsInExpectedOrder([320], K.values)
+        self.assertElementsInExpectedOrder([335, 340], L.values)
+        self.assertElementsInExpectedOrder([375, 400], M.values)
+        self.assertEqual(K.parent, E)
+        self.assertEqual(L.parent, E)
+        self.assertEqual(M.parent, E)
+
+        """
+        Delete 500 (the root).
+        Should simply replace it with its predecessor (400)
+        """
+        A.remove(500)
+        self.assertElementsInExpectedOrder([400], A.values)
+        self.assertElementsInExpectedOrder([375], M.values)
+
 
     def test_remove_edge_case(self):
         """

@@ -66,10 +66,11 @@ class BNode:
             return
 
         # try to find predecessor and successor
+        predecessor: BNode = self.get_predecessor(value)
         value_idx = self.values.index(value)
-        predecessor: BNode = self.children[value_idx]
-        if predecessor.__has_children():
-            predecessor = predecessor.children[-1]
+        # predecessor: BNode = self.children[value_idx]
+        # if predecessor.__has_children():
+        #     predecessor = predecessor.children[-1]
         successor: BNode = self.children[value_idx + 1]
         if successor is not None and successor.__has_children():
             successor = successor.children[0]
@@ -200,7 +201,13 @@ class BNode:
             # copy children
             left_node.children = self.children[:median + 1]
             right_node.children = self.children[median + 1:]
-
+            # assign parents to children
+            for i in left_node.children:
+                if i is not None:
+                    i.parent = left_node
+            for i in right_node.children:
+                if i is not None:
+                    i.parent = right_node
             self.values = [median_value]
             self.children = [left_node, right_node]
             # Merge nodes
@@ -370,3 +377,24 @@ class BNode:
                 # self.merge_with_child(ch)
         if self.parent is not None:
             self.parent.merge_recursively(excluding=self)
+
+    def get_predecessor(self, value) -> 'BNode':
+        """
+        Return the predecessor of our given value
+        e.g
+          100 | 200 | 300 (A)
+          /   |
+            150
+                \
+               165
+        A.get_predecessor(200) should return 165
+        """
+        if value not in self.values:
+            raise Exception("Can't get the predecessor of a value that does not exist!")
+        value_idx = self.values.index(value)
+        predecessor: BNode = self.children[value_idx]  # get the smaller node
+        # go right as much as possible
+        while predecessor is not None and len(predecessor.children) > 0 and predecessor.children[-1] is not None:
+            predecessor = predecessor.children[-1]
+
+        return predecessor
