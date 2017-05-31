@@ -44,15 +44,13 @@ class BNode:
                         break
 
     def remove(self, value):
+        # find the appropriate root to remove
         if value not in self.values:
             if not self.__has_children():
                 raise Exception('Value not in tree!')
-            recursed = False
-            if value < self.values[0]:
-                # before first
+            if value < self.values[0]:  # before first
                 self.children[0].remove(value)
-            elif value > self.values[-1]:
-                # after last
+            elif value > self.values[-1]:  # after last
                 self.children[-1].remove(value)
             else:
                 for i in range(len(self.values)-1):
@@ -61,17 +59,13 @@ class BNode:
                         break
             return
 
-        if not self.__has_children():
-            # easy, simple remove
-            # TODO: Take top node and merge with right/left
+        if not self.__has_children():  # easy, simple remove
             self.values.remove(value)
-            if len(self.values) < 1:
-                # try to do a transfer
+            if len(self.values) == 0:  # try to do a transfer
                 self.parent.remove_merge(value, self)
-                pass
             return
 
-        # try to find predecessor
+        # try to find predecessor and successor
         value_idx = self.values.index(value)
         predecessor: BNode = self.children[value_idx]
         if predecessor.__has_children():
@@ -111,72 +105,48 @@ class BNode:
                     rght_sibling = self.parent.children[right_sbl_idx]
                 if left_sbl_idx >= 0:
                     left_sibling = self.parent.children[left_sbl_idx]
+
+                chosen_sibling = None  # the sibling we'll transfer with
+                sibling_idx = None
+
                 if rght_sibling is not None and left_sibling is not None:
-                    # decide from both, taking one with more vlaues
+                    # decide from both, taking one with more values
                     if len(rght_sibling.values) > len(left_sibling.values):
                         # take right
-                        self.parent.children[self.parent.children.index(self)] = new_parent
-                        if len(rght_sibling.values) == 1:
-                            raise Exception("TANK")
-                        if len(self.parent.values) != 1:
-                            raise Exception("TANK")
-                        # self.values.append(self.parent.values[0])
-                        new_parent.values.append(self.parent.values[0])
-                        # get first rght sibling child and add it here (old parent successor)
-                        new_parent.children.append(self)
-                        new_parent.children.append(rght_sibling.children[0])
-                        self.parent.values[0] = rght_sibling.values[0]
-                        rght_sibling.values.pop(0)
-                        rght_sibling.children.pop(0)
-                        self.parent = new_parent
-                        pass
+                        chosen_sibling = rght_sibling
                     else:
-                        # take left
-                        pass
-                    pass
+                        chosen_sibling = left_sibling
                 elif rght_sibling is not None:
                     # take right
-                    self.parent.children[self.parent.children.index(self)] = new_parent
-                    if len(rght_sibling.values) == 1:
-                        raise Exception("TANK")
-                    if len(self.parent.values) != 1:
-                        raise Exception("TANK")
-                    # self.values.append(self.parent.values[0])
-                    new_parent.values.append(self.parent.values[0])
-                    # get first rght sibling child and add it here (old parent successor)
-                    new_parent.children.append(self)
-                    new_parent.children.append(rght_sibling.children[0])
-                    rght_sibling.children[0].parent = new_parent
-                    self.parent.values[0] = rght_sibling.values[0]
-                    rght_sibling.values.pop(0)
-                    rght_sibling.children.pop(0)
-                    self.parent = new_parent
-                    pass
+                    chosen_sibling = rght_sibling
                 elif left_sibling is not None:
                     # take left
-                    self.parent.children[self.parent.children.index(self)] = new_parent
-                    if len(left_sibling.values) == 1:
-                        raise Exception("TANK")
-                    if len(self.parent.values) != 1:
-                        raise Exception("TANK")
-                    # self.values.append(self.parent.values[0])
-                    new_parent.values.append(self.parent.values[-1])
-                    # get last left sibling child and add it here (old parent successor)
-                    new_parent.children.append(left_sibling.children[-1])
-                    left_sibling.children[-1].parent = new_parent
+                    chosen_sibling = left_sibling
+
+                sibling_idx = 0 if chosen_sibling == rght_sibling else -1
+
+                parent_self_idx = self.parent.children.index(self)  # the index of the current node in the parent's children arr
+                self.parent.children[parent_self_idx] = new_parent
+                if len(chosen_sibling.values) == 1:
+                    raise Exception("TANK")
+                if len(self.parent.values) != 1:
+                    raise Exception("TANK")
+                new_parent.values.append(self.parent.values[sibling_idx])
+                # get first rght sibling child and add it here (old parent successor)
+                if sibling_idx == 0:
                     new_parent.children.append(self)
-                    self.parent.values[-1] = left_sibling.values[-1]
-                    left_sibling.values.pop(-1)
-                    left_sibling.children.pop(-1)
-                    self.parent = new_parent
-                    pass
+                    new_parent.children.append(chosen_sibling.children[sibling_idx])
+                else:
+                    new_parent.children.append(chosen_sibling.children[sibling_idx])
+                    new_parent.children.append(self)
 
+                self.parent.values[sibling_idx] = chosen_sibling.values[sibling_idx]
+                chosen_sibling.children[sibling_idx].parent = new_parent
 
+                chosen_sibling.values.pop(sibling_idx)
+                chosen_sibling.children.pop(sibling_idx)
+                self.parent = new_parent
 
-                # TODO:
-            # if len(self.values) == 0:
-            #     self.merge_recursively(excluding=self)
-                # self.parent.remove_merge(value, self)
         elif successor is None or len(predecessor.values) >= len(successor.values):
             pass
             # switch with predecessor value
