@@ -3,6 +3,7 @@ from unittest import TestCase
 from b_tree import BNode
 
 
+# TODO: get_predecessor/get_successor tests
 class BNodeTests(TestCase):
 
     def assertElementsInExpectedOrder(self, expected_elements, received_elements):
@@ -730,6 +731,12 @@ class BNodeTests(TestCase):
         Lets work with a B-Tree of order 4 and add/remove all we want
         Add 50, 100, 150
         50|100|150 (A)
+
+        Simple summary of add/delete for easier rebuilding on the site
+        +50, +100, +150, +200, -100, +300, +400, +25, +75, +151, +255, -150,
+        +500, -151, +565, +600, -50, +350, +375, +275, +290, +700, +320,
+        +750, +800, +900, +330, +340, +335, +725, +740, +735, +950, +1000,
+        +710, +715, +720, +717, +716, +713, +714, +712, -500
         """
         A = BNode(order=4)
         A.add(50)
@@ -1246,10 +1253,98 @@ class BNodeTests(TestCase):
         """
         Delete 500 (the root).
         Should simply replace it with its predecessor (400)
+                                                                      ___________________________________________400___________________________________________(A)
+                                                            /                                                                                           \
+                                    ____________________300(B)                                                                    ______________710     |   725 (C)_______________________________________
+                                   /                            \                                                                 /                      |                                                \
+                                200(D)                      330 |     350 (E)                                                 600(F)                 713 | 716 (G)                                 750   |    900 (H)
+                              /       \                   /     |            \                                              /      \               /     |       \                               /       |         \
+                         25|75(I)   255|275|290(J)  320(K)   335|340(L)    375(M)                                 565(N)    700(O)         712(P)  714|715(Q)  717|720(R)              735|740(S) 800(T)     950|100(U)
         """
         A.remove(500)
         self.assertElementsInExpectedOrder([400], A.values)
         self.assertElementsInExpectedOrder([375], M.values)
+        """
+        Remove 400, should replace it with its predecessor (375)
+        M should take 350 from E and 340 should go to its place
+                                                            ___________________________________________375___________________________________________(A)
+                                                            /                                                                                           \
+                                    ____________________300(B)                                                                    ______________710     |   725 (C)_______________________________________
+                                   /                            \                                                                 /                      |                                                \
+                                200(D)                      330 |     340 (E)                                                 600(F)                 713 | 716 (G)                                 750   |    900 (H)
+                              /       \                   /     |            \                                              /      \               /     |       \                               /       |         \
+                         25|75(I)   255|275|290(J)  320(K)     335(L)    350(M)                                 565(N)    700(O)         712(P)  714|715(Q)  717|720(R)              735|740(S) 800(T)     950|100(U)
+        """
+        A.remove(400)
+        self.assertElementsInExpectedOrder([375], A.values)
+        self.assertElementsInExpectedOrder([335], L.values)
+        self.assertElementsInExpectedOrder([350], M.values)
+        self.assertElementsInExpectedOrder([330, 340], E.values)
+        """
+        Remove 375, should replace it with its predecessor (350)
+        340 should go down to M and merge with L
+                                                            ___________________________________________350___________________________________________(A)
+                                                            /                                                                                           \
+                                    ____________________300(B)                                                                    ______________710     |   725 (C)_______________________________________
+                                   /                            \                                                                 /                      |                                                \
+                                200(D)                      330 (E)                                                          600(F)                 713 | 716 (G)                                 750   |    900 (H)
+                              /       \                   /     |                                                           /      \               /     |       \                               /       |         \
+                         25|75(I)   255|275|290(J)  320(K)     335|340(L)                                              565(N)    700(O)         712(P)  714|715(Q)  717|720(R)              735|740(S) 800(T)     950|100(U)
+        """
+        A.remove(375)
+        self.assertElementsInExpectedOrder([350], A.values)
+        self.assertElementsInExpectedOrder([330], E.values)
+        self.assertEqual(len(E.children), 2)
+        K, L = E.children
+        self.assertElementsInExpectedOrder([320], K.values)
+        self.assertElementsInExpectedOrder([335, 340], L.values)
+        """
+        Remove 350, should replace it with its predecessor (340)
+                                                            ___________________________________________340___________________________________________(A)
+                                                            /                                                                                           \
+                                    ____________________300(B)                                                                    ______________710     |   725 (C)_______________________________________
+                                   /                            \                                                                 /                      |                                                \
+                                200(D)                      330 (E)                                                          600(F)                 713 | 716 (G)                                 750   |    900 (H)
+                              /       \                   /     |                                                           /      \               /     |       \                               /       |         \
+                         25|75(I)   255|275|290(J)  320(K)     335   (L)                                              565(N)    700(O)         712(P)  714|715(Q)  717|720(R)              735|740(S) 800(T)     950|100(U)
+        """
+        A.remove(350)
+        self.assertElementsInExpectedOrder([340], A.values)
+        self.assertElementsInExpectedOrder([335], L.values)
+        """
+        Remove 340
+        Should be replaced with predecessor 335
+        E is left with one child, so it merges with its children.
+                   ____________________300(B)__
+                  /                            \
+               200(D)                      320|330 (E)
+             /       \
+        25|75(I)   255|275|290(J)
+        We need to rebalance the levels now, so B merges with D
+
+                200|300
+              /    |    \
+            I     J      E
+
+        Now our left part of the tree has 2 levels, while our right has 3 (WTF)
+        We try to fill B's place by stealing (transferring) from its right sibling C (710) and we do so.
+        710 goes to A's place and B takes A's value
+        Note: You can imagine that 300(B) went to take E's place and we needed to fill up B with something
+
+                                                            ___________________________________________710___________________________________________(A)
+                                                            /                                                                                           \
+                                    ____________________335(B)                                                                              __________725 (C)____________________
+                                   /                            \                                                                         /                                       \
+                         ______200|300 (D)                       600(E)                                                            713 | 716 (F)                              750   |    900 (G)
+                        /         |        \                    /      \                                                         /     |       \                            /       |         \
+                   25|75(H)  255|275|290(I) 320|330(J)      565(K)    700(L)                                               712(M)  714|715(N)  717|720(O)           735|740(P) 800(Q)     950|100(R)
+        """
+        A.remove(340)
+        # self.assertElementsInExpectedOrder([710], A.values)
+        print(A.values)
+        for ch in A.children:
+            print(ch.values)
+
 
 
     def test_remove_edge_case(self):
@@ -1317,4 +1412,3 @@ class BNodeTests(TestCase):
         self.assertElementsInExpectedOrder([250, 350], H.values)
         self.assertEqual(G.parent, C)
         self.assertEqual(H.parent, C)
-

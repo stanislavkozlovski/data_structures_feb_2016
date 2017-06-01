@@ -42,6 +42,74 @@ class BNode:
                         wanted_child = self.children[i]
                         wanted_child.add(value)
                         break
+    def try_transfer(self):
+        if len(self.values) == 0:
+            old_ch = [ch for ch in self.children]
+            for ch in old_ch:
+                if ch is not None:
+                    self.merge_with_child(ch)
+            # self.children = []
+            new_parent = BNode(order=self.order, parent=self.parent)
+            new_parent.children = []
+            if self.parent is None:
+                return
+            # swap parent with right or left sibling
+            right_sbl_idx = self.parent.children.index(self) + 1
+            left_sbl_idx = self.parent.children.index(self) - 1
+            # decide on a sibling
+            rght_sibling = None
+            left_sibling = None
+            if right_sbl_idx < len(self.parent.children):
+                rght_sibling = self.parent.children[right_sbl_idx]
+            if left_sbl_idx >= 0:
+                left_sibling = self.parent.children[left_sbl_idx]
+
+            chosen_sibling = None  # the sibling we'll transfer with
+            sibling_idx = None
+
+            if rght_sibling is not None and left_sibling is not None:
+                # decide from both, taking one with more values
+                if len(rght_sibling.values) > len(left_sibling.values):
+                    # take right
+                    chosen_sibling = rght_sibling
+                else:
+                    chosen_sibling = left_sibling
+            elif rght_sibling is not None:
+                # take right
+                chosen_sibling = rght_sibling
+            elif left_sibling is not None:
+                # take left
+                chosen_sibling = left_sibling
+            if len(chosen_sibling.values) == 1:
+                # take from the parent and try to transfer him
+                self.values.append(self.parent.values[0])
+                self.parent.values.remove(self.parent.values[0])
+                self.parent.try_transfer()
+                return
+            sibling_idx = 0 if chosen_sibling == rght_sibling else -1
+
+            parent_self_idx = self.parent.children.index(
+                self)  # the index of the current node in the parent's children arr
+            self.parent.children[parent_self_idx] = new_parent
+            if len(chosen_sibling.values) == 1:
+                raise Exception("TANK")
+            if len(self.parent.values) != 1:
+                raise Exception("TANK")
+            new_parent.values.append(self.parent.values[sibling_idx])
+            # get first rght sibling child and add it here (old parent successor)
+            if sibling_idx == 0:
+                new_parent.children.append(self)
+                new_parent.children.append(chosen_sibling.children[sibling_idx])
+            else:
+                new_parent.children.append(chosen_sibling.children[sibling_idx])
+                new_parent.children.append(self)
+
+            self.parent.values[sibling_idx] = chosen_sibling.values[sibling_idx]
+            chosen_sibling.children[sibling_idx].parent = new_parent
+
+            chosen_sibling.values.pop(sibling_idx)
+            chosen_sibling.children.pop(sibling_idx)
+            self.parent = new_parent
 
     def remove(self, value):
         # find the appropriate root to remove
@@ -151,8 +219,10 @@ class BNode:
         elif successor is None or len(predecessor.values) >= len(successor.values):
             pass
             # switch with predecessor value
+            print(f'EXCHANGING NODE {self.values[value_idx]} WITH PREDECESSOR {predecessor.values[-1]}')
             self.values[value_idx], predecessor.values[-1] = predecessor.values[-1], self.values[value_idx]
             # recursively delete downwards
+            print(f'DELETING {value} FROM PREDECESSOR')
             return predecessor.remove(value)
 
         else:
@@ -216,6 +286,8 @@ class BNode:
     def merge_with_child(self, other: 'BNode'):
         # add the values
         to_split = False
+        if other is None:
+            raise Exception('Error here!')
         if len(other.values) + len(self.values) >= self.order:
             to_split = True  # we will go past the capacity for this node and will need to split it
 
@@ -265,6 +337,8 @@ class BNode:
         end_val = self.values[-1]
         # find left and right idx
         move_value = None
+        right_idx = None
+        left_idx = None
         if value < start_val:
             move_value = start_val
             mv_val_idx = 0
@@ -348,10 +422,28 @@ class BNode:
             predecessor.remove(move_value)
         else:
             # merge
-            self.merge_recursively()
+            # TANK
+            # TODO: Tank more
+            # merge oneself with children, we should now be empty
+            self.merge_with_children()
+            # take the parent and try to merge him
+            self.values.append(self.parent.values[0])
+            self.parent.values.remove(self.parent.values[0])
+            self.parent.try_transfer()
+            # self.parent.remove_merge(334, self)
+            # self.merge_recursively()
             self.children = [None for _ in self.children]
 
-
+    def merge_with_children(self):
+        p = BNode(order=self.order)
+        p.values = [val for val in self.values]
+        p.children = [child for child in self.children]
+        self.values = []
+        self.children = [p]
+        for pc in p.children:
+            p.merge_with_child(pc)
+        return p
+        pass
     def merge_recursively(self, excluding=None):
         """
         Merge this current root with all its children
