@@ -42,13 +42,13 @@ class Node
   end
 
   def get_children_count
-    if self.color == COLORS[:NIL_C]
+    if self.color == :NIL_C
       return 0
     end
 
-    if self.left.color != COLORS[:NIL_C] && self.right.color != COLORS[:NIL_C]
+    if self.left.color != :NIL_C && self.right.color != :NIL_C
       return 2
-    elsif self.left.color != COLORS[:NIL_C] || self.right.color != COLORS[:NIL_C]
+    elsif self.left.color != :NIL_C || self.right.color != :NIL_C
       return 1
     else
       return 0
@@ -225,25 +225,282 @@ class RedBlackTree
     find.call @root
   end
 
+  # removes a node from the tree
+  def remove(value)
+    # try to get a node with 0 or 1 children (by finding a successor if needed)
+    node_to_remove = find_node value
+    if node_to_remove.nil?
+      return  #  value not in tree
+    end
+
+    if node_to_remove.get_children_count == 2  # does not have 0 or 1 children, find successor
+      # find the in-order successor and replace its value, then remove the successor
+      successor = find_successor node_to_remove
+      node_to_remove.value = successor.value
+      node_to_remove = successor
+    end
+
+    remove_internal node_to_remove
+    @count -= 1
+  end
+
+  # receives a node with 0 or 1 children and removes it according to its color/children
+  def remove_internal(node_to_remove)
+    left_child = node_to_remove.left
+    right_child = node_to_remove.right
+    not_nil_child = if left_child != @@nil_leaf then left_child else right_child end
+    if node_to_remove == self.root
+      if not_nil_child != @@nil_leaf
+        @root = not_nil_child
+        @root.parent = NIL
+        @root.color = :BLACK
+      else  # both children are nil and this is the root
+        @root = NIL
+      return
+      end
+
+      if node_to_remove.color == :RED
+        # red node with no children, simple remove
+        if node_to_remove.has_children?
+          raise Exception('Unexpected behavior, a successor red node without 2 children should not have any children!')
+        end
+        remove_leaf node
+      else  # node is black
+        if not_nil_child.color == :RED
+          # last easy chance, swap the values with the red child and simply remove it
+          node_to_remove.value = not_nil_child.value
+          node_to_remove.left = not_nil_child.left
+          node_to_remove.right = not_nil_child.right
+        else  # black child
+          # 6 different cases apply here, good luck
+          remove_black_node node_to_remove
+        end
+      end
+
+    end
+
+  end
+
+  # loop through each of the 6 cases until we reach a terminating case
+  # what we're left is a leaf node ready to be deleted
+  def remove_black_node(node_to_remove)
+    # code here
+    case_1 node_to_remove
+    remove_leaf node_to_remove
+  end
+
+
+
+
+  # simply removes a leaf node, making its parent point to a NIL_LEAF
+  def remove_leaf(node)
+    if node.parent.value > node.value
+      node.parent.left = @@nil_leaf
+    else
+      node.parent.right = @@nil_leaf
+    end
+  end
+
+  def find_successor(node_to_remove)
+    successor = node_to_remove.right
+    successor = successor.left while successor.left != @@nil_leaf
+    successor
+  end
+
+  def find_node(value)
+    find = Proc.new do |node|
+      if node.nil? || node == @@nil_leaf
+        return NIL
+      elsif node.value == value
+        return node
+      elsif node.value > value
+        return find.call node.left
+      else
+        return find.call node.right
+      end
+    end
+
+    find.call @root
+  end
+
+  # Case 1 is when there's a double black node on the root
+  # Because we're at the root, we can simply remove it
+  # and reduce the black height of the whole tree.
+  #
+  #   __|10B|__                  __10B__
+  # /         \      ==>       /       \
+  #9B         20B            9B        20B
+  def case_1(node_to_remove)
+    if @root == node_to_remove
+      node_to_remove.color = :BLACK
+      return
+    end
+
+    case_2 node_to_remove
+  end
+
+  # case 2 applies when
+  # the parent is BLACK
+  # the sibling is RED
+  # the sibling's children are BLACK or NIL
+  #It takes the sibling and rotates it
+  #
+  #                        40B                                              60B
+  #                      /   \       --CASE 2 ROTATE-->                   /   \
+  #                 |20B|   60R       LEFT ROTATE                      40R   80B
+  # DBL BLACK IS 20----^   /   \      SIBLING 60R                     /   \
+  #                      50B    80B                                |20B|  50B
+  #            (if the sibling's direction was left of its parent, we would RIGHT ROTATE it)
+  #        Now the original node's parent is RED
+  #        and we can apply case 4 or case 6
+  def case_2(node_to_remove)
+    parent = node_to_remove.parent
+    sibling, direction = get_sibling node_to_remove
+    if sibling.color == :RED && parent.color == :BLACK && sibling.left.color != :RED && sibling.right.color != :RED
+      if direction == :RIGHT
+        left_rotation(node=NIL, parent=sibling, grandfather=parent)
+      else
+        right_rotation(node=NIL, parent=sibling, grandfather=parent)
+      end
+      parent.color = :RED
+      sibling.color = :BLACK
+      return case_1 node_to_remove
+    end
+
+    case_3 node_to_remove
+  end
+
+
+#Case 3 deletion is when:
+#           the parent is BLACK
+#          the sibling is BLACK
+#         the sibling's children are BLACK (or nil)
+#        Then, we make the sibling red and
+#       pass the double black node upwards
+#
+#                           Parent is black
+#              ___50B___    Sibling is black                       ___50B___
+#              /         \   Sibling's children are black          /         \
+#           30B          80B        CASE 3                       30B        |80B|  Continue with other cases
+#          /   \        /   \        ==>                        /  \        /   \
+#        20B   35R    70B   |90B|<---REMOVE                   20B  35R     70R   X
+#              /  \                                               /   \
+#            34B   37B                                          34B   37B
+  def case_3(node_to_remove)
+    parent = node_to_remove.parent
+    sibling, _ = get_sibling node_to_remove
+    if sibling.color == :BLACK && parent.color == :BLACK && sibling.left.color != :RED && sibling.right.color != :RED
+      # color the sibling red and forward the black node upwards, calling the cases for the parent
+      sibling.color = :RED
+      return case_1 parent
+    end
+
+    case_4 node_to_remove
+  end
+
+# TERMINATING CASE
+#   If the parent is red and the sibling is black with no red children,
+#        simply swap their colors
+#        DB-Double Black
+#                __10R__                   __10B__        The black height of the left subtree has been incremented
+#               /       \                 /       \       And the one below stays the same
+#             DB        15B      ===>    X        15R     No consequences, we're done!
+#                      /   \                     /   \
+#                    12B   17B                 12B   17B
+  def case_4(node_to_remove)
+    parent = node_to_remove.parent
+    sibling, _ = get_sibling node_to_remove
+    if parent.color == :RED && sibling.color == :BLACK && sibling.left.color != :RED && sibling.right.color != :RED
+      parent.color = :BLACK
+      sibling.color = :RED
+      return
+    end
+
+    case_5 node_to_remove
+  end
+
+#  Case 5 is a rotation that changes the circumstances so that we can do a case 6
+#        If the closer node is red and the outer BLACK or NIL, we do a left/right rotation, depending on the orientation
+#        This showcases when the CLOSER NODE's direction is RIGHT
+#
+#              ___50B___                                                    __50B__
+#             /         \                                                  /       \
+#           30B        |80B|  <-- Double black                           35B      |80B|        Case 6 is now
+#          /  \        /   \      Closer node is red (35R)              /   \      /           applicable here,
+#        20B  35R     70R   X     Outer is black (20B)               30R    37B  70R           so we redirect the node
+#            /   \                So we do a LEFT ROTATION          /   \                      to it :)
+#          34B  37B               on 35R (closer node)           20B   34B
+  def case_5(node_to_remove)
+    sibling, direction = get_sibling node_to_remove
+    closer_node = if direction == :LEFT then sibling.right else sibling.left end
+    outer_node = if direction == :LEFT then sibling.left else sibling.right end
+    if closer_node.color == :RED && outer_node.color != :RED && sibling.color == :BLACK
+      if direction == :LEFT
+        left_rotation(node=NIL, parent=closer_node, grandfather=sibling)
+      else
+        right_rotation(node=NIL, parent=closer_node, grandfather=sibling)
+      end
+      closer_node.color = :BLACK
+      sibling.color = :RED
+    end
+
+    case_6 node_to_remove
+  end
+
+# TERMINATING
+#  Case 6 requires
+#            SIBLING to be BLACK
+#            OUTER NODE to be RED
+#        Then, does a right or left rotation on the sibling
+#        This will showcase when the SIBLING's direction is LEFT
+#
+#                            Double Black
+#                    __50B__       |                               __35B__
+#                   /       \      |                              /       \
+#      SIBLING--> 35B      |80B| <-                             30R       50R
+#                /   \      /                                  /   \     /   \
+#             30R    37B  70R   Outer node is RED            20B   34B 37B    80B
+#            /   \              Closer node doesn't                           /
+#         20B   34B                 matter                                   70R
+#                               Parent doesn't
+#                                   matter
+#                               So we do a right rotation on 35B!
+  def case_6(node_to_remove)
+    sibling, direction = get_sibling node_to_remove
+    outer_node = if direction == :LEFT then sibling.left else sibling.right end
+
+    case_6_rotation = Proc.new do |dir|
+      parent_color = sibling.parent.color
+      if dir == :LEFT
+        right_rotation(node=NIL, parent=sibling, grandfather=sibling.parent)
+      else
+        left_rotation(node=NIL, parent=sibling, grandfather=sibling.parent)
+      end
+      # our new parent is the sibling
+      sibling.color = parent_color
+      sibling.right.color = :BLACK
+      sibling.left.color = :BLACK
+    end
+
+    if sibling.color == :BLACK && outer_node.color == :RED
+      return case_6_rotation(direction)  # terminating
+    end
+
+    raise Exception('Should not have reached here')
+  end
+
+  def get_sibling(node)
+    # code here
+    parent = node.parent
+    parent_sibling, dir = if parent.left == node then [parent.right, :RIGHT] else [parent.left, :LEFT] end
+    return parent_sibling, dir
+  end
+
   public :add
-  private :find_parent
+  private :find_parent, :update_parent, :recolor, :right_rotation, :left_rotation
   # end
 
   def self.get_nil_leaf
     return @@nil_leaf
   end
 end
-
-# root = Node.new(value=1, color=:RED, parent=NIL, left=NIL,  right=NIL)
-# left = Node.new(value=0, color=:RED, parent=root, left=RedBlackTree.get_nil_leaf, right=RedBlackTree.get_nil_leaf)
-rbt = RedBlackTree.new
-rbt.add 1
-rbt.add 2
-rbt.add 3
-rbt.add 4
-rbt.add 5
-rbt.add 6
-rbt.add 10
-# root.left=left
-# rbt.root = root
-# p rbt.send(:find_parent, -1)
