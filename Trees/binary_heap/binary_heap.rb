@@ -74,4 +74,41 @@ p bh.remove_max
 p bh.remove_max
 p bh.remove_max
 p bh.remove_max
+for i in (3..1)
+  puts i
+end
+def heap_sort(arr)
+  heapify_down = lambda do |array, idx, border|
+    puts "IDX is #{idx} and BORDER IS #{border}"
+    while idx < border/2
+      left_idx = idx*2 + 1
+      right_idx = left_idx+1
 
+      greater_idx = if right_idx < border && array[right_idx] > array[left_idx] then right_idx else left_idx end
+      if array[greater_idx] > array[idx]
+        array[idx], array[greater_idx] = array[greater_idx], array[idx]
+        idx = greater_idx
+      else
+        break
+      end
+    end
+  end
+  n = arr.length
+  (0..n/2).reverse_each {|i|
+    heapify_down.call arr, i, arr.length
+  }
+    puts"AA, NO FEAR #{arr}"
+
+  (1..n-1).reverse_each {|i|
+    arr[i], arr[0] = arr[0], arr[i]
+    puts "#{arr}"
+    heapify_down.call arr, 0, i
+    puts "#{arr}"
+  }
+
+  puts "should be sorted #{arr}"
+end
+
+
+puts heap_sort [5, 139, 3, -1, 41341, 1, 4]
+# puts heap_sort [1,2,3, 4]
