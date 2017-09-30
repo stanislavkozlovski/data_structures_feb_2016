@@ -7,6 +7,9 @@ _Problems with an asterisk (*) are considered hard and optional._
 * <a href="/SoftUni/Collection Data Structures and Libraries/homework/trie.py">__**Trie Data Struccture__</a>
 * <a href="/SoftUni/Collection Data Structures and Libraries/rope.py">__****Rope Data Structure__</a>
 * <a href="/SoftUni/Dictionaries and Hash Tables/homework/red_black_tree/rb_tree.py">__****Red-Black Tree__</a> <a href="/SoftUni/Dictionaries and Hash Tables/homework/red_black_tree/rb_tree_tests.py">RB Tests</a>
+* <a href="/Trees/B_Tree/b_tree.py">__****B-Tree__</a> *sloppy implementation that needs refactoring* <a href="/Trees/B_Tree/b_tree_tests.py">B-Tree Tests</a>
+* <a href="/Trees/left_leaning_red_black_tree/ll_rb_tree.py">__**Left-Leaning Red-Black Tree__</a>
+* <a href="/Trees/AA_Tree/aa_tree.go">__**AA Tree__</a> <a href="/Trees/AA_Tree/aa_tree_test.go"> AA Tree Tests </a>
 * <a href="/SoftUni/Dictionaries and Hash Tables/homework/balanced_ordered_set/ordered_set.py">**Balanced Ordered Set</a> <a href="/SoftUni/Dictionaries and Hash Tables/homework/balanced_ordered_set/ordered_set_tests.py">tests</a>
 * <a href="/SoftUni/Trees and Tree-Like Structures/homework/calculate_arithmetic_expression.py">__***Calculate Arithmetic Expression__</a> - calculate arithmetic expressions using the Shunting Yard Algorithm
 * KD-Tree - <a href="/SoftUni/Advanced Tree Structures - II/homework/mass_effect_galaxy_map_k_d_tree.py"> __*Mass Effect Galaxy Map__ </a>
